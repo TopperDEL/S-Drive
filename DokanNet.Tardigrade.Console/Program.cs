@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DokanNet.Tardigrade
+namespace DokanNet.Tardigrade.Console
 {
     class Program
     {
         static void Main(string[] args)
         {
-            DokanNet.Tardigrade.TardigradeMount tardigradeMount = new TardigradeMount();
-            tardigradeMount.Mount("", "", "");
+            TardigradeMount tardigradeMount = new TardigradeMount();
+            tardigradeMount.Mount(args[0], args[1], args[2]);
         }
     }
 }
