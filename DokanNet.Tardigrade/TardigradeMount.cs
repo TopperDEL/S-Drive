@@ -399,7 +399,6 @@ namespace DokanNet.Tardigrade
 
         public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
         {
-            //Finishes upload
             ClearListCache();
             return DokanResult.Success;
         }
@@ -418,6 +417,8 @@ namespace DokanNet.Tardigrade
 
             var upload = await _objectService.UploadObjectAsync(_bucket, realFileName, new UploadOptions(), buffer, false);
             await upload.StartUploadAsync();
+
+            ClearListCache();
 
             if (upload.Completed)
             {
@@ -477,6 +478,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
         {
+            return DokanResult.Success;
             throw new NotImplementedException();
         }
 
@@ -491,6 +493,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus SetFileAttributes(string fileName, FileAttributes attributes, IDokanFileInfo info)
         {
+            return DokanResult.Success;
             throw new NotImplementedException();
         }
 
