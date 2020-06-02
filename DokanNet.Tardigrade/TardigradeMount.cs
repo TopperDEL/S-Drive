@@ -385,22 +385,67 @@ namespace DokanNet.Tardigrade
 
         #region To implement
 
-        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
+        public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
-        }
-        public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
+            //Creates an empty file
+            var file = GetPath(fileName);
+            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
+            uploadTask.Wait();
+            var result = uploadTask.Result;
+            result.StartUploadAsync().Wait();
+            ClearListCache();
+            return DokanResult.Success;
         }
 
-        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
+        public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
+            //Finishes upload
+            ClearListCache();
+            return DokanResult.Success;
         }
-        public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
+
+        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
+            var writeFileTask = WriteFileAsync(fileName, buffer, offset,info);
+            writeFileTask.Wait();
+            bytesWritten = writeFileTask.Result.Item2;
+            return writeFileTask.Result.Item1;
+        }
+
+        public async Task<Tuple<NtStatus,int>> WriteFileAsync(string fileName, byte[] buffer, long offset, IDokanFileInfo info)
+        {
+            var realFileName = GetPath(fileName);
+
+            var upload = await _objectService.UploadObjectAsync(_bucket, realFileName, new UploadOptions(), buffer, false);
+            await upload.StartUploadAsync();
+
+            if (upload.Completed)
+            {
+                return new Tuple<NtStatus, int>(DokanResult.Success, (int)upload.BytesSent);
+            }
+            else
+            {
+                return new Tuple<NtStatus, int>(DokanResult.Error, 0);
+            }
+        }
+
+        public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
+        {
+            var readFileTask = ReadFileAsync(fileName, buffer, offset, info);
+            readFileTask.Wait();
+            bytesRead = readFileTask.Result.Item2;
+            return readFileTask.Result.Item1;
+        }
+        public async Task<Tuple<NtStatus, int>> ReadFileAsync(string fileName, byte[] buffer, long offset, IDokanFileInfo info)
+        {
+            var realFileName = GetPath(fileName);
+
+            var download = await _objectService.DownloadObjectAsync(_bucket, realFileName, new DownloadOptions(), false);
+            await download.StartDownloadAsync();
+
+            Array.Copy(download.DownloadedBytes, buffer, download.BytesReceived);
+
+            return new Tuple<NtStatus, int>(DokanResult.Success, (int)download.BytesReceived);
         }
 
         public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
@@ -430,23 +475,16 @@ namespace DokanNet.Tardigrade
             return DokanResult.Success;
         }
 
-        public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
+        public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
         {
             throw new NotImplementedException();
         }
 
-        public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
+        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
-            var file = GetPath(fileName);
-            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
-            uploadTask.Wait();
-            var result = uploadTask.Result;
-            result.StartUploadAsync().Wait();
-            ClearListCache();
-            return DokanResult.Success;
+            throw new NotImplementedException();
         }
-
-        public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
+        public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             throw new NotImplementedException();
         }
