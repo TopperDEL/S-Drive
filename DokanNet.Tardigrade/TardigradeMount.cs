@@ -43,7 +43,7 @@ namespace DokanNet.Tardigrade
             Access.SetTempDirectory(System.IO.Path.GetTempPath());
             _access = new Access(satelliteAddress, apiKey, secret);
             await InitUplinkAsync(bucketName);
-            
+
             Mount();
         }
 
@@ -73,11 +73,11 @@ namespace DokanNet.Tardigrade
         private async Task<List<uplink.NET.Models.Object>> ListAllAsync()
         {
             var result = _listingCache["all"] as List<uplink.NET.Models.Object>;
-            if(result == null)
+            if (result == null)
             {
                 var objects = await _objectService.ListObjectsAsync(_bucket, new ListObjectsOptions() { Recursive = true, Custom = true, System = true });
                 result = new List<uplink.NET.Models.Object>();
-                foreach(var obj in objects.Items)
+                foreach (var obj in objects.Items)
                 {
                     result.Add(obj);
                 }
@@ -114,6 +114,10 @@ namespace DokanNet.Tardigrade
             logger.Debug(
                 DokanFormat(
                     $"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}]) -> {result}"));
+            if(result == NtStatus.ObjectNameNotFound)
+            {
+
+            }
 #endif
 
             return result;
@@ -220,43 +224,13 @@ namespace DokanNet.Tardigrade
                     switch (mode)
                     {
                         case FileMode.Open:
-                            if (!Directory.Exists(filePath))
-                            {
-                                try
-                                {
-                                    if (!File.GetAttributes(filePath).HasFlag(FileAttributes.Directory))
-                                        return Trace(nameof(CreateFile), fileName, info, access, share, mode, options,
-                                            attributes, DokanResult.NotADirectory);
-                                }
-                                catch (Exception)
-                                {
-                                    return Trace(nameof(CreateFile), fileName, info, access, share, mode, options,
-                                        attributes, DokanResult.FileNotFound);
-                                }
-                                return Trace(nameof(CreateFile), fileName, info, access, share, mode, options,
-                                    attributes, DokanResult.PathNotFound);
-                            }
-
-                            new DirectoryInfo(filePath).EnumerateFileSystemInfos().Any();
-                            // you can't list the directory
+                            //Nothing to do here
+                            info.Context = new object();
                             break;
 
                         case FileMode.CreateNew:
-                            if (Directory.Exists(filePath))
-                                return Trace(nameof(CreateFile), fileName, info, access, share, mode, options,
-                                    attributes, DokanResult.FileExists);
-
-                            try
-                            {
-                                File.GetAttributes(filePath).HasFlag(FileAttributes.Directory);
-                                return Trace(nameof(CreateFile), fileName, info, access, share, mode, options,
-                                    attributes, DokanResult.AlreadyExists);
-                            }
-                            catch (IOException)
-                            {
-                            }
-
-                            Directory.CreateDirectory(GetPath(fileName));
+                            //Need to think about how to create a folder with a prefix
+                            info.Context = new object();
                             break;
                     }
                 }
@@ -273,21 +247,18 @@ namespace DokanNet.Tardigrade
 
                 var readWriteAttributes = (access & DataAccess) == 0;
                 var readAccess = (access & DataWriteAccess) == 0;
+                var listTask = ListAllAsync();
+                listTask.Wait();
 
-                try
-                {
-                    pathExists = (Directory.Exists(filePath) || File.Exists(filePath));
-                    pathIsDirectory = pathExists ? File.GetAttributes(filePath).HasFlag(FileAttributes.Directory) : false;
-                }
-                catch (IOException)
-                {
-                }
+                var prefix = listTask.Result.Where(l => l.Key == filePath).FirstOrDefault();
+                pathExists = prefix != null ? true : false;
+                pathIsDirectory = prefix != null && prefix.IsPrefix ? true : false;
 
                 switch (mode)
                 {
                     case FileMode.Open:
 
-                        if (pathExists)
+                        if (pathExists || fileName == ROOT_FOLDER)
                         {
                             // check if driver only wants to read attributes, security info, or open directory
                             if (readWriteAttributes || pathIsDirectory)
@@ -299,8 +270,7 @@ namespace DokanNet.Tardigrade
                                         attributes, DokanResult.AccessDenied);
 
                                 info.IsDirectory = pathIsDirectory;
-                                info.Context = new object();
-                                // must set it to someting if you return DokanError.Success
+                                info.Context = prefix; // must set it to someting if you return DokanError.Success
 
                                 return Trace(nameof(CreateFile), fileName, info, access, share, mode, options,
                                     attributes, DokanResult.Success);
@@ -317,6 +287,7 @@ namespace DokanNet.Tardigrade
                         if (pathExists)
                             return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
                                 DokanResult.FileExists);
+                        info.Context = "NEW_UPLOAD";
                         break;
 
                     case FileMode.Truncate:
@@ -326,48 +297,8 @@ namespace DokanNet.Tardigrade
                         break;
                 }
 
-                try
-                {
-                    info.Context = new FileStream(filePath, mode,
-                        readAccess ? System.IO.FileAccess.Read : System.IO.FileAccess.ReadWrite, share, 4096, options);
-
-                    if (pathExists && (mode == FileMode.OpenOrCreate
-                                       || mode == FileMode.Create))
-                        result = DokanResult.AlreadyExists;
-
-                    if (mode == FileMode.CreateNew || mode == FileMode.Create) //Files are always created as Archive
-                        attributes |= FileAttributes.Archive;
-                    File.SetAttributes(filePath, attributes);
-                }
-                catch (UnauthorizedAccessException) // don't have access rights
-                {
-                    if (info.Context is FileStream fileStream)
-                    {
-                        // returning AccessDenied cleanup and close won't be called,
-                        // so we have to take care of the stream now
-                        fileStream.Dispose();
-                        info.Context = null;
-                    }
-                    return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
-                        DokanResult.AccessDenied);
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
-                        DokanResult.PathNotFound);
-                }
-                catch (Exception ex)
-                {
-                    var hr = (uint)Marshal.GetHRForException(ex);
-                    switch (hr)
-                    {
-                        case 0x80070020: //Sharing violation
-                            return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
-                                DokanResult.SharingViolation);
-                        default:
-                            throw;
-                    }
-                }
+                if (pathExists && (mode == FileMode.OpenOrCreate || mode == FileMode.Create))
+                    result = DokanResult.AlreadyExists;
             }
             return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
                 result);
@@ -375,21 +306,67 @@ namespace DokanNet.Tardigrade
 
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
-            // may be called with info.Context == null, but usually it isn't
-            var filePath = GetPath(fileName);
-            FileSystemInfo finfo = new FileInfo(filePath);
-            if (!finfo.Exists)
-                finfo = new DirectoryInfo(filePath);
-
-            fileInfo = new FileInformation
+            if(info.Context != null && info.Context == "NEW_UPLOAD")
             {
-                FileName = fileName,
-                Attributes = finfo.Attributes,
-                CreationTime = finfo.CreationTime,
-                LastAccessTime = finfo.LastAccessTime,
-                LastWriteTime = finfo.LastWriteTime,
-                Length = (finfo as FileInfo)?.Length ?? 0,
-            };
+                fileInfo = new FileInformation
+                {
+                    FileName = fileName,
+                    Attributes = FileAttributes.NotContentIndexed | FileAttributes.Archive,
+                    CreationTime = DateTime.Now,
+                    LastAccessTime = DateTime.Now,
+                    LastWriteTime = DateTime.Now,
+                    Length = 0,
+                };
+            }
+            else if (fileName == ROOT_FOLDER)
+            {
+                fileInfo = new FileInformation
+                {
+                    FileName = fileName,
+                    Attributes = FileAttributes.Directory,
+                    CreationTime = DateTime.Now,
+                    LastAccessTime = DateTime.Now,
+                    LastWriteTime = DateTime.Now, 
+                    Length = 0,
+                };
+            }
+            else
+            {
+                var filePath = GetPath(fileName);
+
+                var listTask = ListAllAsync();
+                listTask.Wait();
+
+                var file = listTask.Result.Where(l => l.Key == filePath).FirstOrDefault();
+                var fileExists = file != null ? true : false;
+
+                if (file.IsPrefix)
+                {
+                    //See it as a directory
+                    fileInfo = new FileInformation
+                    {
+                        FileName = fileName,
+                        Attributes = FileAttributes.Directory,
+                        CreationTime = file.SystemMetaData.Created,
+                        LastAccessTime = file.SystemMetaData.Created, //Todo: use custom meta
+                        LastWriteTime = file.SystemMetaData.Created, //Todo: use custom meta
+                        Length = 0,
+                    };
+                }
+                else
+                {
+                    //See it as a file
+                    fileInfo = new FileInformation
+                    {
+                        FileName = fileName,
+                        Attributes = FileAttributes.NotContentIndexed | FileAttributes.Archive,
+                        CreationTime = file.SystemMetaData.Created,
+                        LastAccessTime = file.SystemMetaData.Created, //Todo: use custom meta
+                        LastWriteTime = file.SystemMetaData.Created, //Todo: use custom meta
+                        Length = file.SystemMetaData.ContentLength,
+                    };
+                }
+            }
             return Trace(nameof(GetFileInformation), fileName, info, DokanResult.Success);
         }
         #endregion
@@ -426,7 +403,10 @@ namespace DokanNet.Tardigrade
 
         public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
+            var uploadTask = _objectService.UploadObjectAsync(_bucket, fileName, new UploadOptions(), new byte[] { }, false);
+            uploadTask.Wait();
+            uploadTask.Result.StartUploadAsync().Wait();
+            return DokanResult.Success;
         }
 
         public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
