@@ -11,7 +11,7 @@ namespace DokanNet.Tardigrade.Console
         static void Main(string[] args)
         {
             TardigradeMount tardigradeMount = new TardigradeMount();
-            tardigradeMount.Mount(args[0], args[1], args[2]);
+            tardigradeMount.MountAsync(args[0], args[1], args[2],"dokan1").Wait();
         }
     }
 }

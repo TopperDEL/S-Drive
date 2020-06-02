@@ -8,7 +8,7 @@ namespace DokanNet.Tardigrade.Interfaces
 {
     public interface ITardigradeMount
     {
-        void Mount(string satelliteAddress, string apiKey, string secret);
-        void Mount(string accessGrant);
+        Task MountAsync(string satelliteAddress, string apiKey, string secret, string bucketName);
+        Task MountAsync(string accessGrant, string bucketName);
     }
 }
