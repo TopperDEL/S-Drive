@@ -18,6 +18,7 @@ namespace DokanNet.Tardigrade
 {
     public class TardigradeMount : ITardigradeMount, IDokanOperations
     {
+        const string ROOT_FOLDER = "\\";
         private const FileAccess DataAccess = FileAccess.ReadData | FileAccess.WriteData | FileAccess.AppendData |
                                               FileAccess.Execute |
                                               FileAccess.GenericExecute | FileAccess.GenericWrite |
@@ -90,15 +91,121 @@ namespace DokanNet.Tardigrade
         }
         #endregion
 
-        #region Implementation of IDokanOperations
-        public void Cleanup(string fileName, IDokanFileInfo info)
+        #region Helper
+        protected NtStatus Trace(string method, string fileName, IDokanFileInfo info, NtStatus result,
+            params object[] parameters)
         {
-            //throw new NotImplementedException();
+#if TRACE
+            var extraParameters = parameters != null && parameters.Length > 0
+                ? ", " + string.Join(", ", parameters.Select(x => string.Format(DefaultFormatProvider, "{0}", x)))
+                : string.Empty;
+
+            logger.Debug(DokanFormat($"{method}('{fileName}', {info}{extraParameters}) -> {result}"));
+#endif
+
+            return result;
         }
 
-        public void CloseFile(string fileName, IDokanFileInfo info)
+        private NtStatus Trace(string method, string fileName, IDokanFileInfo info,
+            FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes,
+            NtStatus result)
         {
-            //throw new NotImplementedException();
+#if TRACE
+            logger.Debug(
+                DokanFormat(
+                    $"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}]) -> {result}"));
+#endif
+
+            return result;
+        }
+
+        protected string GetPath(string fileName)
+        {
+            //return path + fileName;
+            return fileName;
+        }
+
+        public IList<FileInformation> FindFilesHelper(string fileName, string searchPattern)
+        {
+            var listTask = ListAllAsync();
+            listTask.Wait();
+
+            IList<FileInformation> files = listTask.Result
+                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true))
+                .Select(finfo => new FileInformation
+                {
+                    Attributes = FileAttributes.Normal,
+                    CreationTime = finfo.SystemMetaData.Created,
+                    LastAccessTime = finfo.SystemMetaData.Created,
+                    LastWriteTime = finfo.SystemMetaData.Created,
+                    Length = finfo.SystemMetaData.ContentLength,
+                    FileName = finfo.Key
+                }).ToArray();
+
+            return files;
+        }
+        #endregion
+
+        #region Done
+        public NtStatus GetDiskFreeSpace(out long freeBytesAvailable, out long totalNumberOfBytes, out long totalNumberOfFreeBytes, IDokanFileInfo info)
+        {
+            freeBytesAvailable = 512 * 1024 * 1024;
+            totalNumberOfBytes = 1024 * 1024 * 1024;
+            totalNumberOfFreeBytes = 512 * 1024 * 1024;
+            return Trace(nameof(GetDiskFreeSpace), null, info, DokanResult.Success, "out " + freeBytesAvailable.ToString(),
+                "out " + totalNumberOfBytes.ToString(), "out " + totalNumberOfFreeBytes.ToString());
+        }
+
+        public NtStatus FindFiles(string fileName, out IList<FileInformation> files, IDokanFileInfo info)
+        {
+            // This function is not called because FindFilesWithPattern is implemented
+            // Return DokanResult.NotImplemented in FindFilesWithPattern to make FindFiles called
+            files = FindFilesHelper(fileName, "*");
+
+            return Trace(nameof(FindFiles), fileName, info, DokanResult.Success);
+        }
+
+        public NtStatus FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, IDokanFileInfo info)
+        {
+            files = FindFilesHelper(fileName, searchPattern);
+
+            return Trace(nameof(FindFilesWithPattern), fileName, info, DokanResult.Success);
+        }
+        public NtStatus GetVolumeInformation(out string volumeLabel, out FileSystemFeatures features, out string fileSystemName, out uint maximumComponentLength, IDokanFileInfo info)
+        {
+            volumeLabel = "Tardigrade";
+            fileSystemName = "NTFS";
+            maximumComponentLength = 256;
+
+            features = FileSystemFeatures.CasePreservedNames | FileSystemFeatures.CaseSensitiveSearch |
+                       FileSystemFeatures.PersistentAcls | FileSystemFeatures.SupportsRemoteStorage |
+                       FileSystemFeatures.UnicodeOnDisk;
+
+            return Trace(nameof(GetVolumeInformation), null, info, DokanResult.Success, "out " + volumeLabel,
+                "out " + features.ToString(), "out " + fileSystemName);
+        }
+
+        public NtStatus Mounted(IDokanFileInfo info)
+        {
+            return Trace(nameof(Mounted), null, info, DokanResult.Success);
+        }
+
+        public NtStatus Unmounted(IDokanFileInfo info)
+        {
+            return Trace(nameof(Unmounted), null, info, DokanResult.Success);
+        }
+        #endregion
+
+        #region partly implemented / not sure
+        public NtStatus GetFileSecurity(string fileName, out FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
+        {
+            security = null;
+            return DokanResult.NotImplemented;
+        }
+
+        public NtStatus SetFileSecurity(string fileName, FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
+        {
+            return DokanResult.Error;
         }
 
         public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
@@ -159,7 +266,7 @@ namespace DokanNet.Tardigrade
                         DokanResult.AccessDenied);
                 }
             }
-            else
+            else //IsFile
             {
                 var pathExists = true;
                 var pathIsDirectory = false;
@@ -266,51 +373,6 @@ namespace DokanNet.Tardigrade
                 result);
         }
 
-        public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
-        }
-
-        public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
-        }
-
-        public NtStatus FindFiles(string fileName, out IList<FileInformation> files, IDokanFileInfo info)
-        {
-            // This function is not called because FindFilesWithPattern is implemented
-            // Return DokanResult.NotImplemented in FindFilesWithPattern to make FindFiles called
-            files = FindFilesHelper(fileName, "*");
-
-            return Trace(nameof(FindFiles), fileName, info, DokanResult.Success);
-        }
-
-        public NtStatus FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, IDokanFileInfo info)
-        {
-            files = FindFilesHelper(fileName, searchPattern);
-
-            return Trace(nameof(FindFilesWithPattern), fileName, info, DokanResult.Success);
-        }
-
-        public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
-        }
-
-        public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
-        }
-
-        public NtStatus GetDiskFreeSpace(out long freeBytesAvailable, out long totalNumberOfBytes, out long totalNumberOfFreeBytes, IDokanFileInfo info)
-        {
-            freeBytesAvailable = 512 * 1024 * 1024;
-            totalNumberOfBytes = 1024 * 1024 * 1024;
-            totalNumberOfFreeBytes = 512 * 1024 * 1024;
-            return Trace(nameof(GetDiskFreeSpace), null, info, DokanResult.Success, "out " + freeBytesAvailable.ToString(),
-                "out " + totalNumberOfBytes.ToString(), "out " + totalNumberOfFreeBytes.ToString());
-        }
-
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
             // may be called with info.Context == null, but usually it isn't
@@ -330,37 +392,28 @@ namespace DokanNet.Tardigrade
             };
             return Trace(nameof(GetFileInformation), fileName, info, DokanResult.Success);
         }
+        #endregion
 
-        public NtStatus GetFileSecurity(string fileName, out FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
+        #region To implement
+
+        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
         {
-            security = null;
-            return DokanResult.NotImplemented;
+            throw new NotImplementedException();
+        }
+        public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
+        {
+            throw new NotImplementedException();
         }
 
-        public NtStatus GetVolumeInformation(out string volumeLabel, out FileSystemFeatures features, out string fileSystemName, out uint maximumComponentLength, IDokanFileInfo info)
+        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
-            volumeLabel = "Tardigrade";
-            fileSystemName = "NTFS";
-            maximumComponentLength = 256;
-
-            features = FileSystemFeatures.CasePreservedNames | FileSystemFeatures.CaseSensitiveSearch |
-                       FileSystemFeatures.PersistentAcls | FileSystemFeatures.SupportsRemoteStorage |
-                       FileSystemFeatures.UnicodeOnDisk;
-
-            return Trace(nameof(GetVolumeInformation), null, info, DokanResult.Success, "out " + volumeLabel,
-                "out " + features.ToString(), "out " + fileSystemName);
+            throw new NotImplementedException();
         }
-
         public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             throw new NotImplementedException();
         }
 
-        public NtStatus Mounted(IDokanFileInfo info)
-        {
-            return Trace(nameof(Mounted), null, info, DokanResult.Success);
-        }
-        
         public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
         {
             throw new NotImplementedException();
@@ -386,85 +439,36 @@ namespace DokanNet.Tardigrade
             throw new NotImplementedException();
         }
 
-        public NtStatus SetFileSecurity(string fileName, FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
+        public void Cleanup(string fileName, IDokanFileInfo info)
         {
-            return DokanResult.Error;
         }
 
-        public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
+        public void CloseFile(string fileName, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
         }
 
-        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
+        public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
             throw new NotImplementedException();
         }
 
-        public NtStatus Unmounted(IDokanFileInfo info)
-        {
-            return Trace(nameof(Unmounted), null, info, DokanResult.Success);
-        }
-
-        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
+        public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
             throw new NotImplementedException();
         }
-        #endregion
 
-        #region Helper
-        protected NtStatus Trace(string method, string fileName, IDokanFileInfo info, NtStatus result,
-            params object[] parameters)
+        public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
         {
-#if TRACE
-            var extraParameters = parameters != null && parameters.Length > 0
-                ? ", " + string.Join(", ", parameters.Select(x => string.Format(DefaultFormatProvider, "{0}", x)))
-                : string.Empty;
-
-            logger.Debug(DokanFormat($"{method}('{fileName}', {info}{extraParameters}) -> {result}"));
-#endif
-
-            return result;
+            throw new NotImplementedException();
         }
 
-        private NtStatus Trace(string method, string fileName, IDokanFileInfo info,
-            FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes,
-            NtStatus result)
+        public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
         {
-#if TRACE
-            logger.Debug(
-                DokanFormat(
-                    $"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}]) -> {result}"));
-#endif
-
-            return result;
+            throw new NotImplementedException();
         }
 
-        protected string GetPath(string fileName)
-        {
-            //return path + fileName;
-            return fileName;
-        }
 
-        public IList<FileInformation> FindFilesHelper(string fileName, string searchPattern)
-        {
-            var listTask = ListAllAsync();
-            listTask.Wait();
 
-            IList<FileInformation> files = listTask.Result
-                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true))
-                .Select(finfo => new FileInformation
-                {
-                    Attributes = FileAttributes.Normal,
-                    CreationTime = finfo.SystemMetaData.Created,
-                    LastAccessTime = finfo.SystemMetaData.Created,
-                    LastWriteTime = finfo.SystemMetaData.Created,
-                    Length = finfo.SystemMetaData.ContentLength,
-                    FileName = finfo.Key
-                }).ToArray();
-
-            return files;
-        }
         #endregion
     }
 }
