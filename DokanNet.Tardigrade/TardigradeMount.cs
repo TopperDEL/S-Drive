@@ -92,6 +92,11 @@ namespace DokanNet.Tardigrade
         #endregion
 
         #region Helper
+
+        private void ClearListCache()
+        {
+            _listingCache.Remove("all");
+        }
         protected NtStatus Trace(string method, string fileName, IDokanFileInfo info, NtStatus result,
             params object[] parameters)
         {
@@ -114,7 +119,7 @@ namespace DokanNet.Tardigrade
             logger.Debug(
                 DokanFormat(
                     $"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}]) -> {result}"));
-            if(result == NtStatus.ObjectNameNotFound)
+            if (result == NtStatus.ObjectNameNotFound)
             {
 
             }
@@ -125,8 +130,15 @@ namespace DokanNet.Tardigrade
 
         protected string GetPath(string fileName)
         {
-            //return path + fileName;
-            return fileName;
+            if (fileName == ROOT_FOLDER)
+                return fileName;
+            else
+            {
+                if (fileName.StartsWith(ROOT_FOLDER))
+                    return fileName.Substring(1);
+                else
+                    return fileName;
+            }
         }
 
         public IList<FileInformation> FindFilesHelper(string fileName, string searchPattern)
@@ -306,7 +318,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
-            if(info.Context != null && info.Context == "NEW_UPLOAD")
+            if (info.Context != null && info.Context == "NEW_UPLOAD")
             {
                 fileInfo = new FileInformation
                 {
@@ -326,7 +338,7 @@ namespace DokanNet.Tardigrade
                     Attributes = FileAttributes.Directory,
                     CreationTime = DateTime.Now,
                     LastAccessTime = DateTime.Now,
-                    LastWriteTime = DateTime.Now, 
+                    LastWriteTime = DateTime.Now,
                     Length = 0,
                 };
             }
@@ -393,7 +405,29 @@ namespace DokanNet.Tardigrade
 
         public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
+            var moveFileTask = MoveFileAsync(oldName, newName, replace, info);
+            moveFileTask.Wait();
+            return moveFileTask.Result;
+        }
+        public async Task<NtStatus> MoveFileAsync(string oldName, string newName, bool replace, IDokanFileInfo info)
+        {
+            var realOldName = GetPath(oldName);
+            var realNewName = GetPath(newName);
+
+            if (replace)
+                await _objectService.DeleteObjectAsync(_bucket, realNewName);
+
+            var download = await _objectService.DownloadObjectAsync(_bucket, realOldName, new DownloadOptions(), false);
+            await download.StartDownloadAsync();
+
+            var upload = await _objectService.UploadObjectAsync(_bucket, realNewName, new UploadOptions(), download.DownloadedBytes, false);
+            await upload.StartUploadAsync();
+
+            await _objectService.DeleteObjectAsync(_bucket, realOldName);
+
+            ClearListCache();
+
+            return DokanResult.Success;
         }
 
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
@@ -403,9 +437,12 @@ namespace DokanNet.Tardigrade
 
         public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
         {
-            var uploadTask = _objectService.UploadObjectAsync(_bucket, fileName, new UploadOptions(), new byte[] { }, false);
+            var file = GetPath(fileName);
+            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
             uploadTask.Wait();
-            uploadTask.Result.StartUploadAsync().Wait();
+            var result = uploadTask.Result;
+            result.StartUploadAsync().Wait();
+            ClearListCache();
             return DokanResult.Success;
         }
 
