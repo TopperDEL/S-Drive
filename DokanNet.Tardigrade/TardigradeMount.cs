@@ -19,6 +19,7 @@ namespace DokanNet.Tardigrade
     public class TardigradeMount : ITardigradeMount, IDokanOperations
     {
         const string ROOT_FOLDER = "\\";
+        const string DOKAN_FOLDER = "folder.dokan";
         private const FileAccess DataAccess = FileAccess.ReadData | FileAccess.WriteData | FileAccess.AppendData |
                                               FileAccess.Execute |
                                               FileAccess.GenericExecute | FileAccess.GenericWrite |
@@ -150,7 +151,8 @@ namespace DokanNet.Tardigrade
             listTask.Wait();
 
             IList<FileInformation> files = listTask.Result
-                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true))
+                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                !finfo.Key.Contains(DOKAN_FOLDER))
                 .Select(finfo => new FileInformation
                 {
                     Attributes = FileAttributes.Normal,
@@ -161,7 +163,26 @@ namespace DokanNet.Tardigrade
                     FileName = finfo.Key
                 }).ToArray();
 
-            return files;
+            IList<FileInformation> folders = listTask.Result
+                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                finfo.Key.Contains(DOKAN_FOLDER))
+                .Select(finfo => new FileInformation
+                {
+                    Attributes = FileAttributes.Directory,
+                    CreationTime = finfo.SystemMetaData.Created,
+                    LastAccessTime = finfo.SystemMetaData.Created,
+                    LastWriteTime = finfo.SystemMetaData.Created,
+                    Length = finfo.SystemMetaData.ContentLength,
+                    FileName = finfo.Key.Replace("/" + DOKAN_FOLDER, "")
+                }).ToArray();
+
+            List<FileInformation> result = new List<FileInformation>();
+            foreach (var folder in folders)
+                result.Add(folder);
+            foreach (var file in files)
+                result.Add(file);
+
+            return result;
         }
 
         private void InitDownload(string fileName, IDokanFileInfo info)
@@ -383,6 +404,7 @@ namespace DokanNet.Tardigrade
                         case FileMode.CreateNew:
                             //Need to think about how to create a folder with a prefix
                             info.Context = new object();
+                            CreateFolder(fileName);
                             break;
                     }
                 }
@@ -455,6 +477,17 @@ namespace DokanNet.Tardigrade
                 result);
         }
 
+        private void CreateFolder(string folderName)
+        {
+            var file = GetPath(folderName);
+            file = file + "/" + DOKAN_FOLDER;
+            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
+            uploadTask.Wait();
+            var result = uploadTask.Result;
+            result.StartUploadAsync().Wait();
+            ClearListCache();
+        }
+
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
             if (_currentUploads.ContainsKey(fileName))
@@ -469,8 +502,12 @@ namespace DokanNet.Tardigrade
                     Length = 0,
                 };
             }
-            else if (fileName == ROOT_FOLDER)
+            else if (fileName == ROOT_FOLDER || info.IsDirectory)
             {
+                if(fileName.Contains("Ordner"))
+                {
+
+                }
                 fileInfo = new FileInformation
                 {
                     FileName = fileName,
@@ -555,7 +592,7 @@ namespace DokanNet.Tardigrade
             CleanupChunkedUpload(fileName, info);
             CleanupDownload(info);
 
-            if(info.DeleteOnClose)
+            if (info.DeleteOnClose)
             {
                 var realFileName = GetPath(fileName);
                 var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
