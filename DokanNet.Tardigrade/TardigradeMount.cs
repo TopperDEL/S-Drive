@@ -94,9 +94,11 @@ namespace DokanNet.Tardigrade
 
         #region Helper
 
-        private void ClearListCache()
+        private void ClearListCache(string fileName = null)
         {
             _listingCache.Remove("all");
+            if (fileName != null)
+                _listingCache.Remove(fileName);
         }
         protected NtStatus Trace(string method, string fileName, IDokanFileInfo info, NtStatus result,
             params object[] parameters)
@@ -211,9 +213,7 @@ namespace DokanNet.Tardigrade
         {
             return Trace(nameof(Unmounted), null, info, DokanResult.Success);
         }
-        #endregion
 
-        #region partly implemented / not sure
         public NtStatus GetFileSecurity(string fileName, out FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
         {
             security = null;
@@ -224,7 +224,9 @@ namespace DokanNet.Tardigrade
         {
             return DokanResult.Error;
         }
+        #endregion
 
+        #region partly implemented / not sure
         public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
         {
             var result = DokanResult.Success;
@@ -406,7 +408,7 @@ namespace DokanNet.Tardigrade
             //if (_currentUploads.ContainsKey(fileName))
             //    CleanupChunkedUpload(fileName, info);
             //else
-                InitChunkedUpload(fileName, info);
+            InitChunkedUpload(fileName, info);
 
             ClearListCache();
             return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
@@ -444,7 +446,7 @@ namespace DokanNet.Tardigrade
 
         private void InitChunkedUpload(string fileName, IDokanFileInfo info)
         {
-            if(!_currentUploads.ContainsKey(fileName))
+            if (!_currentUploads.ContainsKey(fileName))
             {
                 var realFileName = GetPath(fileName);
 
@@ -459,7 +461,7 @@ namespace DokanNet.Tardigrade
             {
                 var commitResult = _currentUploads[fileName].Commit();
                 _currentUploads.Remove(fileName);
-                ClearListCache();
+                ClearListCache(fileName);
             }
         }
 
@@ -482,44 +484,18 @@ namespace DokanNet.Tardigrade
             }
         }
 
-
-        private object _downloadLock = new object();
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
         {
             InitDownload(fileName, info);
-            //if(info.Context != null && info.Context is DownloadStream)
-            lock (_downloadLock)
-            {
-                var download = info.Context as DownloadStream;
-                Console.WriteLine("DOWNLOAD - " + fileName + " - " + offset.ToString() + " - " + buffer.Length.ToString() + " - " + download.Length);
-                download.Position = offset;
-                if (download.Length < offset + buffer.Length)
-                    bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
-                else
-                    bytesRead = download.Read(buffer, 0, buffer.Length);
-                return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
-            }
-            //else
-            //{
-            //    bytesRead = 0;
-            //    return Trace(nameof(ReadFile), fileName, info, DokanResult.Error);
-            //}
-            //var readFileTask = ReadFileAsync(fileName, buffer, offset, info);
-            //readFileTask.Wait();
-            //bytesRead = readFileTask.Result.Item2;
-            //return readFileTask.Result.Item1;
+
+            var download = info.Context as DownloadStream;
+            download.Position = offset;
+            if (download.Length < offset + buffer.Length)
+                bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
+            else
+                bytesRead = download.Read(buffer, 0, buffer.Length);
+            return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
         }
-        //public async Task<Tuple<NtStatus, int>> ReadFileAsync(string fileName, byte[] buffer, long offset, IDokanFileInfo info)
-        //{
-        //    var realFileName = GetPath(fileName);
-
-        //    var download = await _objectService.DownloadObjectAsync(_bucket, realFileName, new DownloadOptions(), false);
-        //    await download.StartDownloadAsync();
-
-        //    Array.Copy(download.DownloadedBytes, 0, buffer, 0, buffer.Length);
-
-        //    return new Tuple<NtStatus, int>(DokanResult.Success, (int)download.BytesReceived);
-        //}
 
         public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
         {
