@@ -353,6 +353,17 @@ namespace DokanNet.Tardigrade
 
             return DokanResult.Success;
         }
+
+        public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
+        {
+            var realFileName = GetPath(fileName);
+            var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
+            deleteTask.Wait();
+
+            ClearListCache();
+
+            return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
+        }
         #endregion
 
         #region partly implemented / not sure
@@ -557,17 +568,6 @@ namespace DokanNet.Tardigrade
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
             throw new NotImplementedException();
-        }
-
-        public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
-        {
-            var realFileName = GetPath(fileName);
-            var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
-            deleteTask.Wait();
-
-            ClearListCache();
-
-            return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
         }
 
         public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
