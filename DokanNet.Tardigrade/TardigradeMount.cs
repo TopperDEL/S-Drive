@@ -163,6 +163,55 @@ namespace DokanNet.Tardigrade
 
             return files;
         }
+
+        private void InitDownload(string fileName, IDokanFileInfo info)
+        {
+            if (info.Context == null && _listingCache[fileName] != null)
+                info.Context = _listingCache[fileName];
+
+            if (info.Context == null)
+            {
+                var realFileName = GetPath(fileName);
+
+                var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
+                getObjectTask.Wait();
+                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName, _access);
+                var cachePolicy = new CacheItemPolicy();
+                cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(30);
+                _listingCache.Set(fileName, info.Context, cachePolicy);
+            }
+        }
+        private void CleanupDownload(IDokanFileInfo info)
+        {
+            return;
+            if (info.Context != null && info.Context is DownloadStream)
+            {
+                var download = info.Context as DownloadStream;
+                download.Dispose();
+                info.Context = null;
+            }
+        }
+
+        private void InitChunkedUpload(string fileName, IDokanFileInfo info)
+        {
+            if (!_currentUploads.ContainsKey(fileName))
+            {
+                var realFileName = GetPath(fileName);
+
+                var uploadTask = _objectService.UploadObjectChunkedAsync(_bucket, realFileName, new UploadOptions(), null);
+                uploadTask.Wait();
+                _currentUploads.Add(fileName, uploadTask.Result);
+            }
+        }
+        private void CleanupChunkedUpload(string fileName, IDokanFileInfo info)
+        {
+            if (_currentUploads.ContainsKey(fileName))
+            {
+                var commitResult = _currentUploads[fileName].Commit();
+                _currentUploads.Remove(fileName);
+                ClearListCache(fileName);
+            }
+        }
         #endregion
 
         #region Done
@@ -223,6 +272,86 @@ namespace DokanNet.Tardigrade
         public NtStatus SetFileSecurity(string fileName, FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
         {
             return DokanResult.Error;
+        }
+
+        public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
+        {
+            //Creates an empty file
+            var file = GetPath(fileName);
+            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
+            uploadTask.Wait();
+            var result = uploadTask.Result;
+            result.StartUploadAsync().Wait();
+            ClearListCache();
+            return Trace(nameof(SetAllocationSize), fileName, info, DokanResult.Success);
+        }
+
+        public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
+        {
+            InitChunkedUpload(fileName, info);
+
+            ClearListCache();
+            return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
+        }
+
+        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
+        {
+            if (!_currentUploads.ContainsKey(fileName))
+                InitChunkedUpload(fileName, info);
+
+            var chunkedUpload = _currentUploads[fileName];
+            var chunkUploaded = chunkedUpload.WriteBytes(buffer);
+            if (chunkUploaded)
+            {
+                bytesWritten = buffer.Length;
+                return Trace(nameof(WriteFile), fileName, info, DokanResult.Success);
+            }
+            else
+            {
+                bytesWritten = 0;
+                return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
+            }
+        }
+
+        public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
+        {
+            InitDownload(fileName, info);
+
+            var download = info.Context as DownloadStream;
+            download.Position = offset;
+            if (download.Length < offset + buffer.Length)
+                bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
+            else
+                bytesRead = download.Read(buffer, 0, buffer.Length);
+            return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
+        }
+
+        public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
+        {
+            var moveFileTask = MoveFileAsync(oldName, newName, replace, info);
+            moveFileTask.Wait();
+            return moveFileTask.Result;
+        }
+
+        public async Task<NtStatus> MoveFileAsync(string oldName, string newName, bool replace, IDokanFileInfo info)
+        {
+            var realOldName = GetPath(oldName);
+            var realNewName = GetPath(newName);
+
+            if (replace)
+                await _objectService.DeleteObjectAsync(_bucket, realNewName);
+
+            var download = await _objectService.DownloadObjectAsync(_bucket, realOldName, new DownloadOptions(), false);
+            await download.StartDownloadAsync();
+
+            var upload = await _objectService.UploadObjectAsync(_bucket, realNewName, new UploadOptions(), download.DownloadedBytes, false);
+            await upload.StartUploadAsync();
+
+            await _objectService.DeleteObjectAsync(_bucket, realOldName);
+
+            ClearListCache();
+
+            return DokanResult.Success;
         }
         #endregion
 
@@ -391,138 +520,6 @@ namespace DokanNet.Tardigrade
         #endregion
 
         #region To implement
-        public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
-        {
-            //Creates an empty file
-            var file = GetPath(fileName);
-            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
-            uploadTask.Wait();
-            var result = uploadTask.Result;
-            result.StartUploadAsync().Wait();
-            ClearListCache();
-            return Trace(nameof(SetAllocationSize), fileName, info, DokanResult.Success);
-        }
-
-        public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
-        {
-            //if (_currentUploads.ContainsKey(fileName))
-            //    CleanupChunkedUpload(fileName, info);
-            //else
-            InitChunkedUpload(fileName, info);
-
-            ClearListCache();
-            return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
-        }
-
-        private void InitDownload(string fileName, IDokanFileInfo info)
-        {
-            if (info.Context == null && _listingCache[fileName] != null)
-                info.Context = _listingCache[fileName];
-
-            if (info.Context == null)
-            {
-                logger.Debug(DokanFormat($"*** DOWNLOAD('{fileName}') ***"));
-
-                var realFileName = GetPath(fileName);
-
-                var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
-                getObjectTask.Wait();
-                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName, _access);
-                var cachePolicy = new CacheItemPolicy();
-                cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(30);
-                _listingCache.Set(fileName, info.Context, cachePolicy);
-            }
-        }
-        private void CleanupDownload(IDokanFileInfo info)
-        {
-            return;
-            if (info.Context != null && info.Context is DownloadStream)
-            {
-                var download = info.Context as DownloadStream;
-                download.Dispose();
-                info.Context = null;
-            }
-        }
-
-        private void InitChunkedUpload(string fileName, IDokanFileInfo info)
-        {
-            if (!_currentUploads.ContainsKey(fileName))
-            {
-                var realFileName = GetPath(fileName);
-
-                var uploadTask = _objectService.UploadObjectChunkedAsync(_bucket, realFileName, new UploadOptions(), null);
-                uploadTask.Wait();
-                _currentUploads.Add(fileName, uploadTask.Result);
-            }
-        }
-        private void CleanupChunkedUpload(string fileName, IDokanFileInfo info)
-        {
-            if (_currentUploads.ContainsKey(fileName))
-            {
-                var commitResult = _currentUploads[fileName].Commit();
-                _currentUploads.Remove(fileName);
-                ClearListCache(fileName);
-            }
-        }
-
-        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
-        {
-            if (!_currentUploads.ContainsKey(fileName))
-                InitChunkedUpload(fileName, info);
-
-            var chunkedUpload = _currentUploads[fileName];
-            var chunkUploaded = chunkedUpload.WriteBytes(buffer);
-            if (chunkUploaded)
-            {
-                bytesWritten = buffer.Length;
-                return Trace(nameof(WriteFile), fileName, info, DokanResult.Success);
-            }
-            else
-            {
-                bytesWritten = 0;
-                return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
-            }
-        }
-
-        public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
-        {
-            InitDownload(fileName, info);
-
-            var download = info.Context as DownloadStream;
-            download.Position = offset;
-            if (download.Length < offset + buffer.Length)
-                bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
-            else
-                bytesRead = download.Read(buffer, 0, buffer.Length);
-            return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
-        }
-
-        public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
-        {
-            var moveFileTask = MoveFileAsync(oldName, newName, replace, info);
-            moveFileTask.Wait();
-            return moveFileTask.Result;
-        }
-        public async Task<NtStatus> MoveFileAsync(string oldName, string newName, bool replace, IDokanFileInfo info)
-        {
-            var realOldName = GetPath(oldName);
-            var realNewName = GetPath(newName);
-
-            if (replace)
-                await _objectService.DeleteObjectAsync(_bucket, realNewName);
-
-            var download = await _objectService.DownloadObjectAsync(_bucket, realOldName, new DownloadOptions(), false);
-            await download.StartDownloadAsync();
-
-            var upload = await _objectService.UploadObjectAsync(_bucket, realNewName, new UploadOptions(), download.DownloadedBytes, false);
-            await upload.StartUploadAsync();
-
-            await _objectService.DeleteObjectAsync(_bucket, realOldName);
-
-            ClearListCache();
-
-            return DokanResult.Success;
-        }
 
         public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
         {
@@ -564,8 +561,13 @@ namespace DokanNet.Tardigrade
 
         public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
-            return DokanResult.NotImplemented;
-            throw new NotImplementedException();
+            var realFileName = GetPath(fileName);
+            var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
+            deleteTask.Wait();
+
+            ClearListCache();
+
+            return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
         }
 
         public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
