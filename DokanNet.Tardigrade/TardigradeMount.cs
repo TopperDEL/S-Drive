@@ -299,7 +299,7 @@ namespace DokanNet.Tardigrade
                         if (pathExists)
                             return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
                                 DokanResult.FileExists);
-                        info.Context = "NEW_UPLOAD";
+                        InitChunkedUpload(fileName, info);
                         break;
 
                     case FileMode.Truncate:
@@ -318,7 +318,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
-            if (info.Context != null && info.Context == "NEW_UPLOAD")
+            if (info.Context != null && info.Context is ChunkedUploadOperation)
             {
                 fileInfo = new FileInformation
                 {
@@ -351,6 +351,11 @@ namespace DokanNet.Tardigrade
 
                 var file = listTask.Result.Where(l => l.Key == filePath).FirstOrDefault();
                 var fileExists = file != null ? true : false;
+                if (!fileExists)
+                {
+                    fileInfo = new FileInformation();
+                    return Trace(nameof(GetFileInformation), fileName, info, DokanResult.FileNotFound);
+                }
 
                 if (file.IsPrefix)
                 {
@@ -384,7 +389,6 @@ namespace DokanNet.Tardigrade
         #endregion
 
         #region To implement
-
         public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
         {
             //Creates an empty file
@@ -394,21 +398,64 @@ namespace DokanNet.Tardigrade
             var result = uploadTask.Result;
             result.StartUploadAsync().Wait();
             ClearListCache();
-            return DokanResult.Success;
+            return Trace(nameof(SetAllocationSize), fileName, info, DokanResult.Success);
         }
 
         public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
         {
+            InitChunkedUpload(fileName, info);
+
             ClearListCache();
-            return DokanResult.Success;
+            return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
+        }
+
+        private void InitChunkedUpload(string fileName, IDokanFileInfo info)
+        {
+            if (info.Context == null)
+            {
+                var realFileName = GetPath(fileName);
+
+                var uploadTask = _objectService.UploadObjectChunkedAsync(_bucket, realFileName, new UploadOptions(), null);
+                uploadTask.Wait();
+                info.Context = uploadTask.Result;
+            }
+        }
+        private void CleanupChunkedUpload(IDokanFileInfo info)
+        {
+            if (info.Context != null && info.Context is ChunkedUploadOperation)
+            {
+                var chunkedUpload = info.Context as ChunkedUploadOperation;
+                var commitResult = chunkedUpload.Commit();
+                info.Context = null;
+                ClearListCache();
+            }
         }
 
         public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
         {
-            var writeFileTask = WriteFileAsync(fileName, buffer, offset,info);
-            writeFileTask.Wait();
-            bytesWritten = writeFileTask.Result.Item2;
-            return writeFileTask.Result.Item1;
+            if (info.Context == null)
+                InitChunkedUpload(fileName, info);
+
+                var chunkedUpload = info.Context as ChunkedUploadOperation;
+                var chunkUploaded = chunkedUpload.WriteBytes(buffer);
+                if (chunkUploaded)
+                {
+                    bytesWritten = buffer.Length;
+                    return Trace(nameof(WriteFile), fileName, info, DokanResult.Success);
+                }
+                else
+                {
+                    bytesWritten = 0;
+                    return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
+                }
+            //bytesWritten = 0;
+            //return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
+
+
+            //var writeFileTask = WriteFileAsync(fileName, buffer, offset,info);
+            //writeFileTask.Wait();
+            //bytesWritten = writeFileTask.Result.Item2;
+            //return writeFileTask.Result.Item1;
         }
 
         public async Task<Tuple<NtStatus,int>> WriteFileAsync(string fileName, byte[] buffer, long offset, IDokanFileInfo info)
@@ -432,6 +479,8 @@ namespace DokanNet.Tardigrade
 
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
         {
+            bytesRead = 0;
+            return DokanResult.NotImplemented;
             var readFileTask = ReadFileAsync(fileName, buffer, offset, info);
             readFileTask.Wait();
             bytesRead = readFileTask.Result.Item2;
@@ -444,7 +493,7 @@ namespace DokanNet.Tardigrade
             var download = await _objectService.DownloadObjectAsync(_bucket, realFileName, new DownloadOptions(), false);
             await download.StartDownloadAsync();
 
-            Array.Copy(download.DownloadedBytes, buffer, download.BytesReceived);
+            Array.Copy(download.DownloadedBytes, 0, buffer, 0, buffer.Length);
 
             return new Tuple<NtStatus, int>(DokanResult.Success, (int)download.BytesReceived);
         }
@@ -499,10 +548,12 @@ namespace DokanNet.Tardigrade
 
         public void Cleanup(string fileName, IDokanFileInfo info)
         {
+            CleanupChunkedUpload(info);
         }
 
         public void CloseFile(string fileName, IDokanFileInfo info)
         {
+            CleanupChunkedUpload(info);
         }
 
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
@@ -512,6 +563,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
+            return DokanResult.NotImplemented;
             throw new NotImplementedException();
         }
 
