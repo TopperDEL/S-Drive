@@ -36,6 +36,7 @@ namespace DokanNet.Tardigrade
         private ConsoleLogger logger = new ConsoleLogger("[Tardigrade] ");
 
         private ObjectCache _listingCache = MemoryCache.Default;
+        private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
         #region Implementation of ITardigradeMount
         public async Task MountAsync(string satelliteAddress, string apiKey, string secret, string bucketName)
@@ -317,7 +318,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
-            if (info.Context != null && info.Context is ChunkedUploadOperation)
+            if (_currentUploads.ContainsKey(fileName))
             {
                 fileInfo = new FileInformation
                 {
@@ -402,7 +403,10 @@ namespace DokanNet.Tardigrade
 
         public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
         {
-            InitChunkedUpload(fileName, info);
+            //if (_currentUploads.ContainsKey(fileName))
+            //    CleanupChunkedUpload(fileName, info);
+            //else
+                InitChunkedUpload(fileName, info);
 
             ClearListCache();
             return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
@@ -440,32 +444,31 @@ namespace DokanNet.Tardigrade
 
         private void InitChunkedUpload(string fileName, IDokanFileInfo info)
         {
-            if (info.Context == null)
+            if(!_currentUploads.ContainsKey(fileName))
             {
                 var realFileName = GetPath(fileName);
 
                 var uploadTask = _objectService.UploadObjectChunkedAsync(_bucket, realFileName, new UploadOptions(), null);
                 uploadTask.Wait();
-                info.Context = uploadTask.Result;
+                _currentUploads.Add(fileName, uploadTask.Result);
             }
         }
-        private void CleanupChunkedUpload(IDokanFileInfo info)
+        private void CleanupChunkedUpload(string fileName, IDokanFileInfo info)
         {
-            if (info.Context != null && info.Context is ChunkedUploadOperation)
+            if (_currentUploads.ContainsKey(fileName))
             {
-                var chunkedUpload = info.Context as ChunkedUploadOperation;
-                var commitResult = chunkedUpload.Commit();
-                info.Context = null;
+                var commitResult = _currentUploads[fileName].Commit();
+                _currentUploads.Remove(fileName);
                 ClearListCache();
             }
         }
 
         public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
         {
-            if (info.Context == null)
+            if (!_currentUploads.ContainsKey(fileName))
                 InitChunkedUpload(fileName, info);
 
-            var chunkedUpload = info.Context as ChunkedUploadOperation;
+            var chunkedUpload = _currentUploads[fileName];
             var chunkUploaded = chunkedUpload.WriteBytes(buffer);
             if (chunkUploaded)
             {
@@ -477,34 +480,8 @@ namespace DokanNet.Tardigrade
                 bytesWritten = 0;
                 return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
             }
-            //bytesWritten = 0;
-            //return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
-
-
-            //var writeFileTask = WriteFileAsync(fileName, buffer, offset,info);
-            //writeFileTask.Wait();
-            //bytesWritten = writeFileTask.Result.Item2;
-            //return writeFileTask.Result.Item1;
         }
 
-        public async Task<Tuple<NtStatus, int>> WriteFileAsync(string fileName, byte[] buffer, long offset, IDokanFileInfo info)
-        {
-            var realFileName = GetPath(fileName);
-
-            var upload = await _objectService.UploadObjectAsync(_bucket, realFileName, new UploadOptions(), buffer, false);
-            await upload.StartUploadAsync();
-
-            ClearListCache();
-
-            if (upload.Completed)
-            {
-                return new Tuple<NtStatus, int>(DokanResult.Success, (int)upload.BytesSent);
-            }
-            else
-            {
-                return new Tuple<NtStatus, int>(DokanResult.Error, 0);
-            }
-        }
 
         private object _downloadLock = new object();
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
@@ -594,13 +571,13 @@ namespace DokanNet.Tardigrade
 
         public void Cleanup(string fileName, IDokanFileInfo info)
         {
-            CleanupChunkedUpload(info);
+            CleanupChunkedUpload(fileName, info);
             CleanupDownload(info);
         }
 
         public void CloseFile(string fileName, IDokanFileInfo info)
         {
-            CleanupChunkedUpload(info);
+            CleanupChunkedUpload(fileName, info);
             CleanupDownload(info);
         }
 
