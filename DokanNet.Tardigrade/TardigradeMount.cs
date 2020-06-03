@@ -356,10 +356,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
-            var realFileName = GetPath(fileName);
-            var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
-            deleteTask.Wait();
-
+            //The real delete happens on Cleanup
             ClearListCache();
 
             return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
@@ -557,6 +554,15 @@ namespace DokanNet.Tardigrade
         {
             CleanupChunkedUpload(fileName, info);
             CleanupDownload(info);
+
+            if(info.DeleteOnClose)
+            {
+                var realFileName = GetPath(fileName);
+                var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
+                deleteTask.Wait();
+
+                ClearListCache(fileName);
+            }
         }
 
         public void CloseFile(string fileName, IDokanFileInfo info)
@@ -567,7 +573,7 @@ namespace DokanNet.Tardigrade
 
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
+            return DokanResult.NotImplemented;
         }
 
         public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
