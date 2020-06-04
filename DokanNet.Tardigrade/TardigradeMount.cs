@@ -819,6 +819,11 @@ namespace DokanNet.Tardigrade
                 result);
         }
 
+        /// <summary>
+        /// Creates a folder with the given name. Technically it uploads a fake-file ("folder.dokan") to storj to make
+        /// a "folder".
+        /// </summary>
+        /// <param name="folderName">The name of the new folder</param>
         private void CreateFolder(string folderName)
         {
             var file = GetPath(folderName);
@@ -830,10 +835,18 @@ namespace DokanNet.Tardigrade
             ClearMemoryCache();
         }
 
+        /// <summary>
+        /// Gets info about a file or folder
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="fileInfo"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
         {
             if (_currentUploads.ContainsKey(fileName))
             {
+                //It is a file that is currently uploading
                 fileInfo = new FileInformation
                 {
                     FileName = fileName,
@@ -846,6 +859,7 @@ namespace DokanNet.Tardigrade
             }
             else if (fileName == ROOT_FOLDER || info.IsDirectory)
             {
+                //It is the root or a directory
                 fileInfo = new FileInformation
                 {
                     FileName = fileName,
@@ -858,8 +872,10 @@ namespace DokanNet.Tardigrade
             }
             else
             {
+                //It is a file or not yet described in full
                 var filePath = GetPath(fileName);
 
+                //Search for it
                 var listTask = ListAllAsync();
                 listTask.Wait();
 
@@ -867,11 +883,12 @@ namespace DokanNet.Tardigrade
                 var fileExists = file != null ? true : false;
                 if (!fileExists)
                 {
+                    //This file/folder does not exist
                     fileInfo = new FileInformation();
                     return Trace(nameof(GetFileInformation), fileName, info, DokanResult.FileNotFound);
                 }
 
-                if (file.IsPrefix)
+                if (file.IsPrefix) //"Fake"-folders ("folder.dokan") are seen as Prefixes, too, within ListAllAsync()
                 {
                     //See it as a directory
                     fileInfo = new FileInformation
@@ -901,6 +918,12 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(GetFileInformation), fileName, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// Closes a "file-handle". If the parameter DeleteOnClose is true, delete that file on the network. But if it is a folder,
+        /// ignore it - folders get deleted in DeleteFolder.
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <param name="info">The DokanFileInfo</param>
         public void Cleanup(string fileName, IDokanFileInfo info)
         {
             CleanupChunkedUpload(fileName);
@@ -917,43 +940,73 @@ namespace DokanNet.Tardigrade
             }
         }
 
+        /// <summary>
+        /// Closes a "file-handle" - the difference between Cleanup and CloseFile is unclear here.
+        /// So cleanup what we have in any case.
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <param name="info">The DokanFileInfo</param>
         public void CloseFile(string fileName, IDokanFileInfo info)
         {
             CleanupChunkedUpload(fileName);
             CleanupDownload(info);
         }
 
+        /// <summary>
+        /// Unlocks a file - not supported on storj.
+        /// </summary>
         public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             return Trace(nameof(UnlockFile), fileName, info, DokanResult.NotImplemented);
         }
 
+        /// <summary>
+        /// Locks a file - not supported on storj.
+        /// </summary>
         public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             return Trace(nameof(LockFile), fileName, info, DokanResult.NotImplemented);
         }
 
+        /// <summary>
+        /// Sets file times - not supported on storj.
+        /// </summary>
         public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
         {
             return DokanResult.NotImplemented;
         }
 
+        /// <summary>
+        /// Sets file attributes - not supported on storj.
+        /// </summary>
         public NtStatus SetFileAttributes(string fileName, FileAttributes attributes, IDokanFileInfo info)
         {
             return DokanResult.NotImplemented;
         }
 
+        /// <summary>
+        /// Find stream, whatever is meant here - not supported on storj.
+        /// </summary>
         public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
         {
             streams = new FileInformation[0];
             return Trace(nameof(FindStreams), fileName, info, DokanResult.NotImplemented);
         }
 
+        /// <summary>
+        /// No flushing necessary
+        /// </summary>
         public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
         {
             return Trace(nameof(FlushFileBuffers), fileName, info, DokanResult.NotImplemented);
         }
 
+        /// <summary>
+        /// Deletes a directory from storj. Internally calls DeleteDirectoryAsync.
+        /// </summary>
+        /// <param name="fileName">The folder to delete</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
             var deleteDirectoryTask = DeleteDirectoryAsync(fileName, info);
@@ -961,6 +1014,13 @@ namespace DokanNet.Tardigrade
             return deleteDirectoryTask.Result;
         }
 
+        /// <summary>
+        /// Deletes a directory from the network. If it is not empty it deletes every object underneath.
+        /// After that the internal cache is cleared so that the listing does not show deleted files/folders anymore.
+        /// </summary>
+        /// <param name="fileName">The folder to delete</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public async Task<NtStatus> DeleteDirectoryAsync(string fileName, IDokanFileInfo info)
         {
             var realFileName = GetPath(fileName);
