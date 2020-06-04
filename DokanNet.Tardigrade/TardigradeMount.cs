@@ -619,7 +619,8 @@ namespace DokanNet.Tardigrade
             CleanupChunkedUpload(fileName, info);
             CleanupDownload(info);
 
-            if (info.DeleteOnClose)
+            if (info.DeleteOnClose &&
+                !info.IsDirectory) //Directories are deleted with DeleteDirectory
             {
                 var realFileName = GetPath(fileName);
                 var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
@@ -665,13 +666,33 @@ namespace DokanNet.Tardigrade
         {
             return Trace(nameof(FlushFileBuffers), fileName, info, DokanResult.NotImplemented);
         }
-        #endregion
-
-        #region To implement
 
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
-            return DokanResult.NotImplemented;
+            var deleteDirectoryTask = DeleteDirectoryAsync(fileName, info);
+            deleteDirectoryTask.Wait();
+            return deleteDirectoryTask.Result;
+        }
+
+        public async Task<NtStatus> DeleteDirectoryAsync(string fileName, IDokanFileInfo info)
+        {
+            var realFileName = GetPath(fileName);
+
+            //The Directory has to be empty - otherwise we would have to copy every object with that path.
+            //Furthermore we need to use the "folder.dokan"-file for the "rename".
+            var files = await ListAllAsync();
+            foreach(var toDelete in files.Where(f => !f.IsPrefix && f.Key.StartsWith(realFileName)))
+            {
+                await _objectService.DeleteObjectAsync(_bucket, toDelete.Key);
+            }
+
+            realFileName = realFileName + "/" + DOKAN_FOLDER;
+
+            await _objectService.DeleteObjectAsync(_bucket, realFileName);
+
+            ClearListCache();
+
+            return Trace(nameof(DeleteDirectoryAsync), fileName, info, DokanResult.Success);
         }
         #endregion
     }
