@@ -43,10 +43,12 @@ namespace DokanNet.Tardigrade.Models
         public string ApiKey { get; set; }
         public string EncryptionPassphrase { get; set; }
         public string AccessGrant { get; set; }
+        public string VolumeLabel { get; set; }
 
         public MountParameters()
         {
             DriveLetter = DriveLetters.s;
+            VolumeLabel = "Tardigrade";
         }
     }
 }

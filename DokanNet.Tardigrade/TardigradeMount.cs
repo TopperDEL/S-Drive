@@ -21,6 +21,11 @@ namespace DokanNet.Tardigrade
     public class TardigradeMount : ITardigradeMount, IDokanOperations
     {
         /// <summary>
+        /// The mount parameters in use.
+        /// </summary>
+        private MountParameters _mountParameters;
+
+        /// <summary>
         /// Defines the root-folder given from the OS
         /// </summary>
         const string ROOT_FOLDER = "\\";
@@ -98,6 +103,7 @@ namespace DokanNet.Tardigrade
         /// <returns>A task doing the initialization</returns>
         public async Task MountAsync(MountParameters mountParameters)
         {
+            _mountParameters = mountParameters;
             Access.SetTempDirectory(System.IO.Path.GetTempPath());
 
             if (string.IsNullOrEmpty(mountParameters.AccessGrant))
@@ -469,10 +475,18 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(FindFilesWithPattern), fileName, info, DokanResult.Success);
         }
 
-
+        /// <summary>
+        /// Gets information about the volume - especially its name and its file-system.
+        /// </summary>
+        /// <param name="volumeLabel">The label of the volume</param>
+        /// <param name="features">The features of the volume</param>
+        /// <param name="fileSystemName">The name of the file-system</param>
+        /// <param name="maximumComponentLength">The maximum component length</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the opration</returns>
         public NtStatus GetVolumeInformation(out string volumeLabel, out FileSystemFeatures features, out string fileSystemName, out uint maximumComponentLength, IDokanFileInfo info)
         {
-            volumeLabel = "Tardigrade";
+            volumeLabel = _mountParameters.VolumeLabel;
             fileSystemName = "NTFS";
             maximumComponentLength = 256;
 
