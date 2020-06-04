@@ -50,6 +50,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\MountParameters.cs" />
     <Compile Include="TardigradeMount.cs" />
     <Compile Include="Interfaces\ITardigradeMount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

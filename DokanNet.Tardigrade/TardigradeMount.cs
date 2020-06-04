@@ -1,5 +1,6 @@
 ﻿using DokanNet.Logging;
 using DokanNet.Tardigrade.Interfaces;
+using DokanNet.Tardigrade.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,27 +42,23 @@ namespace DokanNet.Tardigrade
         private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
         #region Implementation of ITardigradeMount
-        public async Task MountAsync(string satelliteAddress, string apiKey, string secret, string bucketName)
+        public async Task MountAsync(MountParameters mountParameters)
         {
             Access.SetTempDirectory(System.IO.Path.GetTempPath());
-            _access = new Access(satelliteAddress, apiKey, secret);
-            await InitUplinkAsync(bucketName);
 
-            Mount();
+            if (string.IsNullOrEmpty(mountParameters.AccessGrant))
+                _access = new Access(mountParameters.SatelliteAddress, mountParameters.ApiKey, mountParameters.EncryptionPassphrase);
+            else
+                _access = new Access(mountParameters.AccessGrant);
+
+            await InitUplinkAsync(mountParameters.Bucketname);
+
+            Mount(mountParameters.DriveLetter);
         }
 
-        public async Task MountAsync(string accessGrant, string bucketName)
+        private void Mount(MountParameters.DriveLetters driveLetter)
         {
-            Access.SetTempDirectory(System.IO.Path.GetTempPath());
-            _access = new Access(accessGrant);
-            await InitUplinkAsync(bucketName);
-
-            Mount();
-        }
-
-        private void Mount()
-        {
-            this.Mount("s:\\", DokanOptions.DebugMode, 1);
+            this.Mount(driveLetter.ToString() + ":\\", DokanOptions.DebugMode, 1);
         }
         #endregion
 

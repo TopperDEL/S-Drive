@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DokanNet.Tardigrade.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,6 @@ namespace DokanNet.Tardigrade.Interfaces
 {
     public interface ITardigradeMount
     {
-        Task MountAsync(string satelliteAddress, string apiKey, string secret, string bucketName);
-        Task MountAsync(string accessGrant, string bucketName);
+        Task MountAsync(MountParameters parameters);
     }
 }
