@@ -167,8 +167,14 @@ namespace DokanNet.Tardigrade
             if (currentFolder != "")
                 currentFolder = currentFolder + "\\";
 
-            IList<FileInformation> files = listTask.Result
-                .Where(finfo => finfo.Key.StartsWith(currentFolder) &&
+            IList<FileInformation> files;
+            IList<FileInformation> folders;
+
+            if (currentFolder == "")
+            {
+                //In the root-folder
+                files = listTask.Result
+                .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
                                 DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
                                 !finfo.IsPrefix)
                 .Select(finfo => new FileInformation
@@ -180,10 +186,6 @@ namespace DokanNet.Tardigrade
                     Length = finfo.SystemMetaData.ContentLength,
                     FileName = finfo.Key
                 }).ToArray();
-
-            IList<FileInformation> folders;
-            if (currentFolder == "")
-            {
                 folders = listTask.Result
                     .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
                                     DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
@@ -200,8 +202,22 @@ namespace DokanNet.Tardigrade
             }
             else
             {
+                //In any subfolder
+                files = listTask.Result
+                .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Substring(currentFolder.Length).Contains("\\") &&
+                                DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                !finfo.IsPrefix)
+                .Select(finfo => new FileInformation
+                {
+                    Attributes = FileAttributes.Normal,
+                    CreationTime = finfo.SystemMetaData.Created,
+                    LastAccessTime = finfo.SystemMetaData.Created,
+                    LastWriteTime = finfo.SystemMetaData.Created,
+                    Length = finfo.SystemMetaData.ContentLength,
+                    FileName = finfo.Key.Substring(currentFolder.Length)
+                }).ToArray();
                 folders = listTask.Result
-                    .Where(finfo => finfo.Key.StartsWith(currentFolder) && //!finfo.Key.Contains("\\") &&
+                    .Where(finfo => finfo.Key.StartsWith(currentFolder) &&
                                     DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
                                     finfo.IsPrefix)
                     .Select(finfo => new FileInformation
@@ -211,7 +227,7 @@ namespace DokanNet.Tardigrade
                         LastAccessTime = finfo.SystemMetaData.Created,
                         LastWriteTime = finfo.SystemMetaData.Created,
                         Length = 0,
-                        FileName = finfo.Key
+                        FileName = finfo.Key.Substring(currentFolder.Length)
                     }).ToArray();
             }
 
