@@ -379,7 +379,7 @@ namespace DokanNet.Tardigrade
 
             var download = info.Context as DownloadStream;
             download.Position = offset;
-            if (download.Length < offset + buffer.Length)
+            if (download.Length > 0 && download.Length < offset + buffer.Length)
                 bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
             else
                 bytesRead = download.Read(buffer, 0, buffer.Length);
@@ -397,6 +397,20 @@ namespace DokanNet.Tardigrade
         {
             var realOldName = GetPath(oldName);
             var realNewName = GetPath(newName);
+
+            if(info.IsDirectory)
+            {
+                //The Directory has to be empty - otherwise we would have to copy every object with that path.
+                //Furthermore we need to use the "folder.dokan"-file for the "rename".
+                var files = await ListAllAsync();
+                if(files.Where(f=>!f.IsPrefix && f.Key.StartsWith(realOldName)).Count() > 0)
+                {
+                    return DokanResult.DirectoryNotEmpty;
+                }
+
+                realOldName = realOldName + "/" + DOKAN_FOLDER;
+                realNewName = realNewName + "/" + DOKAN_FOLDER;
+            }
 
             if (replace)
                 await _objectService.DeleteObjectAsync(_bucket, realNewName);
