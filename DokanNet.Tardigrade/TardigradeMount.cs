@@ -560,10 +560,6 @@ namespace DokanNet.Tardigrade
             }
             else if (fileName == ROOT_FOLDER || info.IsDirectory)
             {
-                if (fileName.Contains("Ordner"))
-                {
-
-                }
                 fileInfo = new FileInformation
                 {
                     FileName = fileName,
