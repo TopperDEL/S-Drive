@@ -435,9 +435,7 @@ namespace DokanNet.Tardigrade
 
             return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
         }
-        #endregion
 
-        #region partly implemented / not sure
         public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
         {
             var result = DokanResult.Success;
@@ -557,7 +555,7 @@ namespace DokanNet.Tardigrade
             }
             else if (fileName == ROOT_FOLDER || info.IsDirectory)
             {
-                if(fileName.Contains("Ordner"))
+                if (fileName.Contains("Ordner"))
                 {
 
                 }
@@ -615,6 +613,27 @@ namespace DokanNet.Tardigrade
             }
             return Trace(nameof(GetFileInformation), fileName, info, DokanResult.Success);
         }
+
+        public void Cleanup(string fileName, IDokanFileInfo info)
+        {
+            CleanupChunkedUpload(fileName, info);
+            CleanupDownload(info);
+
+            if (info.DeleteOnClose)
+            {
+                var realFileName = GetPath(fileName);
+                var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
+                deleteTask.Wait();
+
+                ClearListCache(fileName);
+            }
+        }
+
+        public void CloseFile(string fileName, IDokanFileInfo info)
+        {
+            CleanupChunkedUpload(fileName, info);
+            CleanupDownload(info);
+        }
         #endregion
 
         #region To implement
@@ -638,27 +657,6 @@ namespace DokanNet.Tardigrade
         {
             return DokanResult.Success;
             throw new NotImplementedException();
-        }
-
-        public void Cleanup(string fileName, IDokanFileInfo info)
-        {
-            CleanupChunkedUpload(fileName, info);
-            CleanupDownload(info);
-
-            if (info.DeleteOnClose)
-            {
-                var realFileName = GetPath(fileName);
-                var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
-                deleteTask.Wait();
-
-                ClearListCache(fileName);
-            }
-        }
-
-        public void CloseFile(string fileName, IDokanFileInfo info)
-        {
-            CleanupChunkedUpload(fileName, info);
-            CleanupDownload(info);
         }
 
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
