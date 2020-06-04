@@ -2,6 +2,7 @@
 using DokanNet.Tardigrade.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
@@ -81,6 +82,11 @@ namespace DokanNet.Tardigrade
                 result = new List<uplink.NET.Models.Object>();
                 foreach (var obj in objects.Items)
                 {
+                    if(obj.Key.Contains(DOKAN_FOLDER))
+                    {
+                        obj.IsPrefix = true;
+                        obj.Key = obj.Key.Replace("/" + DOKAN_FOLDER, "");
+                    }
                     result.Add(obj);
                 }
 
@@ -147,12 +153,24 @@ namespace DokanNet.Tardigrade
 
         public IList<FileInformation> FindFilesHelper(string fileName, string searchPattern)
         {
+            Debug.WriteLine("*** FIND_FILES " + fileName + searchPattern);
+            logger.Debug("*** FIND_FILES " + fileName + searchPattern);
+            if (fileName.Contains("Ordner"))
+            {
+
+            }
+
             var listTask = ListAllAsync();
             listTask.Wait();
 
+            var currentFolder = fileName.Substring(1);
+            if (currentFolder != "")
+                currentFolder = currentFolder + "/";
+
             IList<FileInformation> files = listTask.Result
-                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                !finfo.Key.Contains(DOKAN_FOLDER))
+                .Where(finfo => finfo.Key.StartsWith(currentFolder) &&
+                                DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                !finfo.IsPrefix)
                 .Select(finfo => new FileInformation
                 {
                     Attributes = FileAttributes.Normal,
@@ -164,16 +182,17 @@ namespace DokanNet.Tardigrade
                 }).ToArray();
 
             IList<FileInformation> folders = listTask.Result
-                .Where(finfo => DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                finfo.Key.Contains(DOKAN_FOLDER))
+                .Where(finfo => finfo.Key.StartsWith(currentFolder) && 
+                                DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                finfo.IsPrefix)
                 .Select(finfo => new FileInformation
                 {
                     Attributes = FileAttributes.Directory,
                     CreationTime = finfo.SystemMetaData.Created,
                     LastAccessTime = finfo.SystemMetaData.Created,
                     LastWriteTime = finfo.SystemMetaData.Created,
-                    Length = finfo.SystemMetaData.ContentLength,
-                    FileName = finfo.Key.Replace("/" + DOKAN_FOLDER, "")
+                    Length = 0,
+                    FileName = finfo.Key
                 }).ToArray();
 
             List<FileInformation> result = new List<FileInformation>();
@@ -387,6 +406,10 @@ namespace DokanNet.Tardigrade
         #region partly implemented / not sure
         public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
         {
+            if(fileName.Contains("Ordner"))
+            {
+
+            }
             var result = DokanResult.Success;
             var filePath = GetPath(fileName);
 
