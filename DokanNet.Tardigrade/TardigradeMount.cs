@@ -20,26 +20,74 @@ namespace DokanNet.Tardigrade
 {
     public class TardigradeMount : ITardigradeMount, IDokanOperations
     {
+        /// <summary>
+        /// Defines the root-folder given from the OS
+        /// </summary>
         const string ROOT_FOLDER = "\\";
+
+        /// <summary>
+        /// Objects with this name are (probably) empty folders. As Storj cannot create
+        /// prefixes out of nowhere, we use this file to fake a folder on the network.
+        /// It gets transferred into a Prefix in ListAllAsync().
+        /// </summary>
         const string DOKAN_FOLDER = "/folder.dokan";
+
+        /// <summary>
+        /// The MemoryCache-Entry-Name for the result of ListAllAsync().
+        /// </summary>
         const string LIST_CACHE = "LIST";
+
+        /// <summary>
+        /// A combined field to know the access-type in CreateFile
+        /// </summary>
         private const FileAccess DataAccess = FileAccess.ReadData | FileAccess.WriteData | FileAccess.AppendData |
                                               FileAccess.Execute |
                                               FileAccess.GenericExecute | FileAccess.GenericWrite |
                                               FileAccess.GenericRead;
 
+        /// <summary>
+        /// A combined field to know the access-type in CreateFile
+        /// </summary>
         private const FileAccess DataWriteAccess = FileAccess.WriteData | FileAccess.AppendData |
                                                    FileAccess.Delete |
                                                    FileAccess.GenericWrite;
 
+        /// <summary>
+        /// The access to the storj-network
+        /// </summary>
         private Access _access;
+
+        /// <summary>
+        /// The BucketService to create/access the bucket
+        /// </summary>
         private BucketService _bucketService;
+
+        /// <summary>
+        /// The ObjectService to upload, list, download and delete objects within a bucket
+        /// </summary>
         private ObjectService _objectService;
+
+        /// <summary>
+        /// The bucket used for this mount
+        /// </summary>
         private Bucket _bucket;
 
+        /// <summary>
+        /// The logger used in DEBUG-mode
+        /// </summary>
         private ConsoleLogger logger = new ConsoleLogger("[Tardigrade] ");
 
+        /// <summary>
+        /// The MemoryCache holds mainly the result of ListAllAsync plus some accessed files.
+        /// It reduces the amount of data retrieved from the network lowering costs, saving bandwith and getting overall better performance.
+        /// </summary>
         private ObjectCache _memoryCache = MemoryCache.Default;
+
+        /// <summary>
+        /// The dictionary maps a filename to it's currently running upload. IDokanFile.Context was used here before, but that
+        /// sometimes does not really keep track of that Upload leading to errors on file transfer. Therefore the mapping is hold
+        /// seperately from Dokan.
+        /// </summary>
         private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
         #region Implementation of ITardigradeMount
