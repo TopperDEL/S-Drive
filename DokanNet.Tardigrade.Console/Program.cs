@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DokanNet.Tardigrade.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,15 @@ namespace DokanNet.Tardigrade.Console
         static void Main(string[] args)
         {
             TardigradeMount tardigradeMount = new TardigradeMount();
-            tardigradeMount.MountAsync(args[0], args[1], args[2],"dokan1").Wait();
+
+            MountParameters mountParameters = new MountParameters();
+            mountParameters.DriveLetter = MountParameters.DriveLetters.s;
+            mountParameters.Bucketname = args[3];
+            mountParameters.SatelliteAddress = args[0];
+            mountParameters.ApiKey = args[1];
+            mountParameters.EncryptionPassphrase = args[2];
+
+            tardigradeMount.MountAsync(mountParameters).Wait();
         }
     }
 }
