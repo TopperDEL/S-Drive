@@ -498,27 +498,63 @@ namespace DokanNet.Tardigrade
                 "out " + features.ToString(), "out " + fileSystemName);
         }
 
+        /// <summary>
+        /// Got called if the drive got mounted
+        /// </summary>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus Mounted(IDokanFileInfo info)
         {
             return Trace(nameof(Mounted), null, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// Got called if the drive got unmounted
+        /// </summary>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus Unmounted(IDokanFileInfo info)
         {
             return Trace(nameof(Unmounted), null, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// Gets file security information.
+        /// This is not implemented with storj.
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <param name="security">The security</param>
+        /// <param name="sections">The access control sections</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus GetFileSecurity(string fileName, out FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
         {
             security = null;
             return DokanResult.NotImplemented;
         }
 
+        /// <summary>
+        /// Sets the file security information.
+        /// This is not implemented with storj.
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <param name="security">The security</param>
+        /// <param name="sections">The access control sections</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus SetFileSecurity(string fileName, FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
         {
             return DokanResult.Error;
         }
 
+        /// <summary>
+        /// Creates an empty file and cleares the cache so that the file gets visible.
+        /// The data of that file will be sent with WriteFile().
+        /// </summary>
+        /// <param name="fileName">The filename to create</param>
+        /// <param name="length">The length (not used)</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
         {
             //Creates an empty file
@@ -531,6 +567,13 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(SetAllocationSize), fileName, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// Creates a file that is not empty - the data itself will be sent with WriteFile().
+        /// </summary>
+        /// <param name="fileName">The filename to create</param>
+        /// <param name="length">The length (not used)</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
         {
             InitChunkedUpload(fileName, info);
@@ -539,25 +582,48 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// Writes data into a file by providing byte-chunks.
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <param name="buffer">The bytes to write</param>
+        /// <param name="bytesWritten">The bytes written</param>
+        /// <param name="offset">The offset</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
         {
+            //If not yet in the current uploads (i.e. SetEndOfFile not yet called) init the chunked upload
             if (!_currentUploads.ContainsKey(fileName))
                 InitChunkedUpload(fileName, info);
 
             var chunkedUpload = _currentUploads[fileName];
-            var chunkUploaded = chunkedUpload.WriteBytes(buffer);
+            var chunkUploaded = chunkedUpload.WriteBytes(buffer); //Write the bytes to storj
             if (chunkUploaded)
             {
+                //Provide the bytes written
                 bytesWritten = buffer.Length;
                 return Trace(nameof(WriteFile), fileName, info, DokanResult.Success);
             }
             else
             {
+                //Something went wrong - file saving not possible
                 bytesWritten = 0;
                 return Trace(nameof(WriteFile), fileName, info, DokanResult.Error);
             }
         }
 
+        /// <summary>
+        /// Reads data from a file. Currently the file gets downloaded completely as there is no DownloadRange-Method available (might come in the future).
+        /// That means: if some bytes at the end of a file are requested, the system block here until that data got downloaded from uplink. This might
+        /// be the reason for the most problems regarding the TardigradeMount.
+        /// </summary>
+        /// <param name="fileName">The filename to download</param>
+        /// <param name="buffer">The buffer to write into - might have a different size as available</param>
+        /// <param name="bytesRead">The number of bytes read</param>
+        /// <param name="offset">The offset within the whole file</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
         {
             InitDownload(fileName, info);
@@ -571,6 +637,18 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// Moves a file. Moving a file within storj is not possible! Therefore the files gets downloaded completely, uploaded to the new location
+        /// and the original object gets deleted. This might be expensive for larger files!
+        /// This method also gets called for directory-renames! Non-empty directories fail on purpose with an exception. Technically it would be possible
+        /// by moving all objects to the new location - but depending on the amount and size this would be an expensive operation.
+        /// It internally used MoveFileAsync().
+        /// </summary>
+        /// <param name="oldName">The old name</param>
+        /// <param name="newName">The new name</param>
+        /// <param name="replace">Whether or not an existing file should be replaced. If yes, the existing one gets deleted before.</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
         {
             var moveFileTask = MoveFileAsync(oldName, newName, replace, info);
@@ -578,6 +656,14 @@ namespace DokanNet.Tardigrade
             return moveFileTask.Result;
         }
 
+        /// <summary>
+        /// Moves a file async.
+        /// </summary>
+        // <param name="oldName">The old name</param>
+        /// <param name="newName">The new name</param>
+        /// <param name="replace">Whether or not an existing file should be replaced. If yes, the existing one gets deleted before.</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public async Task<NtStatus> MoveFileAsync(string oldName, string newName, bool replace, IDokanFileInfo info)
         {
             var realOldName = GetPath(oldName);
@@ -613,6 +699,12 @@ namespace DokanNet.Tardigrade
             return DokanResult.Success;
         }
 
+        /// <summary>
+        /// Deletes a file by clearing the cache. The actual delete happens in Cleanup().
+        /// </summary>
+        /// <param name="fileName">The file to delete</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
             //The real delete happens on Cleanup
@@ -621,6 +713,18 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// CreateFile does not really create a file - it creates a kind of a file-handle within Dokan. And it is also being used for directories.
+        /// Depending on the FileMode and the type (file or folder) the method prepares some stuff.
+        /// </summary>
+        /// <param name="fileName">The filename to work on</param>
+        /// <param name="access">The FileAccess</param>
+        /// <param name="share">The FileShare</param>
+        /// <param name="mode">The FileMode</param>
+        /// <param name="options">The FileOptions</param>
+        /// <param name="attributes">The FileAttributes</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
         {
             var result = DokanResult.Success;
@@ -628,6 +732,7 @@ namespace DokanNet.Tardigrade
 
             if (info.IsDirectory)
             {
+                //It is a directory
                 try
                 {
                     switch (mode)
@@ -650,8 +755,9 @@ namespace DokanNet.Tardigrade
                         DokanResult.AccessDenied);
                 }
             }
-            else //IsFile
+            else 
             {
+                //It is a file
                 var pathExists = true;
                 var pathIsDirectory = false;
 
