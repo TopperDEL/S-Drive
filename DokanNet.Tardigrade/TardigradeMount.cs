@@ -111,7 +111,7 @@ namespace DokanNet.Tardigrade
             else
                 _access = new Access(mountParameters.AccessGrant);
 
-            await InitUplinkAsync(mountParameters.Bucketname);
+            await InitUplinkAsync(mountParameters.Bucketname).ConfigureAwait(false);
 
             this.Mount(mountParameters.DriveLetter.ToString() + ":\\", DokanOptions.DebugMode, 1);
         }
@@ -126,7 +126,7 @@ namespace DokanNet.Tardigrade
         {
             _bucketService = new BucketService(_access);
             _objectService = new ObjectService(_access);
-            _bucket = await _bucketService.EnsureBucketAsync(bucketName);
+            _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
         }
         #endregion
 
@@ -140,7 +140,7 @@ namespace DokanNet.Tardigrade
             var result = _memoryCache[LIST_CACHE] as List<uplink.NET.Models.Object>;
             if (result == null)
             {
-                var objects = await _objectService.ListObjectsAsync(_bucket, new ListObjectsOptions() { Recursive = true, Custom = true, System = true });
+                var objects = await _objectService.ListObjectsAsync(_bucket, new ListObjectsOptions() { Recursive = true, Custom = true, System = true }).ConfigureAwait(false);
                 result = new List<uplink.NET.Models.Object>();
                 foreach (var obj in objects.Items)
                 {
@@ -673,7 +673,7 @@ namespace DokanNet.Tardigrade
             {
                 //The Directory has to be empty - otherwise we would have to copy every object with that path.
                 //Furthermore we need to use the "folder.dokan"-file for the "rename".
-                var files = await ListAllAsync();
+                var files = await ListAllAsync().ConfigureAwait(false);
                 if(files.Where(f=>!f.IsPrefix && f.Key.StartsWith(realOldName)).Count() > 0)
                 {
                     return DokanResult.DirectoryNotEmpty;
@@ -684,15 +684,15 @@ namespace DokanNet.Tardigrade
             }
 
             if (replace)
-                await _objectService.DeleteObjectAsync(_bucket, realNewName);
+                await _objectService.DeleteObjectAsync(_bucket, realNewName).ConfigureAwait(false);
 
-            var download = await _objectService.DownloadObjectAsync(_bucket, realOldName, new DownloadOptions(), false);
-            await download.StartDownloadAsync();
+            var download = await _objectService.DownloadObjectAsync(_bucket, realOldName, new DownloadOptions(), false).ConfigureAwait(false);
+            await download.StartDownloadAsync().ConfigureAwait(false);
 
-            var upload = await _objectService.UploadObjectAsync(_bucket, realNewName, new UploadOptions(), download.DownloadedBytes, false);
-            await upload.StartUploadAsync();
+            var upload = await _objectService.UploadObjectAsync(_bucket, realNewName, new UploadOptions(), download.DownloadedBytes, false).ConfigureAwait(false);
+            await upload.StartUploadAsync().ConfigureAwait(false);
 
-            await _objectService.DeleteObjectAsync(_bucket, realOldName);
+            await _objectService.DeleteObjectAsync(_bucket, realOldName).ConfigureAwait(false);
 
             ClearMemoryCache();
 
@@ -1027,15 +1027,15 @@ namespace DokanNet.Tardigrade
 
             //The Directory has to be empty - otherwise we would have to copy every object with that path.
             //Furthermore we need to use the "folder.dokan"-file for the "rename".
-            var files = await ListAllAsync();
+            var files = await ListAllAsync().ConfigureAwait(false);
             foreach(var toDelete in files.Where(f => !f.IsPrefix && f.Key.StartsWith(realFileName)))
             {
-                await _objectService.DeleteObjectAsync(_bucket, toDelete.Key);
+                await _objectService.DeleteObjectAsync(_bucket, toDelete.Key).ConfigureAwait(false);
             }
 
             realFileName = ToInternalFolder(realFileName);
 
-            await _objectService.DeleteObjectAsync(_bucket, realFileName);
+            await _objectService.DeleteObjectAsync(_bucket, realFileName).ConfigureAwait(false);
 
             ClearMemoryCache();
 
