@@ -91,6 +91,12 @@ namespace DokanNet.Tardigrade
         private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
         #region Implementation of ITardigradeMount
+
+        /// <summary>
+        /// Mounts a given bucket with given access privileges. This method will block until the drive gets unmounted again. TODO
+        /// </summary>
+        /// <param name="mountParameters">The parameters to use for a  mount</param>
+        /// <returns>A task doing the initialization</returns>
         public async Task MountAsync(MountParameters mountParameters)
         {
             Access.SetTempDirectory(System.IO.Path.GetTempPath());
@@ -102,12 +108,7 @@ namespace DokanNet.Tardigrade
 
             await InitUplinkAsync(mountParameters.Bucketname);
 
-            Mount(mountParameters.DriveLetter);
-        }
-
-        private void Mount(MountParameters.DriveLetters driveLetter)
-        {
-            this.Mount(driveLetter.ToString() + ":\\", DokanOptions.DebugMode, 1);
+            this.Mount(mountParameters.DriveLetter.ToString() + ":\\", DokanOptions.DebugMode, 1);
         }
         #endregion
 
