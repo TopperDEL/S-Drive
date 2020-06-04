@@ -21,7 +21,7 @@ namespace DokanNet.Tardigrade
     public class TardigradeMount : ITardigradeMount, IDokanOperations
     {
         const string ROOT_FOLDER = "\\";
-        const string DOKAN_FOLDER = "folder.dokan";
+        const string DOKAN_FOLDER = "/folder.dokan";
         private const FileAccess DataAccess = FileAccess.ReadData | FileAccess.WriteData | FileAccess.AppendData |
                                               FileAccess.Execute |
                                               FileAccess.GenericExecute | FileAccess.GenericWrite |
@@ -82,7 +82,7 @@ namespace DokanNet.Tardigrade
                     if(obj.Key.Contains(DOKAN_FOLDER))
                     {
                         obj.IsPrefix = true;
-                        obj.Key = obj.Key.Replace("/" + DOKAN_FOLDER, "");
+                        obj.Key = obj.Key.Replace(DOKAN_FOLDER, "");
                     }
                     result.Add(obj);
                 }
@@ -97,6 +97,11 @@ namespace DokanNet.Tardigrade
         #endregion
 
         #region Helper
+
+        private string ToInternalFolder(string fileName)
+        {
+            return fileName + "/" + DOKAN_FOLDER;
+        }
 
         private void ClearListCache(string fileName = null)
         {
@@ -408,8 +413,8 @@ namespace DokanNet.Tardigrade
                     return DokanResult.DirectoryNotEmpty;
                 }
 
-                realOldName = realOldName + "/" + DOKAN_FOLDER;
-                realNewName = realNewName + "/" + DOKAN_FOLDER;
+                realOldName = ToInternalFolder(realOldName);
+                realNewName = ToInternalFolder(realNewName);
             }
 
             if (replace)
@@ -531,7 +536,7 @@ namespace DokanNet.Tardigrade
         private void CreateFolder(string folderName)
         {
             var file = GetPath(folderName);
-            file = file + "/" + DOKAN_FOLDER;
+            file = ToInternalFolder(file);
             var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
             uploadTask.Wait();
             var result = uploadTask.Result;
@@ -686,7 +691,7 @@ namespace DokanNet.Tardigrade
                 await _objectService.DeleteObjectAsync(_bucket, toDelete.Key);
             }
 
-            realFileName = realFileName + "/" + DOKAN_FOLDER;
+            realFileName = ToInternalFolder(realFileName);
 
             await _objectService.DeleteObjectAsync(_bucket, realFileName);
 
