@@ -22,6 +22,7 @@ namespace DokanNet.Tardigrade
     {
         const string ROOT_FOLDER = "\\";
         const string DOKAN_FOLDER = "/folder.dokan";
+        const string LIST_CACHE = "LIST";
         private const FileAccess DataAccess = FileAccess.ReadData | FileAccess.WriteData | FileAccess.AppendData |
                                               FileAccess.Execute |
                                               FileAccess.GenericExecute | FileAccess.GenericWrite |
@@ -38,7 +39,7 @@ namespace DokanNet.Tardigrade
 
         private ConsoleLogger logger = new ConsoleLogger("[Tardigrade] ");
 
-        private ObjectCache _listingCache = MemoryCache.Default;
+        private ObjectCache _memoryCache = MemoryCache.Default;
         private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
         #region Implementation of ITardigradeMount
@@ -72,7 +73,7 @@ namespace DokanNet.Tardigrade
 
         private async Task<List<uplink.NET.Models.Object>> ListAllAsync()
         {
-            var result = _listingCache["all"] as List<uplink.NET.Models.Object>;
+            var result = _memoryCache[LIST_CACHE] as List<uplink.NET.Models.Object>;
             if (result == null)
             {
                 var objects = await _objectService.ListObjectsAsync(_bucket, new ListObjectsOptions() { Recursive = true, Custom = true, System = true });
@@ -89,7 +90,7 @@ namespace DokanNet.Tardigrade
 
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1);
-                _listingCache.Set("all", result, cachePolicy);
+                _memoryCache.Set(LIST_CACHE, result, cachePolicy);
             }
 
             return result;
@@ -103,11 +104,12 @@ namespace DokanNet.Tardigrade
             return fileName + "/" + DOKAN_FOLDER;
         }
 
-        private void ClearListCache(string fileName = null)
+        private void ClearMemoryCache(string fileName = null)
         {
-            _listingCache.Remove("all");
+            _memoryCache.Remove(LIST_CACHE);
+
             if (fileName != null)
-                _listingCache.Remove(fileName);
+                _memoryCache.Remove(fileName);
         }
         protected NtStatus Trace(string method, string fileName, IDokanFileInfo info, NtStatus result,
             params object[] parameters)
@@ -237,8 +239,8 @@ namespace DokanNet.Tardigrade
 
         private void InitDownload(string fileName, IDokanFileInfo info)
         {
-            if (info.Context == null && _listingCache[fileName] != null)
-                info.Context = _listingCache[fileName];
+            if (info.Context == null && _memoryCache[fileName] != null)
+                info.Context = _memoryCache[fileName];
 
             if (info.Context == null)
             {
@@ -249,7 +251,7 @@ namespace DokanNet.Tardigrade
                 info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName, _access);
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(30);
-                _listingCache.Set(fileName, info.Context, cachePolicy);
+                _memoryCache.Set(fileName, info.Context, cachePolicy);
             }
         }
         private void CleanupDownload(IDokanFileInfo info)
@@ -274,7 +276,7 @@ namespace DokanNet.Tardigrade
             {
                 var commitResult = _currentUploads[fileName].Commit();
                 _currentUploads.Remove(fileName);
-                ClearListCache(fileName);
+                ClearMemoryCache(fileName);
             }
         }
         #endregion
@@ -347,7 +349,7 @@ namespace DokanNet.Tardigrade
             uploadTask.Wait();
             var result = uploadTask.Result;
             result.StartUploadAsync().Wait();
-            ClearListCache();
+            ClearMemoryCache();
             return Trace(nameof(SetAllocationSize), fileName, info, DokanResult.Success);
         }
 
@@ -355,7 +357,7 @@ namespace DokanNet.Tardigrade
         {
             InitChunkedUpload(fileName, info);
 
-            ClearListCache();
+            ClearMemoryCache();
             return Trace(nameof(SetEndOfFile), fileName, info, DokanResult.Success);
         }
 
@@ -428,7 +430,7 @@ namespace DokanNet.Tardigrade
 
             await _objectService.DeleteObjectAsync(_bucket, realOldName);
 
-            ClearListCache();
+            ClearMemoryCache();
 
             return DokanResult.Success;
         }
@@ -436,7 +438,7 @@ namespace DokanNet.Tardigrade
         public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
             //The real delete happens on Cleanup
-            ClearListCache();
+            ClearMemoryCache();
 
             return Trace(nameof(DeleteFile), fileName, info, DokanResult.Success);
         }
@@ -541,7 +543,7 @@ namespace DokanNet.Tardigrade
             uploadTask.Wait();
             var result = uploadTask.Result;
             result.StartUploadAsync().Wait();
-            ClearListCache();
+            ClearMemoryCache();
         }
 
         public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
@@ -627,7 +629,7 @@ namespace DokanNet.Tardigrade
                 var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
                 deleteTask.Wait();
 
-                ClearListCache(fileName);
+                ClearMemoryCache(fileName);
             }
         }
 
@@ -691,7 +693,7 @@ namespace DokanNet.Tardigrade
 
             await _objectService.DeleteObjectAsync(_bucket, realFileName);
 
-            ClearListCache();
+            ClearMemoryCache();
 
             return Trace(nameof(DeleteDirectoryAsync), fileName, info, DokanResult.Success);
         }
