@@ -634,6 +634,15 @@ namespace DokanNet.Tardigrade
             CleanupChunkedUpload(fileName, info);
             CleanupDownload(info);
         }
+
+        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
+        {
+            return Trace(nameof(UnlockFile), fileName, info, DokanResult.NotImplemented);
+        }
+        public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
+        {
+            return Trace(nameof(LockFile), fileName, info, DokanResult.NotImplemented);
+        }
         #endregion
 
         #region To implement
@@ -641,15 +650,6 @@ namespace DokanNet.Tardigrade
         public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
         {
             return DokanResult.Success;
-            throw new NotImplementedException();
-        }
-
-        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
-        }
-        public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
-        {
             throw new NotImplementedException();
         }
 
