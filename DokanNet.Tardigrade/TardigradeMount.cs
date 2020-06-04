@@ -418,9 +418,12 @@ namespace DokanNet.Tardigrade
         #region Implementation of IDokanOperations
         public NtStatus GetDiskFreeSpace(out long freeBytesAvailable, out long totalNumberOfBytes, out long totalNumberOfFreeBytes, IDokanFileInfo info)
         {
-            freeBytesAvailable = 512 * 1024 * 1024;
-            totalNumberOfBytes = 1024 * 1024 * 1024;
-            totalNumberOfFreeBytes = 512 * 1024 * 1024;
+            var listTask = ListAllAsync();
+            listTask.Wait();
+
+            totalNumberOfBytes = 1125899906842624; //1PB - why not? Storj is huge. :)
+            totalNumberOfFreeBytes = totalNumberOfBytes - listTask.Result.Sum(f => f.SystemMetaData.ContentLength); ;
+            freeBytesAvailable = totalNumberOfFreeBytes;
             return Trace(nameof(GetDiskFreeSpace), null, info, DokanResult.Success, "out " + freeBytesAvailable.ToString(),
                 "out " + totalNumberOfBytes.ToString(), "out " + totalNumberOfFreeBytes.ToString());
         }
