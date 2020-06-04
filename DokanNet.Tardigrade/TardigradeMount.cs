@@ -281,7 +281,7 @@ namespace DokanNet.Tardigrade
         }
         #endregion
 
-        #region Done
+        #region Implementation of IDokanOperations
         public NtStatus GetDiskFreeSpace(out long freeBytesAvailable, out long totalNumberOfBytes, out long totalNumberOfFreeBytes, IDokanFileInfo info)
         {
             freeBytesAvailable = 512 * 1024 * 1024;
