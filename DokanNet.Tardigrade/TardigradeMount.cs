@@ -416,6 +416,15 @@ namespace DokanNet.Tardigrade
         #endregion
 
         #region Implementation of IDokanOperations
+        /// <summary>
+        /// Gets the free space of the drive. The used amount is derived from the object-size - this is not the size on the network due to
+        /// erasure coding!
+        /// </summary>
+        /// <param name="freeBytesAvailable">The free bytes available</param>
+        /// <param name="totalNumberOfBytes">The total number of bytes - currently hard-coded 1PB</param>
+        /// <param name="totalNumberOfFreeBytes">The total number of free bytes available</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus GetDiskFreeSpace(out long freeBytesAvailable, out long totalNumberOfBytes, out long totalNumberOfFreeBytes, IDokanFileInfo info)
         {
             var listTask = ListAllAsync();
@@ -428,6 +437,13 @@ namespace DokanNet.Tardigrade
                 "out " + totalNumberOfBytes.ToString(), "out " + totalNumberOfFreeBytes.ToString());
         }
 
+        /// <summary>
+        /// This method searches for files if FindfilesWithPattern is not implemented. Therefore it won't get called here.
+        /// </summary>
+        /// <param name="fileName">The current folder</param>
+        /// <param name="files">The list of files to be returned</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus FindFiles(string fileName, out IList<FileInformation> files, IDokanFileInfo info)
         {
             // This function is not called because FindFilesWithPattern is implemented
@@ -437,12 +453,23 @@ namespace DokanNet.Tardigrade
             return Trace(nameof(FindFiles), fileName, info, DokanResult.Success);
         }
 
+        /// <summary>
+        /// This method searches for files with a pattern. The normal pattern is "*".
+        /// Internally it uses FindFilesHelpfer().
+        /// </summary>
+        /// <param name="fileName">The current folder</param>
+        /// <param name="searchPattern">The search pattern</param>
+        /// <param name="files">The list of files to be returned</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <returns>The result of the operation</returns>
         public NtStatus FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, IDokanFileInfo info)
         {
             files = FindFilesHelper(fileName, searchPattern);
 
             return Trace(nameof(FindFilesWithPattern), fileName, info, DokanResult.Success);
         }
+
+
         public NtStatus GetVolumeInformation(out string volumeLabel, out FileSystemFeatures features, out string fileSystemName, out uint maximumComponentLength, IDokanFileInfo info)
         {
             volumeLabel = "Tardigrade";
