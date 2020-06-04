@@ -84,14 +84,13 @@ namespace DokanNet.Tardigrade
         private ObjectCache _memoryCache = MemoryCache.Default;
 
         /// <summary>
-        /// The dictionary maps a filename to it's currently running upload. IDokanFile.Context was used here before, but that
+        /// The dictionary maps a filename to it's currently running upload. IDokanFileInfo.Context was used here before, but that
         /// sometimes does not really keep track of that Upload leading to errors on file transfer. Therefore the mapping is hold
         /// seperately from Dokan.
         /// </summary>
         private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
         #region Implementation of ITardigradeMount
-
         /// <summary>
         /// Mounts a given bucket with given access privileges. This method will block until the drive gets unmounted again. TODO
         /// </summary>
@@ -113,13 +112,23 @@ namespace DokanNet.Tardigrade
         #endregion
 
         #region uplink-Access
+        /// <summary>
+        /// Init the services and ensure the bucket to use exists.
+        /// </summary>
+        /// <param name="bucketName">The bucket to connect to</param>
         private async Task InitUplinkAsync(string bucketName)
         {
             _bucketService = new BucketService(_access);
             _objectService = new ObjectService(_access);
             _bucket = await _bucketService.EnsureBucketAsync(bucketName);
         }
+        #endregion
 
+        #region Helper
+        /// <summary>
+        /// Lists all objects within a bucket to provide the folder-structure
+        /// </summary>
+        /// <returns>The list of objects</returns>
         private async Task<List<uplink.NET.Models.Object>> ListAllAsync()
         {
             var result = _memoryCache[LIST_CACHE] as List<uplink.NET.Models.Object>;
@@ -129,7 +138,7 @@ namespace DokanNet.Tardigrade
                 result = new List<uplink.NET.Models.Object>();
                 foreach (var obj in objects.Items)
                 {
-                    if(obj.Key.Contains(DOKAN_FOLDER))
+                    if (obj.Key.Contains(DOKAN_FOLDER))
                     {
                         obj.IsPrefix = true;
                         obj.Key = obj.Key.Replace(DOKAN_FOLDER, "");
@@ -144,15 +153,23 @@ namespace DokanNet.Tardigrade
 
             return result;
         }
-        #endregion
 
-        #region Helper
-
+        /// <summary>
+        /// Converts a filename to an internal "fake-directory-file". the folder "myfolder" is internally
+        /// represented as a storj-file named "myfolder/folder.dokan".
+        /// This method adds "/folder.dokan" to a filename.
+        /// </summary>
+        /// <param name="fileName">The file name to convert</param>
+        /// <returns>The internal "fake-folder-object"-name</returns>
         private string ToInternalFolder(string fileName)
         {
             return fileName + "/" + DOKAN_FOLDER;
         }
 
+        /// <summary>
+        /// Clears the memory cache, optionally also removes a file from the buffer (if it changed with a WriteFile-Operation)
+        /// </summary>
+        /// <param name="fileName">Optional - the filename of the file to remove from the cache.</param>
         private void ClearMemoryCache(string fileName = null)
         {
             _memoryCache.Remove(LIST_CACHE);
@@ -160,6 +177,16 @@ namespace DokanNet.Tardigrade
             if (fileName != null)
                 _memoryCache.Remove(fileName);
         }
+
+        /// <summary>
+        /// Writes the result of an operation to the given trace - but only in DEBUG mode.
+        /// </summary>
+        /// <param name="method">The name of the current method</param>
+        /// <param name="fileName">The name of the current file</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <param name="result">The result of the operation</param>
+        /// <param name="parameters">Additional parameters</param>
+        /// <returns>The result of the operation</returns>
         protected NtStatus Trace(string method, string fileName, IDokanFileInfo info, NtStatus result,
             params object[] parameters)
         {
@@ -174,6 +201,19 @@ namespace DokanNet.Tardigrade
             return result;
         }
 
+        /// <summary>
+        /// Writes the result of a FileAccess to the given trace - but only in DEBUG mode.
+        /// </summary>
+        /// <param name="method">The name of the current method</param>
+        /// <param name="fileName">The name of the current file</param>
+        /// <param name="info">The DokanFileInfo</param>
+        /// <param name="access">The FileAccess</param>
+        /// <param name="share">The FileShare</param>
+        /// <param name="mode">The FileMode</param>
+        /// <param name="options">The FileOptions</param>
+        /// <param name="attributes">The FileAttributes</param>
+        /// <param name="result">The result of the operation</param>
+        /// <returns>The result of the operation</returns>
         private NtStatus Trace(string method, string fileName, IDokanFileInfo info,
             FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes,
             NtStatus result)
@@ -191,6 +231,11 @@ namespace DokanNet.Tardigrade
             return result;
         }
 
+        /// <summary>
+        /// Returns a path from a filename given by the OS. It mainly removes the leading \\ from the name.
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <returns>The filename used within storj.</returns>
         protected string GetPath(string fileName)
         {
             if (fileName == ROOT_FOLDER)
@@ -204,11 +249,18 @@ namespace DokanNet.Tardigrade
             }
         }
 
+        /// <summary>
+        /// Searches for files in the current folder.
+        /// </summary>
+        /// <param name="fileName">The name of the current folder</param>
+        /// <param name="searchPattern">A search pattern</param>
+        /// <returns>The list of files and folders within the current folder</returns>
         public IList<FileInformation> FindFilesHelper(string fileName, string searchPattern)
         {
             var listTask = ListAllAsync();
             listTask.Wait();
 
+            //If we are within a subfolder, we need to add a backslash to the foldername
             var currentFolder = fileName.Substring(1);
             if (currentFolder != "")
                 currentFolder = currentFolder + "\\";
@@ -218,7 +270,9 @@ namespace DokanNet.Tardigrade
 
             if (currentFolder == "")
             {
-                //In the root-folder
+                //We are in the root-folder
+
+                //List all files that belong to the current root but are not (fake-)folders.
                 files = listTask.Result
                 .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
                                 DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
@@ -232,6 +286,8 @@ namespace DokanNet.Tardigrade
                     Length = finfo.SystemMetaData.ContentLength,
                     FileName = finfo.Key
                 }).ToArray();
+
+                //List all folders that belong to the current root.
                 folders = listTask.Result
                     .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
                                     DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
@@ -248,7 +304,9 @@ namespace DokanNet.Tardigrade
             }
             else
             {
-                //In any subfolder
+                //We are in a subfolder
+
+                //List all files that belong to the current folder but are not (fake-)folders.
                 files = listTask.Result
                 .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Substring(currentFolder.Length).Contains("\\") &&
                                 DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
@@ -262,6 +320,8 @@ namespace DokanNet.Tardigrade
                     Length = finfo.SystemMetaData.ContentLength,
                     FileName = finfo.Key.Substring(currentFolder.Length)
                 }).ToArray();
+
+                //List all folders that belong to the current folder.
                 folders = listTask.Result
                     .Where(finfo => finfo.Key.StartsWith(currentFolder) &&
                                     DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
@@ -277,6 +337,7 @@ namespace DokanNet.Tardigrade
                     }).ToArray();
             }
 
+            //Merge files and folders.
             List<FileInformation> result = new List<FileInformation>();
             foreach (var folder in folders)
                 result.Add(folder);
@@ -286,28 +347,47 @@ namespace DokanNet.Tardigrade
             return result;
         }
 
+        /// <summary>
+        /// Initializes a download by preparing a DownloadStream and starting it. The DownloadStream will be placed
+        /// in the DokanFileInfo.Context.
+        /// </summary>
+        /// <param name="fileName">The filename to download</param>
+        /// <param name="info">The DokanFileInfo</param>
         private void InitDownload(string fileName, IDokanFileInfo info)
         {
+            //We may have downloaded that file already - if yes, take it from the cache.
             if (info.Context == null && _memoryCache[fileName] != null)
                 info.Context = _memoryCache[fileName];
 
             if (info.Context == null)
             {
+                //Get the internal name of that file
                 var realFileName = GetPath(fileName);
 
+                //Download that object using a DownloadStream
                 var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
                 getObjectTask.Wait();
                 info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName, _access);
                 var cachePolicy = new CacheItemPolicy();
-                cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(30);
+                cachePolicy.SlidingExpiration = new TimeSpan(0, 30, 0); //Keep it for 30 Minutes since last access in our cache.
                 _memoryCache.Set(fileName, info.Context, cachePolicy);
             }
         }
+
+        /// <summary>
+        /// Removes Download-Artifacts - currently not in use. Need to see if we need some disposal here...
+        /// </summary>
+        /// <param name="info">The DokanFileInfo</param>
         private void CleanupDownload(IDokanFileInfo info)
         {
             return;
         }
 
+        /// <summary>
+        /// Initializes a chunked upload.
+        /// </summary>
+        /// <param name="fileName">The filename to upload</param>
+        /// <param name="info">The DokanFileInfo</param>
         private void InitChunkedUpload(string fileName, IDokanFileInfo info)
         {
             if (!_currentUploads.ContainsKey(fileName))
@@ -319,7 +399,12 @@ namespace DokanNet.Tardigrade
                 _currentUploads.Add(fileName, uploadTask.Result);
             }
         }
-        private void CleanupChunkedUpload(string fileName, IDokanFileInfo info)
+
+        /// <summary>
+        /// Removes upload-Artifacts and clears the file from the cache.
+        /// </summary>
+        /// <param name="fileName">The filename to clear</param>
+        private void CleanupChunkedUpload(string fileName)
         {
             if (_currentUploads.ContainsKey(fileName))
             {
@@ -668,7 +753,7 @@ namespace DokanNet.Tardigrade
 
         public void Cleanup(string fileName, IDokanFileInfo info)
         {
-            CleanupChunkedUpload(fileName, info);
+            CleanupChunkedUpload(fileName);
             CleanupDownload(info);
 
             if (info.DeleteOnClose &&
@@ -684,7 +769,7 @@ namespace DokanNet.Tardigrade
 
         public void CloseFile(string fileName, IDokanFileInfo info)
         {
-            CleanupChunkedUpload(fileName, info);
+            CleanupChunkedUpload(fileName);
             CleanupDownload(info);
         }
 
