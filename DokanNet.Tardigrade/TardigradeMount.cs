@@ -639,34 +639,34 @@ namespace DokanNet.Tardigrade
         {
             return Trace(nameof(UnlockFile), fileName, info, DokanResult.NotImplemented);
         }
+
         public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             return Trace(nameof(LockFile), fileName, info, DokanResult.NotImplemented);
         }
-        #endregion
-
-        #region To implement
 
         public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime, IDokanFileInfo info)
         {
-            return DokanResult.Success;
-            throw new NotImplementedException();
+            return DokanResult.NotImplemented;
         }
 
         public NtStatus SetFileAttributes(string fileName, FileAttributes attributes, IDokanFileInfo info)
-        {
-            return DokanResult.Success;
-            throw new NotImplementedException();
-        }
-
-        public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
             return DokanResult.NotImplemented;
         }
 
         public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
         {
-            throw new NotImplementedException();
+            streams = new FileInformation[0];
+            return Trace(nameof(FindStreams), fileName, info, DokanResult.NotImplemented);
+        }
+        #endregion
+
+        #region To implement
+
+        public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
+        {
+            return DokanResult.NotImplemented;
         }
 
         public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
