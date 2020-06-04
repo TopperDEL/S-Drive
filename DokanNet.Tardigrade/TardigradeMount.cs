@@ -150,13 +150,6 @@ namespace DokanNet.Tardigrade
 
         public IList<FileInformation> FindFilesHelper(string fileName, string searchPattern)
         {
-            Debug.WriteLine("*** FIND_FILES " + fileName + searchPattern);
-            logger.Debug("*** FIND_FILES " + fileName + searchPattern);
-            if (fileName.Contains("Ordner"))
-            {
-
-            }
-
             var listTask = ListAllAsync();
             listTask.Wait();
 
@@ -257,12 +250,6 @@ namespace DokanNet.Tardigrade
         private void CleanupDownload(IDokanFileInfo info)
         {
             return;
-            if (info.Context != null && info.Context is DownloadStream)
-            {
-                var download = info.Context as DownloadStream;
-                download.Dispose();
-                info.Context = null;
-            }
         }
 
         private void InitChunkedUpload(string fileName, IDokanFileInfo info)
@@ -439,10 +426,6 @@ namespace DokanNet.Tardigrade
         #region partly implemented / not sure
         public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
         {
-            if(fileName.Contains("Ordner"))
-            {
-
-            }
             var result = DokanResult.Success;
             var filePath = GetPath(fileName);
 
@@ -678,9 +661,6 @@ namespace DokanNet.Tardigrade
         {
             throw new NotImplementedException();
         }
-
-
-
         #endregion
     }
 }
