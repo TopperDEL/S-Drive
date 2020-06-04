@@ -165,7 +165,7 @@ namespace DokanNet.Tardigrade
 
             var currentFolder = fileName.Substring(1);
             if (currentFolder != "")
-                currentFolder = currentFolder + "/";
+                currentFolder = currentFolder + "\\";
 
             IList<FileInformation> files = listTask.Result
                 .Where(finfo => finfo.Key.StartsWith(currentFolder) &&
@@ -181,19 +181,39 @@ namespace DokanNet.Tardigrade
                     FileName = finfo.Key
                 }).ToArray();
 
-            IList<FileInformation> folders = listTask.Result
-                .Where(finfo => finfo.Key.StartsWith(currentFolder) && 
-                                DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                finfo.IsPrefix)
-                .Select(finfo => new FileInformation
-                {
-                    Attributes = FileAttributes.Directory,
-                    CreationTime = finfo.SystemMetaData.Created,
-                    LastAccessTime = finfo.SystemMetaData.Created,
-                    LastWriteTime = finfo.SystemMetaData.Created,
-                    Length = 0,
-                    FileName = finfo.Key
-                }).ToArray();
+            IList<FileInformation> folders;
+            if (currentFolder == "")
+            {
+                folders = listTask.Result
+                    .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
+                                    DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                    finfo.IsPrefix)
+                    .Select(finfo => new FileInformation
+                    {
+                        Attributes = FileAttributes.Directory,
+                        CreationTime = finfo.SystemMetaData.Created,
+                        LastAccessTime = finfo.SystemMetaData.Created,
+                        LastWriteTime = finfo.SystemMetaData.Created,
+                        Length = 0,
+                        FileName = finfo.Key
+                    }).ToArray();
+            }
+            else
+            {
+                folders = listTask.Result
+                    .Where(finfo => finfo.Key.StartsWith(currentFolder) && //!finfo.Key.Contains("\\") &&
+                                    DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
+                                    finfo.IsPrefix)
+                    .Select(finfo => new FileInformation
+                    {
+                        Attributes = FileAttributes.Directory,
+                        CreationTime = finfo.SystemMetaData.Created,
+                        LastAccessTime = finfo.SystemMetaData.Created,
+                        LastWriteTime = finfo.SystemMetaData.Created,
+                        Length = 0,
+                        FileName = finfo.Key
+                    }).ToArray();
+            }
 
             List<FileInformation> result = new List<FileInformation>();
             foreach (var folder in folders)
