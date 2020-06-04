@@ -660,6 +660,11 @@ namespace DokanNet.Tardigrade
             streams = new FileInformation[0];
             return Trace(nameof(FindStreams), fileName, info, DokanResult.NotImplemented);
         }
+
+        public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
+        {
+            return Trace(nameof(FlushFileBuffers), fileName, info, DokanResult.NotImplemented);
+        }
         #endregion
 
         #region To implement
@@ -667,11 +672,6 @@ namespace DokanNet.Tardigrade
         public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
             return DokanResult.NotImplemented;
-        }
-
-        public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
-        {
-            throw new NotImplementedException();
         }
         #endregion
     }
