@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core.Preview;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,6 +26,26 @@ namespace DokanNet.Tardigrade.UWP
         public MainPage()
         {
             this.InitializeComponent();
+
+            SystemNavigationManagerPreview mgr = SystemNavigationManagerPreview.GetForCurrentView();
+            mgr.CloseRequested += SystemNavigationManager_CloseRequested;
+        }
+
+        private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
+        {
+            Deferral deferral = e.GetDeferral();
+
+            var launched = await Services.SystrayCommunicator.LaunchSystray();
+            if (!launched)
+            {
+                //ToDo
+                e.Handled = true;
+            }
+            else
+            {
+                e.Handled = false;
+                deferral.Complete();
+            }
         }
     }
 }
