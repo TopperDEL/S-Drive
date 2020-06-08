@@ -33,7 +33,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray
 
         private static void _uwpConnectionService_MountAll(List<Contracts.Models.MountParameters> mountList)
         {
-            MessageBox.Show("Mount all received");
+            MessageBox.Show("Mount all received - " + mountList.Count());
         }
 
         private static void _uwpConnectionService_UnmountAll()

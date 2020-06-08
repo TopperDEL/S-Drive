@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
+using Windows.Data.Json;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 
@@ -15,14 +16,12 @@ namespace DokanNet.Tardigrade.UWP.Services
     {
         internal static AppServiceConnection _connection;
 
-        public UWPConnectionService()
-        {
-        }
-
         public async Task<bool> SendMountAllAsync()
         {
             var message = new ValueSet();
-            message.Add(Messages.MountAll, new List<MountParameters>());
+            var mountParams = new List<MountParameters>();
+            mountParams.Add(new MountParameters());
+            message.Add(Messages.MountAll, Newtonsoft.Json.JsonConvert.SerializeObject(mountParams));
             var result = await _connection.SendMessageAsync(message);
             return result.Status == AppServiceResponseStatus.Success;
         }
