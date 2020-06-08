@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.AppService;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -58,6 +60,7 @@ namespace DokanNet.Tardigrade.UWP
                 // Den Frame im aktuellen Fenster platzieren
                 Window.Current.Content = rootFrame;
             }
+            
 
             if (e.PrelaunchActivated == false)
             {
@@ -70,6 +73,17 @@ namespace DokanNet.Tardigrade.UWP
                 }
                 // Sicherstellen, dass das aktuelle Fenster aktiv ist
                 Window.Current.Activate();
+            }
+            Services.SystrayCommunicator.LaunchSystray();
+        }
+
+        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+            base.OnBackgroundActivated(args);
+            if (args.TaskInstance.TriggerDetails is AppServiceTriggerDetails)
+            {
+                AppServiceTriggerDetails details = args.TaskInstance.TriggerDetails as AppServiceTriggerDetails; 
+                Services.UWPConnectionService._connection = details.AppServiceConnection;
             }
         }
 

@@ -1,11 +1,10 @@
-﻿using DokanNet.Tardigrade.Models;
+﻿using DokanNet.Tardigrade.Contracts.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DokanNet.Tardigrade.Interfaces
+namespace DokanNet.Tardigrade.Contracts.Interfaces
 {
     public interface ITardigradeMount
     {

@@ -9,6 +9,10 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <StackPanel>
+            <Button Content="Mount all" Click="MountAll_Click"/>
+            <Button Content="Unmount all" Click="UnmountAll_Click"/>
+        </StackPanel>
 
     </Grid>
 </Page>

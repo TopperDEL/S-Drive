@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core.Preview;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -23,28 +25,56 @@ namespace DokanNet.Tardigrade.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private Services.UWPConnectionService _uwpConnectionService;
+
         public MainPage()
         {
             this.InitializeComponent();
 
             SystemNavigationManagerPreview mgr = SystemNavigationManagerPreview.GetForCurrentView();
             mgr.CloseRequested += SystemNavigationManager_CloseRequested;
+
+            _uwpConnectionService = new Services.UWPConnectionService();
+            //LaunchSystrayAsync();
         }
 
-        private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
+        private async Task LaunchSystrayAsync()
         {
-            Deferral deferral = e.GetDeferral();
+           // Deferral deferral = e.GetDeferral();
 
             var launched = await Services.SystrayCommunicator.LaunchSystray();
             if (!launched)
             {
                 //ToDo
-                e.Handled = true;
+             //   e.Handled = true;
             }
             else
             {
-                e.Handled = false;
-                deferral.Complete();
+               // e.Handled = false;
+                //deferral.Complete();
+            }
+        }
+
+        private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
+        {
+           
+        }
+
+        private async void MountAll_Click(object sender, RoutedEventArgs e)
+        {
+            var messageSent = await _uwpConnectionService.SendMountAllAsync();
+            if (!messageSent)
+            {
+                MessageDialog dlg = new MessageDialog("error");
+            }
+        }
+
+        private async void UnmountAll_Click(object sender, RoutedEventArgs e)
+        {
+            var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
+            if (!messageSent)
+            {
+                MessageDialog dlg = new MessageDialog("error");
             }
         }
     }

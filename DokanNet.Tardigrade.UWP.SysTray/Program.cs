@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.ApplicationModel.AppService;
 
 namespace DokanNet.Tardigrade.UWP.SysTray
 {
@@ -15,6 +16,12 @@ namespace DokanNet.Tardigrade.UWP.SysTray
         [STAThread]
         static void Main()
         {
+            
+            //Console.ForegroundColor = ConsoleColor.Yellow;
+            //Console.WriteLine("*****************************");
+            //Console.WriteLine("**** Classic desktop app ****");
+            //Console.WriteLine("*****************************");
+            //Console.ReadLine();
             Mutex mutex = null;
             if (!Mutex.TryOpenExisting("TardigradeSystrayExtensionMutex", out mutex))
             {
@@ -25,5 +32,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray
                 mutex.Close();
             }
         }
+
+        
     }
 }

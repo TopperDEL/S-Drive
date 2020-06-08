@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj">
+      <Project>{6af39c55-ef62-4114-b8f5-6c157c4ecbef}</Project>
+      <Name>DokanNet.Tardigrade.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DokanNet.Tardigrade\DokanNet.Tardigrade.csproj">
       <Project>{c82236d5-4973-44f1-963e-8bf2f2dfab3f}</Project>
       <Name>DokanNet.Tardigrade</Name>

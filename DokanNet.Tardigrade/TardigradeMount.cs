@@ -1,6 +1,6 @@
 ﻿using DokanNet.Logging;
-using DokanNet.Tardigrade.Interfaces;
-using DokanNet.Tardigrade.Models;
+using DokanNet.Tardigrade.Contracts.Interfaces;
+using DokanNet.Tardigrade.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

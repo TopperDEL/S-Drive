@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.UWP", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.UWP.SysTray", "DokanNet.Tardigrade.UWP.SysTray\DokanNet.Tardigrade.UWP.SysTray.csproj", "{D6AF9590-0963-4E52-B2DD-D46D14774746}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.Contracts", "DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,26 @@ Global
 		{D6AF9590-0963-4E52-B2DD-D46D14774746}.Release|x64.Build.0 = Release|Any CPU
 		{D6AF9590-0963-4E52-B2DD-D46D14774746}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6AF9590-0963-4E52-B2DD-D46D14774746}.Release|x86.Build.0 = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|ARM.Build.0 = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|x64.Build.0 = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Debug|x86.Build.0 = Debug|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|ARM.Build.0 = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|ARM64.Build.0 = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x64.ActiveCfg = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x64.Build.0 = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x86.ActiveCfg = Release|Any CPU
+		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -46,7 +46,7 @@
         <uap:Extension Category="windows.appService">
           <uap:AppService Name="SystrayExtensionService" />
         </uap:Extension>
-        <desktop:Extension Category="windows.fullTrustProcess" Executable="Win32\DokanNet.Tardigrade.UWP.SysTray.exe" />
+        <desktop:Extension Category="windows.fullTrustProcess" Executable="DokanNet.Tardigrade.UWP.SysTray.exe" />
       </Extensions>
     </Application>
   </Applications>

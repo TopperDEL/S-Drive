@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Models;
+﻿using DokanNet.Tardigrade.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace DokanNet.Tardigrade.Console
             TardigradeMount tardigradeMount = new TardigradeMount();
 
             MountParameters mountParameters = new MountParameters();
-            mountParameters.DriveLetter = MountParameters.DriveLetters.s;
+            mountParameters.DriveLetter = DriveLetters.s;
             mountParameters.Bucketname = args[3];
             mountParameters.SatelliteAddress = args[0];
             mountParameters.ApiKey = args[1];

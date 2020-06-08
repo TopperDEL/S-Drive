@@ -69,5 +69,14 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Could not connect to Management-App (UWP). ähnelt.
+        /// </summary>
+        internal static string UWPConnectError {
+            get {
+                return ResourceManager.GetString("UWPConnectError", resourceCulture);
+            }
+        }
     }
 }
