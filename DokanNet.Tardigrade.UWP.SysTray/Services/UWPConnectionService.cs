@@ -36,7 +36,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
         {
             if (args.Request.Message.ContainsKey(Messages.MountAll))
             {
-                MountAll?.Invoke(args.Request.Message[Messages.MountAll] as List<MountParameters>);
+                MountAll?.Invoke(Newtonsoft.Json.JsonConvert.DeserializeObject<List<MountParameters>>(args.Request.Message[Messages.MountAll].ToString()));
             }
             else if (args.Request.Message.ContainsKey(Messages.UnmountAll.ToString()))
             {

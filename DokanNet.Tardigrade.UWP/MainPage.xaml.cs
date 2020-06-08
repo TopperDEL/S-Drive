@@ -35,24 +35,6 @@ namespace DokanNet.Tardigrade.UWP
             mgr.CloseRequested += SystemNavigationManager_CloseRequested;
 
             _uwpConnectionService = new Services.UWPConnectionService();
-            //LaunchSystrayAsync();
-        }
-
-        private async Task LaunchSystrayAsync()
-        {
-           // Deferral deferral = e.GetDeferral();
-
-            var launched = await Services.SystrayCommunicator.LaunchSystray();
-            if (!launched)
-            {
-                //ToDo
-             //   e.Handled = true;
-            }
-            else
-            {
-               // e.Handled = false;
-                //deferral.Complete();
-            }
         }
 
         private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
