@@ -1,13 +1,14 @@
 ﻿using DokanNet.Tardigrade.Contracts.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DokanNet.Tardigrade.UWP.ViewModels
 {
-    public class MountParameterViewModel
+    public class MountParameterViewModel:INotifyPropertyChanged
     {
         public MountParameters MountParameters { get; set; }
 
@@ -25,6 +26,40 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             }
         }
 
+        public bool UseAuthMethod_AccessGrant
+        {
+            get
+            {
+                return MountParameters.AuthMethod == Contracts.Models.AuthMethods.AccessGrant;
+            }
+            set
+            {
+                if (value)
+                    MountParameters.AuthMethod = Contracts.Models.AuthMethods.AccessGrant;
+                else
+                    MountParameters.AuthMethod = Contracts.Models.AuthMethods.APIkey;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UseAuthMethod_AccessGrant)));
+            }
+        }
+
+        public bool UseAuthMethod_APIkey
+        {
+            get
+            {
+                return MountParameters.AuthMethod == Contracts.Models.AuthMethods.APIkey;
+            }
+            set
+            {
+                if (value)
+                    MountParameters.AuthMethod = Contracts.Models.AuthMethods.APIkey;
+                else
+                    MountParameters.AuthMethod = Contracts.Models.AuthMethods.AccessGrant;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UseAuthMethod_APIkey)));
+            }
+        }
+
         public MountParameterViewModel(MountParameters mountParameters)
         {
             MountParameters = mountParameters;
@@ -33,5 +68,7 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             foreach (var value in Enum.GetValues(typeof(DriveLetters)))
                 DriveLetterList.Add(value.ToString());
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

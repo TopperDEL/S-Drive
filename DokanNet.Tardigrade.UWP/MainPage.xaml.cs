@@ -79,5 +79,11 @@ namespace DokanNet.Tardigrade.UWP
         {
             _vm.Mounts.Add(new ViewModels.MountParameterViewModel(new Contracts.Models.MountParameters()));
         }
+
+        private async void EditCredentials_Click(object sender, RoutedEventArgs e)
+        {
+            Views.EditCredentialsDialog editCredentialsDlg = new Views.EditCredentialsDialog(new ViewModels.MountParameterViewModel(new Contracts.Models.MountParameters()));
+            var result = await editCredentialsDlg.ShowAsync();
+        }
     }
 }

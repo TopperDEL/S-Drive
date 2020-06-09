@@ -12,37 +12,39 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <!--Row 1-->
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
+        <Image Source="/Assets/StoreLogo.scale-400.png" Height="100" Grid.Row="0"/>
+
+        <!--Row 2-->
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Button Content="Mount all" Click="MountAll_Click"/>
             <Button Content="Unmount all" Click="UnmountAll_Click"/>
         </StackPanel>
 
-        <!--Row 2-->
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <!--Row 3-->
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
             <Button Content="Add Mount" Click="AddMount_Click"/>
         </StackPanel>
 
-        <!--Row 3-->
-        <ListView Grid.Row="2" ItemsSource="{x:Bind _vm.Mounts, Mode=TwoWay}">
+        <!--Row 4-->
+        <ListView Grid.Row="3" ItemsSource="{x:Bind _vm.Mounts, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:MountParameterViewModel">
                     <StackPanel Orientation="Horizontal">
                         <StackPanel Padding="5">
-                            <TextBlock Text="Drive" FontSize="12"/>
-                            <ComboBox ItemsSource="{x:Bind DriveLetterList}" SelectedItem="{x:Bind SelectedDriveLetter, Mode=TwoWay}"/>
+                            <ComboBox x:Uid="drive" ItemsSource="{x:Bind DriveLetterList}" SelectedItem="{x:Bind SelectedDriveLetter, Mode=TwoWay}"/>
                         </StackPanel>
                         <StackPanel Padding="5">
-                            <TextBlock Text="Volume" FontSize="12"/>
-                            <TextBox Text="{x:Bind MountParameters.VolumeLabel, Mode=TwoWay}" Width="200"/>
+                            <TextBox x:Uid="volume" Text="{x:Bind MountParameters.VolumeLabel, Mode=TwoWay}" Width="200"/>
                         </StackPanel>
                         <StackPanel Padding="5">
-                            <TextBlock Text="Bucket" FontSize="12"/>
-                            <TextBox Text="{x:Bind MountParameters.Bucketname, Mode=TwoWay}" Width="200"/>
+                            <TextBox x:Uid="bucket" Text="{x:Bind MountParameters.Bucketname, Mode=TwoWay}" Width="200"/>
                         </StackPanel>
+                        <Button x:Uid="editCredentials" Click="EditCredentials_Click" VerticalAlignment="Center" Margin="0,22,0,0"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
