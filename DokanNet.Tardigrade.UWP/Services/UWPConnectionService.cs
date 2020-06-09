@@ -16,12 +16,10 @@ namespace DokanNet.Tardigrade.UWP.Services
     {
         internal static AppServiceConnection _connection;
 
-        public async Task<bool> SendMountAllAsync()
+        public async Task<bool> SendMountAllAsync(List<MountParameters> mounts)
         {
             var message = new ValueSet();
-            var mountParams = new List<MountParameters>();
-            mountParams.Add(new MountParameters());
-            message.Add(Messages.MountAll, Newtonsoft.Json.JsonConvert.SerializeObject(mountParams));
+            message.Add(Messages.MountAll, Newtonsoft.Json.JsonConvert.SerializeObject(mounts));
             var result = await _connection.SendMessageAsync(message);
             return result.Status == AppServiceResponseStatus.Success;
         }

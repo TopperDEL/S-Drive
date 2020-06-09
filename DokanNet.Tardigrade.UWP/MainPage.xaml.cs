@@ -26,10 +26,20 @@ namespace DokanNet.Tardigrade.UWP
     public sealed partial class MainPage : Page
     {
         private Services.UWPConnectionService _uwpConnectionService;
+        private Services.VaultService _vaultService;
+        public ViewModels.MountViewModel _vm;
 
         public MainPage()
         {
             this.InitializeComponent();
+
+            _vaultService = new Services.VaultService();
+
+            this.DataContext = _vm = new ViewModels.MountViewModel();
+            foreach(var mount in _vaultService.LoadMounts())
+            {
+                _vm.Mounts.Add(new ViewModels.MountParameterViewModel(mount));
+            }
 
             SystemNavigationManagerPreview mgr = SystemNavigationManagerPreview.GetForCurrentView();
             mgr.CloseRequested += SystemNavigationManager_CloseRequested;
@@ -44,10 +54,14 @@ namespace DokanNet.Tardigrade.UWP
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
         {
-            var messageSent = await _uwpConnectionService.SendMountAllAsync();
+            var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
+            _vaultService.SaveMounts(mounts);
+
+            var messageSent = await _uwpConnectionService.SendMountAllAsync(mounts);
             if (!messageSent)
             {
                 MessageDialog dlg = new MessageDialog("error");
+                await dlg.ShowAsync();
             }
         }
 
@@ -57,7 +71,13 @@ namespace DokanNet.Tardigrade.UWP
             if (!messageSent)
             {
                 MessageDialog dlg = new MessageDialog("error");
+                await dlg.ShowAsync();
             }
+        }
+
+        private void AddMount_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.Mounts.Add(new ViewModels.MountParameterViewModel(new Contracts.Models.MountParameters()));
         }
     }
 }
