@@ -86,7 +86,7 @@ namespace DokanNet.Tardigrade.UWP
             var button = sender as Button;
 
             Views.EditCredentialsDialog editCredentialsDlg = new Views.EditCredentialsDialog(button.Tag as MountParameterViewModel);
-            var result = await editCredentialsDlg.ShowAsync();
+            await editCredentialsDlg.ShowAsync();
         }
 
         private void DeleteMount_Click(object sender, RoutedEventArgs e)

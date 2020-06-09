@@ -18,9 +18,10 @@ using Windows.UI.Xaml.Navigation;
 
 namespace DokanNet.Tardigrade.UWP.Views
 {
+   
     public sealed partial class EditCredentialsDialog : ContentDialog
     {
-        MountParameterViewModel MountParametersVM { get; set; }
+        public MountParameterViewModel MountParametersVM { get; set; }
 
         public EditCredentialsDialog(MountParameterViewModel mountParametersVM)
         {
@@ -29,12 +30,9 @@ namespace DokanNet.Tardigrade.UWP.Views
             MountParametersVM = mountParametersVM;
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void OKClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
+            //Nothing to do here
         }
     }
 }

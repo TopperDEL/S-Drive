@@ -2,6 +2,9 @@
     x:Class="DokanNet.Tardigrade.UWP.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DokanNet.Tardigrade.UWP">
+    xmlns:local="using:DokanNet.Tardigrade.UWP" xmlns:helper="using:DokanNet.Tardigrade.UWP.Helper">
+    <Application.Resources>
+        <helper:EnumBooleanConverter x:Key="enumBooleanConverter"/>
+    </Application.Resources>
 
 </Application>
