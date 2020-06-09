@@ -115,6 +115,14 @@ namespace DokanNet.Tardigrade
 
             this.Mount(mountParameters.DriveLetter.ToString() + ":\\", DokanOptions.DebugMode, 1);
         }
+
+        /// <summary>
+        /// Unmount this drive
+        /// </summary>
+        public void Unmount()
+        {
+            Dokan.Unmount(_mountParameters.DriveLetter.ToString()[0]);
+        }
         #endregion
 
         #region uplink-Access

@@ -11,20 +11,21 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
 {
     class MountService
     {
-        private Dictionary<MountParameters, Task> _activeMounts;
+        private Dictionary<MountParameters, TardigradeMount> _activeMounts;
 
         public MountService()
         {
-            _activeMounts = new Dictionary<MountParameters, Task>();
+            _activeMounts = new Dictionary<MountParameters, TardigradeMount>();
         }
 
-        public void MountAll(List<MountParameters> mounts)
+        public void MountAll(List<MountParameters> mountParameters)
         {
-            foreach (var mount in mounts)
+            foreach (var mountParameter in mountParameters)
             {
-                Task mountTask = Task.Run(() => StartMount(mount));
-                mountTask.Start();
-                _activeMounts.Add(mount, mountTask);
+                DokanNet.Tardigrade.TardigradeMount tardigradeMount = new TardigradeMount();
+
+                Task mountTask = Task.Run(() => StartMount(tardigradeMount, mountParameter));
+                _activeMounts.Add(mountParameter, tardigradeMount);
             }
         }
 
@@ -32,17 +33,15 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
         {
             foreach (var entry in _activeMounts)
             {
-                //Todo
+                entry.Value.Unmount();
             }
         }
 
-        private void StartMount(MountParameters mountParameters)
+        private void StartMount(TardigradeMount mount, MountParameters mountParameters)
         {
             try
             {
-                DokanNet.Tardigrade.TardigradeMount mount = new TardigradeMount();
                 mount.MountAsync(mountParameters).Wait();
-                MessageBox.Show("Unmounted!");
             }
             catch (Exception ex)
             {
