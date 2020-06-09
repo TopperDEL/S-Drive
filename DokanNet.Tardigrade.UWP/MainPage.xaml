@@ -44,8 +44,8 @@
                         <StackPanel Padding="5">
                             <TextBox x:Uid="bucket" Text="{x:Bind MountParameters.Bucketname, Mode=TwoWay}" Width="200"/>
                         </StackPanel>
-                        <Button x:Uid="editCredentials" Click="EditCredentials_Click" VerticalAlignment="Center" Margin="0,22,0,0" Tag="{x:Bind}"/>
-                        <Button x:Uid="deleteMount" Click="DeleteMount_Click" VerticalAlignment="Center" Margin="0,22,0,0" Tag="{x:Bind}"/>
+                        <Button x:Uid="editCredentials" Click="EditCredentials_Click" VerticalAlignment="Center" Margin="10,22,0,0" Tag="{x:Bind}"/>
+                        <Button x:Uid="deleteMount" Click="DeleteMount_Click" VerticalAlignment="Center" Margin="10,22,0,0" Tag="{x:Bind}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
