@@ -55,6 +55,7 @@ namespace DokanNet.Tardigrade.UWP
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
         {
+            _vm.MountsActive = true;
             var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
             _vaultService.SaveMounts(mounts);
 
@@ -68,6 +69,7 @@ namespace DokanNet.Tardigrade.UWP
 
         private async void UnmountAll_Click(object sender, RoutedEventArgs e)
         {
+            _vm.MountsActive = false;
             var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
             if (!messageSent)
             {

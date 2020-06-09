@@ -153,6 +153,12 @@
   <data name="satelliteAddress.Header" xml:space="preserve">
     <value>Satellite address</value>
   </data>
+  <data name="startDrives.Content" xml:space="preserve">
+    <value>Start drive(s)</value>
+  </data>
+  <data name="stopDrives.Content" xml:space="preserve">
+    <value>Stop drive(s)</value>
+  </data>
   <data name="volume.Header" xml:space="preserve">
     <value>Volume</value>
   </data>

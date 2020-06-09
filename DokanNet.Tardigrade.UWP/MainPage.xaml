@@ -21,8 +21,8 @@
 
         <!--Row 2-->
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="Mount all" Click="MountAll_Click"/>
-            <Button Content="Unmount all" Click="UnmountAll_Click"/>
+            <Button x:Uid="startMounts" Content="Start drive(s)" Visibility="{x:Bind _vm.StartDrivesVisibility, Mode=OneWay}" Click="MountAll_Click"/>
+            <Button x:Uid="stopDrives" Content="Stop drive(s)" Visibility="{x:Bind _vm.StopDrivesVisibility, Mode=OneWay}" Click="UnmountAll_Click"/>
         </StackPanel>
 
         <!--Row 3-->
@@ -31,7 +31,7 @@
         </StackPanel>
 
         <!--Row 4-->
-        <ListView Grid.Row="3" ItemsSource="{x:Bind _vm.Mounts, Mode=TwoWay}">
+        <ListView Grid.Row="3" ItemsSource="{x:Bind _vm.Mounts, Mode=TwoWay}" IsEnabled="{x:Bind _vm.MountsInactive, Mode=OneWay}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:MountParameterViewModel">
                     <StackPanel Orientation="Horizontal">
