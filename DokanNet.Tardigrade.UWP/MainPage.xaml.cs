@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DokanNet.Tardigrade.UWP.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -82,8 +83,16 @@ namespace DokanNet.Tardigrade.UWP
 
         private async void EditCredentials_Click(object sender, RoutedEventArgs e)
         {
-            Views.EditCredentialsDialog editCredentialsDlg = new Views.EditCredentialsDialog(new ViewModels.MountParameterViewModel(new Contracts.Models.MountParameters()));
+            var button = sender as Button;
+
+            Views.EditCredentialsDialog editCredentialsDlg = new Views.EditCredentialsDialog(button.Tag as MountParameterViewModel);
             var result = await editCredentialsDlg.ShowAsync();
+        }
+
+        private void DeleteMount_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            _vm.Mounts.Remove(button.Tag as MountParameterViewModel);
         }
     }
 }

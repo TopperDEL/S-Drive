@@ -120,6 +120,9 @@
   <data name="bucket.Header" xml:space="preserve">
     <value>Bucket</value>
   </data>
+  <data name="deleteMount.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="drive.Header" xml:space="preserve">
     <value>Drive</value>
   </data>
