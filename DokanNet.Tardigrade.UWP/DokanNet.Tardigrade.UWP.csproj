@@ -139,6 +139,12 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\DokanNet.Tardigrade.UWP.SysTray\bin\Debug\DokanNet.dll">
+      <Link>DokanNet.dll</Link>
+    </Content>
+    <Content Include="..\DokanNet.Tardigrade.UWP.SysTray\bin\Debug\DokanNet.Tardigrade.dll">
+      <Link>DokanNet.Tardigrade.dll</Link>
+    </Content>
     <Content Include="..\DokanNet.Tardigrade.UWP.SysTray\bin\Debug\DokanNet.Tardigrade.UWP.SysTray.exe">
       <Link>DokanNet.Tardigrade.UWP.SysTray.exe</Link>
     </Content>
@@ -215,6 +221,9 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="uplink.NET">
+      <Version>2.3.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\MountService.cs" />
     <Compile Include="Services\UWPConnectionService.cs" />
     <Compile Include="SystrayApplicationContext.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -103,6 +104,10 @@
     <ProjectReference Include="..\DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj">
       <Project>{6af39c55-ef62-4114-b8f5-6c157c4ecbef}</Project>
       <Name>DokanNet.Tardigrade.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DokanNet.Tardigrade\DokanNet.Tardigrade.csproj">
+      <Project>{c82236d5-4973-44f1-963e-8bf2f2dfab3f}</Project>
+      <Name>DokanNet.Tardigrade</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

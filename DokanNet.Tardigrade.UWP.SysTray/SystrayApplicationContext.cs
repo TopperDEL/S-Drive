@@ -13,6 +13,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray
     {
         private NotifyIcon _notifyIcon = null;
         private Services.UWPConnectionService _uwpConnectionService;
+        private Services.MountService _mountService;
         public static MenuItem openMenuItem;
 
         public SystrayApplicationContext()
@@ -29,16 +30,19 @@ namespace DokanNet.Tardigrade.UWP.SysTray
             _uwpConnectionService = new Services.UWPConnectionService();
             _uwpConnectionService.MountAll += _uwpConnectionService_MountAll;
             _uwpConnectionService.UnmountAll += _uwpConnectionService_UnmountAll;
+
+            _mountService = new Services.MountService();
         }
 
-        private static void _uwpConnectionService_MountAll(List<Contracts.Models.MountParameters> mountList)
+        private void _uwpConnectionService_MountAll(List<Contracts.Models.MountParameters> mountList)
         {
-            MessageBox.Show("Mount all received - " + mountList.Count());
+            _mountService.UnmountAll();
+            _mountService.MountAll(mountList);
         }
 
-        private static void _uwpConnectionService_UnmountAll()
+        private void _uwpConnectionService_UnmountAll()
         {
-            MessageBox.Show("Unmount all received");
+            _mountService.UnmountAll();
         }
 
         private async void OpenApp(object sender, EventArgs e)
