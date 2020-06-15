@@ -9,11 +9,11 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="7d78794b-e36b-417d-8d80-88877d89f142"
-    Publisher="CN=Tim Parth"
-    Version="1.0.0.0" />
+    Name="8916TimParth.Tardigrade-Drive"
+    Publisher="CN=07929E22-2FB8-4C9D-B9EB-B4A357099123"
+    Version="0.1.1.0" />
 
-  <mp:PhoneIdentity PhoneProductId="7d78794b-e36b-417d-8d80-88877d89f142" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="ce2fa0f7-653c-4953-8d09-eee66e1ee458" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Tardigrade-Drive</DisplayName>

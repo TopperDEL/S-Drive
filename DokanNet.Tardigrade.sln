@@ -11,7 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.UWP", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.UWP.SysTray", "DokanNet.Tardigrade.UWP.SysTray\DokanNet.Tardigrade.UWP.SysTray.csproj", "{D6AF9590-0963-4E52-B2DD-D46D14774746}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.Contracts", "DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokanNet.Tardigrade.Contracts", "DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
+EndProject
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "DokanNet.Tardigrade.Package", "DokanNet.Tardigrade.Package\DokanNet.Tardigrade.Package.wapproj", "{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,7 +71,6 @@ Global
 		{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}.Release|x86.Build.0 = Release|x86
 		{11E66B33-5D46-40AF-924E-C6FE0A9C300E}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{11E66B33-5D46-40AF-924E-C6FE0A9C300E}.Debug|Any CPU.Build.0 = Debug|x86
-		{11E66B33-5D46-40AF-924E-C6FE0A9C300E}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{11E66B33-5D46-40AF-924E-C6FE0A9C300E}.Debug|ARM.ActiveCfg = Debug|ARM
 		{11E66B33-5D46-40AF-924E-C6FE0A9C300E}.Debug|ARM.Build.0 = Debug|ARM
 		{11E66B33-5D46-40AF-924E-C6FE0A9C300E}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -135,6 +136,36 @@ Global
 		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x64.Build.0 = Release|Any CPU
 		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x86.ActiveCfg = Release|Any CPU
 		{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}.Release|x86.Build.0 = Release|Any CPU
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|Any CPU.Build.0 = Debug|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|Any CPU.Deploy.0 = Debug|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|ARM.ActiveCfg = Debug|ARM
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|ARM.Build.0 = Debug|ARM
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|ARM.Deploy.0 = Debug|ARM
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|ARM64.Build.0 = Debug|ARM64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|x64.ActiveCfg = Debug|x64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|x64.Build.0 = Debug|x64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|x64.Deploy.0 = Debug|x64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|x86.ActiveCfg = Debug|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|x86.Build.0 = Debug|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Debug|x86.Deploy.0 = Debug|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|ARM.ActiveCfg = Release|ARM
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|ARM.Build.0 = Release|ARM
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|ARM.Deploy.0 = Release|ARM
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|ARM64.ActiveCfg = Release|ARM64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|ARM64.Build.0 = Release|ARM64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|ARM64.Deploy.0 = Release|ARM64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x64.ActiveCfg = Release|x64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x64.Build.0 = Release|x64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x64.Deploy.0 = Release|x64
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x86.ActiveCfg = Release|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x86.Build.0 = Release|x86
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
