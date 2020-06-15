@@ -53,7 +53,7 @@ namespace DokanNet.Tardigrade.UWP.Services
             try
             {
                 var message = new ValueSet();
-                message.Add(Messages.AreDrivesMounted, "inhalt");
+                message.Add(Messages.AreDrivesMounted, "");
                 var result = await _connection.SendMessageAsync(message);
                 if (result.Status == AppServiceResponseStatus.Success)
                 {
