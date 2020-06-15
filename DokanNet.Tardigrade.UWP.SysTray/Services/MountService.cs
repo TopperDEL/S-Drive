@@ -31,10 +31,16 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
 
         public void UnmountAll()
         {
-            foreach (var entry in _activeMounts)
+            foreach (var entry in _activeMounts.ToList())
             {
                 entry.Value.Unmount();
+                _activeMounts.Remove(entry.Key);
             }
+        }
+
+        public bool GetDrivesMounted()
+        {
+            return _activeMounts.Count() > 0;
         }
 
         private void StartMount(TardigradeMount mount, MountParameters mountParameters)

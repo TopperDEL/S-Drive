@@ -14,7 +14,7 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
     {
         public ObservableCollection<MountParameterViewModel> Mounts { get; set; }
 
-        private bool _mountsActive;
+        private bool _mountsActive = true;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

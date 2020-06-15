@@ -8,5 +8,7 @@ namespace DokanNet.Tardigrade.Contracts.Models
     {
         public static string MountAll = "TARDIGRADE_MOUNT_ALL";
         public static string UnmountAll = "TARDIGRADE_UNMOUNT_ALL";
+        public static string AreDrivesMounted = "TARDIGRADE_ARE_DRIVES_MOUNTED";
+        public static string AreDrivesMountedResult = "TARDIGRADE_ARE_DRIVES_MOUNTED_RESULT";
     }
 }

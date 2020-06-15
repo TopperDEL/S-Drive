@@ -30,8 +30,14 @@ namespace DokanNet.Tardigrade.UWP.SysTray
             _uwpConnectionService = new Services.UWPConnectionService();
             _uwpConnectionService.MountAll += _uwpConnectionService_MountAll;
             _uwpConnectionService.UnmountAll += _uwpConnectionService_UnmountAll;
+            _uwpConnectionService.DrivesMounted += _uwpConnectionService_DrivesMounted;
 
             _mountService = new Services.MountService();
+        }
+
+        private bool _uwpConnectionService_DrivesMounted()
+        {
+            return _mountService.GetDrivesMounted();
         }
 
         private void _uwpConnectionService_MountAll(List<Contracts.Models.MountParameters> mountList)

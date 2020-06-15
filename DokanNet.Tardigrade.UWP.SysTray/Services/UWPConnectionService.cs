@@ -3,18 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using Windows.ApplicationModel.AppService;
+using Windows.Foundation.Collections;
 
 namespace DokanNet.Tardigrade.UWP.SysTray.Services
 {
     public delegate void MountAll(List<MountParameters> mountList);
     public delegate void UnmountAll();
+    public delegate bool DrivesMounted();
     class UWPConnectionService
     {
         static AppServiceConnection connection = null;
 
         public event MountAll MountAll;
         public event UnmountAll UnmountAll;
+        public event DrivesMounted DrivesMounted;
 
         public UWPConnectionService()
         {
@@ -32,7 +36,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
             AppServiceConnectionStatus status = await connection.OpenAsync();
         }
 
-        public void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
+        public async void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
             if (args.Request.Message.ContainsKey(Messages.MountAll))
             {
@@ -41,6 +45,15 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
             else if (args.Request.Message.ContainsKey(Messages.UnmountAll.ToString()))
             {
                 UnmountAll?.Invoke();
+            }
+            else if (args.Request.Message.ContainsKey(Messages.AreDrivesMounted.ToString()))
+            {
+                var drivesMounted = DrivesMounted?.Invoke();
+                ValueSet response = new ValueSet();
+                var def = args.GetDeferral();
+                response.Add(Messages.AreDrivesMountedResult.ToString(), drivesMounted);
+                await args.Request.SendResponseAsync(response);
+                def.Complete();
             }
         }
     }

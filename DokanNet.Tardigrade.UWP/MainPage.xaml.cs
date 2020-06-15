@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -48,9 +49,22 @@ namespace DokanNet.Tardigrade.UWP
             _uwpConnectionService = new Services.UWPConnectionService();
         }
 
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            await GetMountStatusAsync();
+        }
+
+        private async Task GetMountStatusAsync()
+        {
+            while (Services.UWPConnectionService._connection == null)
+                await Task.Delay(100);
+
+            _vm.MountsActive = await _uwpConnectionService.GetAreDrivesMounted();
+        }
+
         private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
         {
-           
         }
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)

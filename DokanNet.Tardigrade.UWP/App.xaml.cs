@@ -82,8 +82,23 @@ namespace DokanNet.Tardigrade.UWP
             base.OnBackgroundActivated(args);
             if (args.TaskInstance.TriggerDetails is AppServiceTriggerDetails)
             {
+                Services.UWPConnectionService._deferral = args.TaskInstance.GetDeferral();
+                args.TaskInstance.Canceled += OnTaskCanceled;
                 AppServiceTriggerDetails details = args.TaskInstance.TriggerDetails as AppServiceTriggerDetails; 
                 Services.UWPConnectionService._connection = details.AppServiceConnection;
+                Services.UWPConnectionService._connection.RequestReceived += _connection_RequestReceived;
+            }
+        }
+
+        private void _connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
+        {
+        }
+
+        private void OnTaskCanceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        {
+            if (Services.UWPConnectionService._deferral != null)
+            {
+                Services.UWPConnectionService._deferral.Complete();
             }
         }
 

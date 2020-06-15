@@ -10,11 +10,14 @@ namespace DokanNet.Tardigrade.UWP.Services
 {
     class SystrayCommunicator
     {
+        private static bool _fillTrustStarted = false;
         internal static async Task<bool> LaunchSystray()
         {
             if (ApiInformation.IsApiContractPresent("Windows.ApplicationModel.FullTrustAppContract", 1, 0))
             {
-                await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
+                if(!_fillTrustStarted)
+                    await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
+                _fillTrustStarted = true;
                 return true;
             }
             else

@@ -27,7 +27,7 @@
 
         <!--Row 3-->
         <StackPanel Orientation="Horizontal" Grid.Row="2">
-            <Button Content="Add Mount" Click="AddMount_Click"/>
+            <Button Content="Add Mount" Click="AddMount_Click" Visibility="{x:Bind _vm.StartDrivesVisibility, Mode=OneWay}"/>
         </StackPanel>
 
         <!--Row 4-->
