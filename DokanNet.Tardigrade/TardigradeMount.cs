@@ -381,7 +381,7 @@ namespace DokanNet.Tardigrade
                 //Download that object using a DownloadStream
                 var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
                 getObjectTask.Wait();
-                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName, _access);
+                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName);
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.SlidingExpiration = new TimeSpan(0, 30, 0); //Keep it for 30 Minutes since last access in our cache.
                 _memoryCache.Set(fileName, info.Context, cachePolicy);
