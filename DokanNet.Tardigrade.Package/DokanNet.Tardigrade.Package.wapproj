@@ -28,7 +28,7 @@
   <PropertyGroup>
     <ProjectGuid>ba19f7c4-9cb7-48a8-8a62-1b2958f20ed1</ProjectGuid>
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
     <DefaultLanguage>de-DE</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\DokanNet.Tardigrade.UWP\DokanNet.Tardigrade.UWP.csproj</EntryPointProjectUniqueName>
@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DokanNet.Tardigrade.Package_TemporaryKey.pfx" />
+    <Content Include="DokanInstaller\DokanSetup_redist.exe" />
     <Content Include="Images\LargeTile.scale-100.png" />
     <Content Include="Images\LargeTile.scale-125.png" />
     <Content Include="Images\LargeTile.scale-150.png" />
