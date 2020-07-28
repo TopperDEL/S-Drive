@@ -3,15 +3,14 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  IgnorableNamespaces="uap rescap desktop6">
+  IgnorableNamespaces="uap rescap">
 
   <Identity
     Name="8916TimParth.Tardigrade-Drive"
     Publisher="CN=07929E22-2FB8-4C9D-B9EB-B4A357099123"
-    Version="0.1.24.0" />
+    Version="0.1.31.0" />
 
   <Properties>
     <DisplayName>Tardigrade-Drive</DisplayName>
@@ -26,22 +25,6 @@
   <Resources>
     <Resource Language="x-generate"/>
   </Resources>
-
-  <Extensions>
-    <desktop6:Extension Category="windows.customInstall">
-      <desktop6:CustomInstall Folder="DokanInstaller">
-        <desktop6:InstallActions>
-          <desktop6:InstallAction File="DokanSetup_redist.exe" Name="Dokan_1" Arguments="/install /quiet /norestart" />
-        </desktop6:InstallActions>
-        <!--<desktop6:RepairActions>
-          <desktop6:RepairAction File="DokanSetup_redist.exe" Name="Dokan_1" Arguments="/add /silent /force" />
-        </desktop6:RepairActions>
-        <desktop6:UninstallActions>
-          <desktop6:UninstallAction File="DokanSetup_redist.exe" Name="Dokan_1" Arguments="/remove /silent" />
-        </desktop6:UninstallActions>-->
-      </desktop6:CustomInstall>
-    </desktop6:Extension>
-  </Extensions>
 
   <Applications>
     <Application Id="App"
@@ -68,6 +51,5 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
-    <rescap:Capability Name="customInstallActions"/>
   </Capabilities>
 </Package>

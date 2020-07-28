@@ -1,6 +1,8 @@
 ﻿using DokanNet.Tardigrade.Contracts.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -18,6 +20,8 @@ namespace DokanNet.Tardigrade.UWP.SysTray
 
         public SystrayApplicationContext()
         {
+            EnsureDokanInstallation();
+
             openMenuItem = new MenuItem("Open UWP", new EventHandler(OpenApp));
             openMenuItem.DefaultItem = true;
 
@@ -33,6 +37,21 @@ namespace DokanNet.Tardigrade.UWP.SysTray
             _uwpConnectionService.DrivesMounted += _uwpConnectionService_DrivesMounted;
 
             _mountService = new Services.MountService();
+        }
+
+        private void EnsureDokanInstallation()
+        {
+            var dokanExists = System.IO.File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "dokan1.dll"));
+            if(!dokanExists)
+            {
+                MessageBox.Show("To use the Tardigrade-Drive you need to install Dokany.","Dokany is missing - Needs install");
+
+                //ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine("DokanInstaller", "DokanSetup_redist.exe"), "/install /quiet /norestart");
+                //startInfo.Verb = "runas";
+                //startInfo.UseShellExecute = false;
+                //var dokanInstall = System.Diagnostics.Process.Start(startInfo);
+                //dokanInstall.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
+            }
         }
 
         private bool _uwpConnectionService_DrivesMounted()

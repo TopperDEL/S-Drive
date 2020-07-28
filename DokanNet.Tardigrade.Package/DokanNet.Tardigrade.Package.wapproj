@@ -67,7 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DokanNet.Tardigrade.Package_TemporaryKey.pfx" />
-    <Content Include="DokanInstaller\DokanSetup_redist.exe" />
     <Content Include="Images\LargeTile.scale-100.png" />
     <Content Include="Images\LargeTile.scale-125.png" />
     <Content Include="Images\LargeTile.scale-150.png" />
