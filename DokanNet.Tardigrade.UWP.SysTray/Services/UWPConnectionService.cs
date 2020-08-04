@@ -15,6 +15,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
     class UWPConnectionService
     {
         static AppServiceConnection connection = null;
+        private DokanyCheckService _dokanyCheckService;
 
         public event MountAll MountAll;
         public event UnmountAll UnmountAll;
@@ -22,6 +23,8 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
 
         public UWPConnectionService()
         {
+            _dokanyCheckService = new DokanyCheckService();
+
             Thread appServiceThread = new Thread(new ThreadStart(InitAsync));
             appServiceThread.Start();
         }
@@ -52,6 +55,14 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
                 ValueSet response = new ValueSet();
                 var def = args.GetDeferral();
                 response.Add(Messages.AreDrivesMountedResult.ToString(), drivesMounted);
+                await args.Request.SendResponseAsync(response);
+                def.Complete();
+            }
+            else if (args.Request.Message.ContainsKey(Messages.IsDokanyInstalled.ToString()))
+            {
+                ValueSet response = new ValueSet();
+                var def = args.GetDeferral();
+                response.Add(Messages.IsDokanyInstalledResult.ToString(), _dokanyCheckService.IsDokanyInstalled());
                 await args.Request.SendResponseAsync(response);
                 def.Complete();
             }

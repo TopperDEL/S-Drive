@@ -19,10 +19,13 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             {
                 return MountParameters.DriveLetter.ToString();
             }
-
             set
             {
-                MountParameters.DriveLetter = (DriveLetters)Enum.Parse(typeof(DriveLetters), value);
+                try
+                {
+                    MountParameters.DriveLetter = (DriveLetters)Enum.Parse(typeof(DriveLetters), value);
+                }
+                catch { }
             }
         }
 

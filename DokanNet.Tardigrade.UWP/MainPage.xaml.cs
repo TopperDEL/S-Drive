@@ -38,7 +38,7 @@ namespace DokanNet.Tardigrade.UWP
             _vaultService = new Services.VaultService();
 
             this.DataContext = _vm = new ViewModels.MountViewModel();
-            foreach(var mount in _vaultService.LoadMounts())
+            foreach (var mount in _vaultService.LoadMounts())
             {
                 _vm.Mounts.Add(new ViewModels.MountParameterViewModel(mount));
             }
@@ -60,6 +60,7 @@ namespace DokanNet.Tardigrade.UWP
             while (Services.UWPConnectionService._connection == null)
                 await Task.Delay(100);
 
+            _vm.IsDokanyInstalled = await _uwpConnectionService.GetIsDokanyInstalled();
             _vm.MountsActive = await _uwpConnectionService.GetAreDrivesMounted();
         }
 
@@ -109,6 +110,14 @@ namespace DokanNet.Tardigrade.UWP
         {
             var button = sender as Button;
             _vm.Mounts.Remove(button.Tag as MountParameterViewModel);
+        }
+
+        private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Environment.Is64BitProcess)
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v1.4.0.1000/Dokan_x64.msi"));
+            else
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v1.4.0.1000/Dokan_x86.msi"));
         }
     }
 }

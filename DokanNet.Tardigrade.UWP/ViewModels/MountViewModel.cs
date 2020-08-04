@@ -10,7 +10,7 @@ using Windows.UI.Xaml;
 
 namespace DokanNet.Tardigrade.UWP.ViewModels
 {
-    public class MountViewModel:INotifyPropertyChanged
+    public class MountViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<MountParameterViewModel> Mounts { get; set; }
 
@@ -34,6 +34,21 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             }
         }
 
+        private bool _isDokanyInstalled = false;
+        public bool IsDokanyInstalled
+        {
+            get
+            {
+                return _isDokanyInstalled;
+            }
+            set
+            {
+                _isDokanyInstalled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDokanyInstalled)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DokanyIsMissingInfoVisibility)));
+            }
+        }
+
         public Visibility StartDrivesVisibility
         {
             get
@@ -47,6 +62,14 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             get
             {
                 return _mountsActive ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public Visibility DokanyIsMissingInfoVisibility
+        {
+            get
+            {
+                return _isDokanyInstalled ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 

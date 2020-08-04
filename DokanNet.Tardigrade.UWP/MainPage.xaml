@@ -11,27 +11,33 @@
     <Grid Padding="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!--Row 1-->
         <Image Source="/Assets/StoreLogo.scale-400.png" Height="100" Grid.Row="0"/>
 
         <!--Row 2-->
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button x:Uid="startMounts" Content="Start drive(s)" Visibility="{x:Bind _vm.StartDrivesVisibility, Mode=OneWay}" Click="MountAll_Click"/>
-            <Button x:Uid="stopDrives" Content="Stop drive(s)" Visibility="{x:Bind _vm.StopDrivesVisibility, Mode=OneWay}" Click="UnmountAll_Click"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Visibility="{x:Bind _vm.StartDrivesVisibility, Mode=OneWay}" Click="MountAll_Click">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Play" Margin="0,0,5,0"/>
+                    <TextBlock x:Uid="startDrives"/>
+                </StackPanel>
+            </Button>
+            <Button Visibility="{x:Bind _vm.StopDrivesVisibility, Mode=OneWay}" Click="UnmountAll_Click">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Stop" Margin="0,0,5,0"/>
+                    <TextBlock x:Uid="stopDrives" />
+                </StackPanel>
+            </Button>
         </StackPanel>
 
         <!--Row 3-->
-        <StackPanel Orientation="Horizontal" Grid.Row="2">
-            <Button Content="Add Mount" Click="AddMount_Click" Visibility="{x:Bind _vm.StartDrivesVisibility, Mode=OneWay}"/>
-        </StackPanel>
-
-        <!--Row 4-->
-        <ListView Grid.Row="3" ItemsSource="{x:Bind _vm.Mounts, Mode=TwoWay}" IsEnabled="{x:Bind _vm.MountsInactive, Mode=OneWay}">
+        <ListView Grid.Row="2" ItemsSource="{x:Bind _vm.Mounts, Mode=TwoWay}" IsEnabled="{x:Bind _vm.MountsInactive, Mode=OneWay}" HorizontalAlignment="Center">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:MountParameterViewModel">
                     <StackPanel Orientation="Horizontal">
@@ -44,12 +50,47 @@
                         <StackPanel Padding="5">
                             <TextBox x:Uid="bucket" Text="{x:Bind MountParameters.Bucketname, Mode=TwoWay}" Width="200"/>
                         </StackPanel>
-                        <Button x:Uid="editCredentials" Click="EditCredentials_Click" VerticalAlignment="Center" Margin="10,22,0,0" Tag="{x:Bind}"/>
-                        <Button x:Uid="deleteMount" Click="DeleteMount_Click" VerticalAlignment="Center" Margin="10,22,0,0" Tag="{x:Bind}"/>
+                        <Button Click="EditCredentials_Click" VerticalAlignment="Center" Margin="10,22,0,0" Tag="{x:Bind}">
+                            <StackPanel Orientation="Horizontal">
+                                <SymbolIcon Symbol="Edit" Margin="0,0,5,0"/>
+                                <TextBlock x:Uid="editCredentials"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Click="DeleteMount_Click" VerticalAlignment="Center" Margin="10,22,0,0" Tag="{x:Bind}">
+                            <StackPanel Orientation="Horizontal">
+                                <SymbolIcon Symbol="Delete" Margin="0,0,5,0"/>
+                                <TextBlock x:Uid="deleteMount"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
-            
         </ListView>
+
+        <!--Row 4-->
+        <StackPanel Orientation="Horizontal" Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="15">
+            <Button Click="AddMount_Click" Visibility="{x:Bind _vm.StartDrivesVisibility, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Add" Margin="0,0,5,0"/>
+                    <TextBlock x:Uid="addMount"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+
+        <!--Row 5-->
+        <Grid Grid.Row="4" Background="Red" CornerRadius="10" Margin="20" Padding="20" MaxWidth="800" Visibility="{x:Bind _vm.DokanyIsMissingInfoVisibility, Mode=OneWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="For this app to work you need Dokany installed. Dokany acts as a system driver and enables Tardigrade-Drive to mount a virtual hard drive on your computer. Please install Dokany and restart your computer."
+                       Grid.Row="0"    
+                       TextWrapping="WrapWholeWords" FontSize="20" VerticalAlignment="Stretch" TextAlignment="Center"
+                       Foreground="White"/>
+            <HyperlinkButton Content="Click here to download and install Dokany"
+                             Grid.Row="1" Click="HyperlinkButton_Click"
+                             Foreground="Black" HorizontalAlignment="Center"/>
+        </Grid>
     </Grid>
 </Page>

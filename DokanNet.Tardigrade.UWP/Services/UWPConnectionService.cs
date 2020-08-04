@@ -67,5 +67,25 @@ namespace DokanNet.Tardigrade.UWP.Services
             catch { }
             return false;
         }
+
+        public async Task<bool> GetIsDokanyInstalled()
+        {
+            try
+            {
+                var message = new ValueSet();
+                message.Add(Messages.IsDokanyInstalled, "");
+                var result = await _connection.SendMessageAsync(message);
+                if (result.Status == AppServiceResponseStatus.Success)
+                {
+                    var response = result.Message.FirstOrDefault();
+                    if (response.Key == Messages.IsDokanyInstalledResult)
+                    {
+                        return (bool)response.Value;
+                    }
+                }
+            }
+            catch { }
+            return false;
+        }
     }
 }
