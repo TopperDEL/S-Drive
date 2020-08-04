@@ -48,7 +48,7 @@ namespace DokanNet.Tardigrade.UWP.Services
             }
         }
 
-        public async Task<bool> GetAreDrivesMounted()
+        public async Task<bool> GetAreDrivesMountedAsync()
         {
             try
             {
@@ -68,7 +68,7 @@ namespace DokanNet.Tardigrade.UWP.Services
             return false;
         }
 
-        public async Task<bool> GetIsDokanyInstalled()
+        public async Task<bool> GetIsDokanyInstalledAsync()
         {
             try
             {
@@ -88,7 +88,7 @@ namespace DokanNet.Tardigrade.UWP.Services
             return false;
         }
 
-        public async Task<bool> GetIsTrayAlive()
+        public async Task<bool> GetIsTrayAliveAsync()
         {
             try
             {

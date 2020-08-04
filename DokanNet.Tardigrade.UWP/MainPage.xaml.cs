@@ -28,7 +28,7 @@ namespace DokanNet.Tardigrade.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        ResourceLoader _resourceLoader;
+        private ResourceLoader _resourceLoader;
         private Services.UWPConnectionService _uwpConnectionService;
         private Services.VaultService _vaultService;
         public ViewModels.MountViewModel _vm;
@@ -70,7 +70,7 @@ namespace DokanNet.Tardigrade.UWP
                 counter++;
             }
 
-            var isAvailable = await _uwpConnectionService.GetIsTrayAlive();
+            var isAvailable = await _uwpConnectionService.GetIsTrayAliveAsync();
 
             if(!isAvailable)
             {
@@ -86,7 +86,7 @@ namespace DokanNet.Tardigrade.UWP
                 }
             }
 
-            isAvailable = await _uwpConnectionService.GetIsTrayAlive();
+            isAvailable = await _uwpConnectionService.GetIsTrayAliveAsync();
 
             if (!isAvailable)
             {
@@ -102,12 +102,12 @@ namespace DokanNet.Tardigrade.UWP
             if (!await IsSystrayAvailable())
                 return;
 
-            var isDokanyInstalled = await _uwpConnectionService.GetIsDokanyInstalled();
+            var isDokanyInstalled = await _uwpConnectionService.GetIsDokanyInstalledAsync();
             if(!isDokanyInstalled)
             {
                 _vm.ShowDokanyMissingInfo();
             }
-            _vm.MountsActive = await _uwpConnectionService.GetAreDrivesMounted();
+            _vm.MountsActive = await _uwpConnectionService.GetAreDrivesMountedAsync();
         }
 
         private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
