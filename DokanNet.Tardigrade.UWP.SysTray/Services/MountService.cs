@@ -51,7 +51,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Mount-Error: " + ex.Message);
+                MessageBox.Show("Mount-Error: " + ex.Message + " - Stack: " + ex.StackTrace);
             }
         }
     }

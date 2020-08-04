@@ -74,7 +74,7 @@ namespace DokanNet.Tardigrade.UWP
                 // Sicherstellen, dass das aktuelle Fenster aktiv ist
                 Window.Current.Activate();
             }
-            Services.SystrayCommunicator.LaunchSystray();
+            Services.SystrayCommunicator.LaunchSystrayAsync();
         }
 
         protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)

@@ -129,10 +129,5 @@
       <Name>DokanNet.Tardigrade</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="DokanInstaller\DokanSetup_redist.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
