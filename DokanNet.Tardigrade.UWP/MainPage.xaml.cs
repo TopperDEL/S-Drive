@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core.Preview;
@@ -27,6 +28,7 @@ namespace DokanNet.Tardigrade.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        ResourceLoader _resourceLoader;
         private Services.UWPConnectionService _uwpConnectionService;
         private Services.VaultService _vaultService;
         public ViewModels.MountViewModel _vm;
@@ -34,6 +36,8 @@ namespace DokanNet.Tardigrade.UWP
         public MainPage()
         {
             this.InitializeComponent();
+
+            _resourceLoader = Windows.ApplicationModel.Resources.ResourceLoader.GetForCurrentView();
 
             _vaultService = new Services.VaultService();
 
@@ -70,7 +74,7 @@ namespace DokanNet.Tardigrade.UWP
 
             if(!isAvailable)
             {
-                MessageDialog dlg = new MessageDialog("Could not connect to the systray-application");
+                MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("Error_SystrayConnect"));
                 await dlg.ShowAsync();
             }
 
@@ -106,7 +110,7 @@ namespace DokanNet.Tardigrade.UWP
             var messageSent = await _uwpConnectionService.SendMountAllAsync(mounts);
             if (!messageSent)
             {
-                MessageDialog dlg = new MessageDialog("error");
+                MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("Error_Mount"));
                 await dlg.ShowAsync();
             }
         }
@@ -120,7 +124,7 @@ namespace DokanNet.Tardigrade.UWP
             var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
             if (!messageSent)
             {
-                MessageDialog dlg = new MessageDialog("error");
+                MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("Error_Unmount"));
                 await dlg.ShowAsync();
             }
         }
