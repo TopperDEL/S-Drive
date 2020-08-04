@@ -34,21 +34,6 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             }
         }
 
-        private bool _isDokanyInstalled = false;
-        public bool IsDokanyInstalled
-        {
-            get
-            {
-                return _isDokanyInstalled;
-            }
-            set
-            {
-                _isDokanyInstalled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDokanyInstalled)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DokanyIsMissingInfoVisibility)));
-            }
-        }
-
         public Visibility StartDrivesVisibility
         {
             get
@@ -65,13 +50,7 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
             }
         }
 
-        public Visibility DokanyIsMissingInfoVisibility
-        {
-            get
-            {
-                return _isDokanyInstalled ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
+        public Visibility DokanyIsMissingInfoVisibility { get; set; } = Visibility.Collapsed;
 
         public bool MountsInactive
         {
@@ -84,6 +63,12 @@ namespace DokanNet.Tardigrade.UWP.ViewModels
         public MountViewModel()
         {
             Mounts = new ObservableCollection<MountParameterViewModel>();
+        }
+
+        public void ShowDokanyMissingInfo()
+        {
+            DokanyIsMissingInfoVisibility = Visibility.Visible;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DokanyIsMissingInfoVisibility)));
         }
     }
 }

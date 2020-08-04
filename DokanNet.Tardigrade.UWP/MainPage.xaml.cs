@@ -60,7 +60,11 @@ namespace DokanNet.Tardigrade.UWP
             while (Services.UWPConnectionService._connection == null)
                 await Task.Delay(100);
 
-            _vm.IsDokanyInstalled = await _uwpConnectionService.GetIsDokanyInstalled();
+            var isDokanyInstalled = await _uwpConnectionService.GetIsDokanyInstalled();
+            if(!isDokanyInstalled)
+            {
+                _vm.ShowDokanyMissingInfo();
+            }
             _vm.MountsActive = await _uwpConnectionService.GetAreDrivesMounted();
         }
 
