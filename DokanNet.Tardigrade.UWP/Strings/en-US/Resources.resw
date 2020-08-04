@@ -168,6 +168,15 @@
   <data name="encryptionPassphrase.Header" xml:space="preserve">
     <value>Encryption passphrase</value>
   </data>
+  <data name="Error_Mount" xml:space="preserve">
+    <value>Could not mount the drive(s) - please check your settings and if Dokany is installed correctly.</value>
+  </data>
+  <data name="Error_SystrayConnect" xml:space="preserve">
+    <value>Could not connect to the systray-application</value>
+  </data>
+  <data name="Error_Unmount" xml:space="preserve">
+    <value>Could not unmount the drive(s) - please try again later</value>
+  </data>
   <data name="librariesUsed.Text" xml:space="preserve">
     <value>Libraries used:</value>
   </data>
