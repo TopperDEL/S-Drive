@@ -16,16 +16,18 @@ namespace DokanNet.Tardigrade.UWP.SysTray
         private Services.UWPConnectionService _uwpConnectionService;
         private Services.MountService _mountService;
         public static MenuItem openMenuItem;
+        public static MenuItem closeMenuItem;
 
         public SystrayApplicationContext()
         {
-            openMenuItem = new MenuItem("Open UWP", new EventHandler(OpenApp));
+            openMenuItem = new MenuItem("Settings", new EventHandler(OpenApp));
             openMenuItem.DefaultItem = true;
+            closeMenuItem = new MenuItem("Close", new EventHandler(CloseApp));
 
             _notifyIcon = new NotifyIcon();
             _notifyIcon.DoubleClick += new EventHandler(OpenApp);
             _notifyIcon.Icon = DokanNet.Tardigrade.UWP.SysTray.Properties.Resources.Storj_symbol;
-            _notifyIcon.ContextMenu = new ContextMenu(new MenuItem[] { openMenuItem });
+            _notifyIcon.ContextMenu = new ContextMenu(new MenuItem[] { openMenuItem, closeMenuItem });
             _notifyIcon.Visible = true;
 
             _uwpConnectionService = new Services.UWPConnectionService();
@@ -56,7 +58,12 @@ namespace DokanNet.Tardigrade.UWP.SysTray
         {
             IEnumerable<AppListEntry> appListEntries = await Package.Current.GetAppListEntriesAsync();
             await appListEntries.First().LaunchAsync();
-            //Application.Exit(); //Todo: Unmount drives or at least handle changes correctly.
+        }
+
+        private void CloseApp(object sender, EventArgs e)
+        {
+            _mountService.UnmountAll();
+            Application.Exit(); 
         }
     }
 }

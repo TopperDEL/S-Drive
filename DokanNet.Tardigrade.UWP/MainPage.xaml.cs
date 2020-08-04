@@ -55,10 +55,32 @@ namespace DokanNet.Tardigrade.UWP
             await GetMountStatusAsync();
         }
 
+        private async Task<bool> IsSystrayAvailable()
+        {
+            await Services.SystrayCommunicator.AssureSystrayIsLaunchedAsync();
+
+            int counter = 0;
+            while (Services.UWPConnectionService._connection == null && counter < 10)
+            {
+                await Task.Delay(100);
+                counter++;
+            }
+
+            var isAvailable = Services.UWPConnectionService._connection != null;
+
+            if(!isAvailable)
+            {
+                MessageDialog dlg = new MessageDialog("Could not connect to the systray-application");
+                await dlg.ShowAsync();
+            }
+
+            return isAvailable;
+        }
+
         private async Task GetMountStatusAsync()
         {
-            while (Services.UWPConnectionService._connection == null)
-                await Task.Delay(100);
+            if (!await IsSystrayAvailable())
+                return;
 
             var isDokanyInstalled = await _uwpConnectionService.GetIsDokanyInstalled();
             if(!isDokanyInstalled)
@@ -74,6 +96,9 @@ namespace DokanNet.Tardigrade.UWP
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
         {
+            if (!await IsSystrayAvailable())
+                return;
+
             _vm.MountsActive = true;
             var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
             _vaultService.SaveMounts(mounts);
@@ -88,6 +113,9 @@ namespace DokanNet.Tardigrade.UWP
 
         private async void UnmountAll_Click(object sender, RoutedEventArgs e)
         {
+            if (!await IsSystrayAvailable())
+                return;
+
             _vm.MountsActive = false;
             var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
             if (!messageSent)
