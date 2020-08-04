@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="aboutButton.Content" xml:space="preserve">
+    <value>About this app</value>
+  </data>
+  <data name="aboutDialog.PrimaryButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="aboutDialog.Title" xml:space="preserve">
+    <value>About Tardigrade-Drive</value>
+  </data>
   <data name="accessGrant.Header" xml:space="preserve">
     <value>Access grant</value>
   </data>
@@ -126,11 +135,23 @@
   <data name="apiKey.Header" xml:space="preserve">
     <value>API key</value>
   </data>
+  <data name="appVersion.Text" xml:space="preserve">
+    <value>Tardigrade-Drive v</value>
+  </data>
   <data name="bucket.Header" xml:space="preserve">
     <value>Tardigrade-Bucket</value>
   </data>
   <data name="deleteMount.Text" xml:space="preserve">
     <value>Delete</value>
+  </data>
+  <data name="developedBy.Text" xml:space="preserve">
+    <value>Developed by Tim Parth (TopperDEL)</value>
+  </data>
+  <data name="dokanyIsMissingInfo.Text" xml:space="preserve">
+    <value>For this app to work you need Dokany installed. Dokany acts as a system driver and enables Tardigrade-Drive to mount a virtual hard drive on your computer. Please install Dokany and restart your computer.</value>
+  </data>
+  <data name="downloadDokany.Content" xml:space="preserve">
+    <value>Click here to download and install Dokany</value>
   </data>
   <data name="drive.Header" xml:space="preserve">
     <value>Drive</value>
@@ -147,6 +168,9 @@
   <data name="encryptionPassphrase.Header" xml:space="preserve">
     <value>Encryption passphrase</value>
   </data>
+  <data name="librariesUsed.Text" xml:space="preserve">
+    <value>Libraries used:</value>
+  </data>
   <data name="rbAccessGrant.Content" xml:space="preserve">
     <value>Access using access grant</value>
   </data>
@@ -155,6 +179,15 @@
   </data>
   <data name="satelliteAddress.Header" xml:space="preserve">
     <value>Satellite address</value>
+  </data>
+  <data name="settingsDialog.PrimaryButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="settingsDialog.Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="sourceCodeLink.Content" xml:space="preserve">
+    <value>Source-Code available on GitHub</value>
   </data>
   <data name="startDrives.Text" xml:space="preserve">
     <value>Start drive(s)</value>

@@ -112,12 +112,24 @@ namespace DokanNet.Tardigrade.UWP
             _vm.Mounts.Remove(button.Tag as MountParameterViewModel);
         }
 
-        private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        private async void InstallDokany_Click(object sender, RoutedEventArgs e)
         {
             if (Environment.Is64BitProcess)
                 await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v1.4.0.1000/Dokan_x64.msi"));
             else
                 await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v1.4.0.1000/Dokan_x86.msi"));
+        }
+
+        private async void About_Click(object sender, RoutedEventArgs e)
+        {
+            Views.AboutDialog aboutDlg = new Views.AboutDialog();
+            await aboutDlg.ShowAsync();
+        }
+
+        private async void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            Views.SettingsDialog settingsDlg = new Views.SettingsDialog();
+            await settingsDlg.ShowAsync();
         }
     }
 }

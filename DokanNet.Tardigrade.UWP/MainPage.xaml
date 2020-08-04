@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
         <!--Row 1-->
@@ -79,18 +80,26 @@
 
 
         <!--Row 5-->
-        <Grid Grid.Row="4" Background="Red" CornerRadius="10" Margin="20" Padding="20" MaxWidth="800" Visibility="{x:Bind _vm.DokanyIsMissingInfoVisibility, Mode=OneWay}">
+        <Grid Grid.Row="4" Background="OrangeRed" CornerRadius="10" Margin="20" Padding="20" MaxWidth="800" Visibility="{x:Bind _vm.DokanyIsMissingInfoVisibility, Mode=OneWay}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="For this app to work you need Dokany installed. Dokany acts as a system driver and enables Tardigrade-Drive to mount a virtual hard drive on your computer. Please install Dokany and restart your computer."
+            <TextBlock x:Uid="dokanyIsMissingInfo"
                        Grid.Row="0"    
                        TextWrapping="WrapWholeWords" FontSize="20" VerticalAlignment="Stretch" TextAlignment="Center"
                        Foreground="White"/>
-            <HyperlinkButton Content="Click here to download and install Dokany"
-                             Grid.Row="1" Click="HyperlinkButton_Click"
+            <HyperlinkButton x:Uid="downloadDokany"
+                             Grid.Row="1" Click="InstallDokany_Click" FontSize="18"
                              Foreground="Black" HorizontalAlignment="Center"/>
         </Grid>
+        
+        <!--Row 6-->
+        <StackPanel Grid.Row="5" Background="White" Orientation="Horizontal" HorizontalAlignment="Right">
+            <HyperlinkButton x:Uid="aboutButton" Foreground="{StaticResource StorjBlue}" Click="About_Click"/>
+            <Button Width="20" MinWidth="40" Background="White" Foreground="{StaticResource StorjBlue}" Click="Settings_Click" Visibility="Collapsed">
+                <SymbolIcon Symbol="Setting"/>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>
