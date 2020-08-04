@@ -12,5 +12,7 @@ namespace DokanNet.Tardigrade.Contracts.Models
         public static string AreDrivesMountedResult = "TARDIGRADE_ARE_DRIVES_MOUNTED_RESULT";
         public static string IsDokanyInstalled = "TARDIGRADE_IS_DOKANY_INSTALLED";
         public static string IsDokanyInstalledResult = "TARDIGRADE_IS_DOKANY_INSTALLED_RESULT";
+        public static string Ping = "TARDIGRADE_PING";
+        public static string Pong = "TARDIGRADE_PING_RESULT";
     }
 }

@@ -66,6 +66,14 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
                 await args.Request.SendResponseAsync(response);
                 def.Complete();
             }
+            else if (args.Request.Message.ContainsKey(Messages.Ping.ToString()))
+            {
+                ValueSet response = new ValueSet();
+                var def = args.GetDeferral();
+                response.Add(Messages.Pong.ToString(), true);
+                await args.Request.SendResponseAsync(response);
+                def.Complete();
+            }
         }
     }
 }

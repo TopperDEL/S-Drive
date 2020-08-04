@@ -70,9 +70,25 @@ namespace DokanNet.Tardigrade.UWP
                 counter++;
             }
 
-            var isAvailable = Services.UWPConnectionService._connection != null;
+            var isAvailable = await _uwpConnectionService.GetIsTrayAlive();
 
             if(!isAvailable)
+            {
+                //Restart systray
+                Services.UWPConnectionService._connection = null;
+                Services.SystrayCommunicator._fillTrustStarted = false;
+                await Services.SystrayCommunicator.AssureSystrayIsLaunchedAsync();
+                counter = 0;
+                while (Services.UWPConnectionService._connection == null && counter < 10)
+                {
+                    await Task.Delay(100);
+                    counter++;
+                }
+            }
+
+            isAvailable = await _uwpConnectionService.GetIsTrayAlive();
+
+            if (!isAvailable)
             {
                 MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("Error_SystrayConnect"));
                 await dlg.ShowAsync();

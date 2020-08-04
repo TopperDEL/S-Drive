@@ -87,5 +87,25 @@ namespace DokanNet.Tardigrade.UWP.Services
             catch { }
             return false;
         }
+
+        public async Task<bool> GetIsTrayAlive()
+        {
+            try
+            {
+                var message = new ValueSet();
+                message.Add(Messages.Ping, "");
+                var result = await _connection.SendMessageAsync(message);
+                if (result.Status == AppServiceResponseStatus.Success)
+                {
+                    var response = result.Message.FirstOrDefault();
+                    if (response.Key == Messages.Pong)
+                    {
+                        return (bool)response.Value;
+                    }
+                }
+            }
+            catch { }
+            return false;
+        }
     }
 }
