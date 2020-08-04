@@ -18,11 +18,12 @@ namespace DokanNet.Tardigrade.UWP.SysTray
         public static MenuItem openMenuItem;
         public static MenuItem closeMenuItem;
 
+
         public SystrayApplicationContext()
         {
-            openMenuItem = new MenuItem("Settings", new EventHandler(OpenApp));
+            openMenuItem = new MenuItem(Properties.Resources.Tray_Settings, new EventHandler(OpenApp));
             openMenuItem.DefaultItem = true;
-            closeMenuItem = new MenuItem("Close", new EventHandler(CloseApp));
+            closeMenuItem = new MenuItem(Properties.Resources.Tray_Close, new EventHandler(CloseApp));
 
             _notifyIcon = new NotifyIcon();
             _notifyIcon.DoubleClick += new EventHandler(OpenApp);

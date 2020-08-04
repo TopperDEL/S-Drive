@@ -61,12 +61,39 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Mount error: $error$ - Stack: $stack$ ähnelt.
+        /// </summary>
+        internal static string MountError {
+            get {
+                return ResourceManager.GetString("MountError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
         /// </summary>
         internal static System.Drawing.Icon Storj_symbol {
             get {
                 object obj = ResourceManager.GetObject("Storj_symbol", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
+        /// </summary>
+        internal static string Tray_Close {
+            get {
+                return ResourceManager.GetString("Tray_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Settings ähnelt.
+        /// </summary>
+        internal static string Tray_Settings {
+            get {
+                return ResourceManager.GetString("Tray_Settings", resourceCulture);
             }
         }
         

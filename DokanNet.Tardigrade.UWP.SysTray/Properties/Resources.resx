@@ -121,6 +121,12 @@
   <data name="Storj_symbol" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Storj-symbol.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Tray_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Tray_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
   <data name="UWPConnectError" xml:space="preserve">
     <value>Could not connect to Management-App (UWP).</value>
   </data>
