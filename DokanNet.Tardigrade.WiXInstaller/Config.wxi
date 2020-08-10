@@ -16,7 +16,7 @@
   <?define RemoveAppPackagePs = "Remove-AppPackage.ps1" ?>
 
   <!-- App settings -->
-  <?define AppxInstallPath = "TardigradeDrive_Test" ?>
-  <?define AppxCertPath = "TardigradeDrive.cer" ?>
+  <?define AppxInstallPath = "DokanNet.Tardigrade.Package_0.2.6.0_Test" ?>
+  <?define AppxCertPath = "DokanNet.Tardigrade.Package_0.2.6.0_x86_x64.cer" ?>
   <?define AppxPackageName = "DokanNet.Tardigrade.Package" ?>
 </Include>
