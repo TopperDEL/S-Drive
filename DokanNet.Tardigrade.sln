@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokanNet.Tardigrade.Contrac
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "DokanNet.Tardigrade.Package", "DokanNet.Tardigrade.Package\DokanNet.Tardigrade.Package.wapproj", "{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}"
 EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DokanNet.Tardigrade.WiXInstaller", "DokanNet.Tardigrade.WiXInstaller\DokanNet.Tardigrade.WiXInstaller.wixproj", "{F4C13607-D66E-4E5E-A207-E9418B0F82DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -75,6 +77,12 @@ Global
 		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x86.ActiveCfg = Release|x86
 		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x86.Build.0 = Release|x86
 		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}.Release|x86.Deploy.0 = Release|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Debug|x64.ActiveCfg = Debug|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Debug|x86.ActiveCfg = Debug|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Debug|x86.Build.0 = Debug|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x64.ActiveCfg = Release|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x86.ActiveCfg = Release|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
