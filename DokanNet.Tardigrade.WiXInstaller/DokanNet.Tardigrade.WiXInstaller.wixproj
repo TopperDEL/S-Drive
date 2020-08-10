@@ -6,7 +6,7 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>f4c13607-d66e-4e5e-a207-e9418b0f82de</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>DokanNet.Tardigrade.WiXInstaller</OutputName>
+    <OutputName>Tardigrade-Drive</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -25,6 +25,7 @@
     <Content Include="Check-WindowsDeveloperLicense.ps1" />
     <Content Include="Config.wxi" />
     <Content Include="Remove-AppPackage.ps1" />
+    <Content Include="Storj-symbol.ico" />
   </ItemGroup>
   <PropertyGroup>
     <!-- Configuration for app harvesting -->
