@@ -7,7 +7,22 @@
     <Icon Id="TardigradeIcon"
           SourceFile="Storj-symbol.ico"
           />
-
+    
+    <WixVariable Id="WixUILicenseRtf" Value="MITlicense.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="TopBanner.png" />
+    <WixVariable Id="WixUIDialogBmp" Value="DialogBmp.png" />
+    <WixVariable Id="WixUIExclamationIco" Value="Storj-symbol_32x32.ico" />
+    <WixVariable Id="WixUIInfoIco" Value="Storj-symbol_32x32.ico" />
+    <WixVariable Id="WixUINewIco" Value="Storj-symbol_16x16.ico" />
+    <WixVariable Id="WixUIUpIco" Value="Storj-symbol_16x16.ico" />
+    
+    
+<!--https://wixtoolset.org//documentation/manual/v3/wixui/wixui_customizations.html-->
+    
+    
+      
+      
+    
     <Property Id="ARPPRODUCTICON" Value="TardigradeIcon" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />

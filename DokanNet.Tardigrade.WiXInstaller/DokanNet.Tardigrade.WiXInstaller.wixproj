@@ -24,8 +24,13 @@
   <ItemGroup>
     <Content Include="Check-WindowsDeveloperLicense.ps1" />
     <Content Include="Config.wxi" />
+    <Content Include="DialogBmp.png" />
+    <Content Include="MITlicense.rtf" />
     <Content Include="Remove-AppPackage.ps1" />
     <Content Include="Storj-symbol.ico" />
+    <Content Include="Storj-symbol_16x16.ico" />
+    <Content Include="Storj-symbol_32x32.ico" />
+    <Content Include="TopBanner.png" />
   </ItemGroup>
   <PropertyGroup>
     <!-- Configuration for app harvesting -->
