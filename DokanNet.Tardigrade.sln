@@ -22,7 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer-Build", "Installer-Build", "{46238BF5-1551-4EBB-931A-D9D82163700F}"
 	ProjectSection(SolutionItems) = preProject
 		build-installer.bat = build-installer.bat
-		..\..\..\Documents\GitHub\uplink.net\SWIG\fart.exe = ..\..\..\Documents\GitHub\uplink.net\SWIG\fart.exe
+		fart.exe = fart.exe
 	EndProjectSection
 EndProject
 Global
@@ -109,6 +109,7 @@ Global
 		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Debug|x86.Build.0 = Debug|x86
 		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|Any CPU.ActiveCfg = Release|x86
 		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x64.ActiveCfg = Release|x86
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x64.Build.0 = Release|x86
 		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x86.ActiveCfg = Release|x86
 		{F4C13607-D66E-4E5E-A207-E9418B0F82DE}.Release|x86.Build.0 = Release|x86
 		{44555887-C439-470C-944D-8866EC3D7067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -121,8 +122,8 @@ Global
 		{44555887-C439-470C-944D-8866EC3D7067}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44555887-C439-470C-944D-8866EC3D7067}.Release|x64.ActiveCfg = Release|Any CPU
 		{44555887-C439-470C-944D-8866EC3D7067}.Release|x64.Build.0 = Release|Any CPU
-		{44555887-C439-470C-944D-8866EC3D7067}.Release|x86.ActiveCfg = Release|Any CPU
-		{44555887-C439-470C-944D-8866EC3D7067}.Release|x86.Build.0 = Release|Any CPU
+		{44555887-C439-470C-944D-8866EC3D7067}.Release|x86.ActiveCfg = Release|x86
+		{44555887-C439-470C-944D-8866EC3D7067}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
