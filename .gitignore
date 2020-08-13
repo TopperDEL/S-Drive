@@ -351,3 +351,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+DokanNet.Tardigrade.WiXBootstrapper/Tardigrade-Drive.msi
+DokanNet.Tardigrade.WiXBootstrapper/Tardigrade-Drive-Bootstrapper.wixpdb
+DokanNet.Tardigrade.WiXBootstrapper/Tardigrade-Drive-Bootstrapper.exe

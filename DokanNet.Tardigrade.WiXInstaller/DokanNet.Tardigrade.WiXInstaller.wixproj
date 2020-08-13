@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>f4c13607-d66e-4e5e-a207-e9418b0f82de</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>Tardigrade-Drive</OutputName>
+    <OutputType>Package</OutputType>
+	<RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Setup.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Check-WindowsDeveloperLicense.ps1" />
+    <Content Include="Config.wxi" />
+    <Content Include="DialogBmp.png" />
+    <Content Include="MITlicense.rtf" />
+    <Content Include="Remove-AppPackage.ps1" />
+    <Content Include="Storj-symbol.ico" />
+    <Content Include="Storj-symbol_16x16.ico" />
+    <Content Include="Storj-symbol_32x32.ico" />
+    <Content Include="TopBanner.png" />
+  </ItemGroup>
+  <PropertyGroup>
+    <!-- Configuration for app harvesting -->
+    <AppxDir>..\DokanNet.Tardigrade.Package\AppPackages\DokanNet.Tardigrade.Package_0.2.7.0_Test\</AppxDir>
+    <DefineConstants>$(DefineConstants);AppxDir=$(AppxDir)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DokanNet.Tardigrade.Package\DokanNet.Tardigrade.Package.wapproj">
+      <Name>DokanNet.Tardigrade.Package</Name>
+      <Project>{ba19f7c4-9cb7-48a8-8a62-1b2958f20ed1}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Harvest app package -->
+    <HarvestDirectory Include="$(AppxDir)">
+      <InProject>false</InProject>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <ComponentGroupName>ComponentGroup.App</ComponentGroupName>
+      <PreprocessorVariable>var.AppxDir</PreprocessorVariable>
+    </HarvestDirectory>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
+  </Target>
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>
