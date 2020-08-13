@@ -35,7 +35,7 @@
   </ItemGroup>
   <PropertyGroup>
     <!-- Configuration for app harvesting -->
-    <AppxDir>..\DokanNet.Tardigrade.Package\AppPackages\DokanNet.Tardigrade.Package_0.2.6.0_Test\</AppxDir>
+    <AppxDir>..\DokanNet.Tardigrade.Package\AppPackages\DokanNet.Tardigrade.Package_0.2.7.0_Test\</AppxDir>
     <DefineConstants>$(DefineConstants);AppxDir=$(AppxDir)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

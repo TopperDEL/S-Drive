@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?include $(sys.CURRENTDIR)\Config.wxi?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="Tardigrade-Drive" Language="1033" Version="0.2.6.0" Manufacturer="Tim Parth" UpgradeCode="137a49ce-18e5-4df6-bc2a-ea46717f5e68">
+	<Product Id="*" Name="Tardigrade-Drive" Language="1033" Version="0.2.7.0" Manufacturer="Tim Parth" UpgradeCode="137a49ce-18e5-4df6-bc2a-ea46717f5e68">
 		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated"/>
 
     <Icon Id="TardigradeIcon"
