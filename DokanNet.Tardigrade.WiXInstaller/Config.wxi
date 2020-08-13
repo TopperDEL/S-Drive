@@ -3,7 +3,7 @@
   <!-- Product info -->
   <?define ProductName = "Tardigrade-Drive" ?>
   <?define ProductManufacturer = "Tim Parth" ?>
-  <?define ProductVersion = "0.2.4" ?>
+  <?define ProductVersion = "0.2.6" ?>
   <?define UpdateCode = "c6e532dc-abcd-4510-a163-334d8623dd7e" ?>
 
   <!-- Install settings-->
