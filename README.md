@@ -12,3 +12,9 @@ The documentation is not finished, yet. But if you want to build this on your ow
 * The .Net-Framework 4.8 (the project will switch to .Net 6 in the future)
 * The Dokany-Driver (DokanSetup.exe from [here](https://github.com/dokan-dev/dokany/releases))
 * You may need to select the windows.winmd from a path like the following: "c:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.19041.0\windows.winmd". That dependencies is necessary as a reference within the DokanNet.Tardigrade.UWP.SysTray-Project
+
+## Build the installer
+Make sure you have your msbuild.exe in your PATH-variable like so:
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin"
+
+Then replace the versions in build-installer.bat accordingly. Run build.bat.
