@@ -15,10 +15,16 @@ namespace DokanNet.Tardigrade.Console
 
             MountParameters mountParameters = new MountParameters();
             mountParameters.DriveLetter = DriveLetters.s;
-            mountParameters.Bucketname = args[3];
-            mountParameters.SatelliteAddress = args[0];
-            mountParameters.ApiKey = args[1];
-            mountParameters.EncryptionPassphrase = args[2];
+
+            //Via Access-Grant:
+            mountParameters.Bucketname = args[0];
+            mountParameters.AccessGrant = args[1];
+
+            //Via Satellite, API key and Passphrase:
+            //mountParameters.SatelliteAddress = args[0];
+            //mountParameters.ApiKey = args[1];
+            //mountParameters.EncryptionPassphrase = args[2];
+            //mountParameters.Bucketname = args[3];
 
             tardigradeMount.MountAsync(mountParameters).Wait();
         }
