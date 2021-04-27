@@ -1,6 +1,6 @@
 @echo off
-SET PREV_VERSION=0.2.6.0
-SET VERSION=0.2.7.0
+SET PREV_VERSION=0.2.7.0
+SET VERSION=0.2.8.0
 
 echo *** Replacing Versions all over the solution
 fart "DokanNet.Tardigrade.Package\Package.appxmanifest" "%PREV_VERSION%" "%VERSION%"

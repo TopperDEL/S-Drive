@@ -14,7 +14,7 @@ namespace DokanNet.Tardigrade.WiXBootstrapper
                   new MsiPackage("Dokan_x86.msi") { InstallCondition = "Not VersionNT64" },
                   new MsiPackage("Tardigrade-Drive.msi") { DisplayInternalUI = true });
 
-            bootstrapper.Version = new Version("0.2.7.0");
+            bootstrapper.Version = new Version("0.2.8.0");
             bootstrapper.IconFile = "Storj-symbol_32x32.ico";
             bootstrapper.Application.LogoFile = "Storj-symbol.png";
             bootstrapper.UpgradeCode = new Guid("6f330b47-2577-43ad-9095-1861bb25844b");
