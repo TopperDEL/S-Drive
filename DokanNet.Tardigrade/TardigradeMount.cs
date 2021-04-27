@@ -134,7 +134,15 @@ namespace DokanNet.Tardigrade
         {
             _bucketService = new BucketService(_access);
             _objectService = new ObjectService(_access);
-            _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
+            try
+            {
+                _bucket = await _bucketService.GetBucketAsync(bucketName).ConfigureAwait(false);
+            }
+            catch
+            {
+                _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
+            }
+
         }
         #endregion
 
@@ -677,12 +685,12 @@ namespace DokanNet.Tardigrade
             var realOldName = GetPath(oldName);
             var realNewName = GetPath(newName);
 
-            if(info.IsDirectory)
+            if (info.IsDirectory)
             {
                 //The Directory has to be empty - otherwise we would have to copy every object with that path.
                 //Furthermore we need to use the "folder.dokan"-file for the "rename".
                 var files = await ListAllAsync().ConfigureAwait(false);
-                if(files.Where(f=>!f.IsPrefix && f.Key.StartsWith(realOldName)).Count() > 0)
+                if (files.Where(f => !f.IsPrefix && f.Key.StartsWith(realOldName)).Count() > 0)
                 {
                     return DokanResult.DirectoryNotEmpty;
                 }
@@ -763,7 +771,7 @@ namespace DokanNet.Tardigrade
                         DokanResult.AccessDenied);
                 }
             }
-            else 
+            else
             {
                 //It is a file
                 var pathExists = true;
@@ -1036,7 +1044,7 @@ namespace DokanNet.Tardigrade
             //The Directory has to be empty - otherwise we would have to copy every object with that path.
             //Furthermore we need to use the "folder.dokan"-file for the "rename".
             var files = await ListAllAsync().ConfigureAwait(false);
-            foreach(var toDelete in files.Where(f => !f.IsPrefix && f.Key.StartsWith(realFileName)))
+            foreach (var toDelete in files.Where(f => !f.IsPrefix && f.Key.StartsWith(realFileName)))
             {
                 await _objectService.DeleteObjectAsync(_bucket, toDelete.Key).ConfigureAwait(false);
             }
