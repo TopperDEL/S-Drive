@@ -187,10 +187,10 @@
       <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="uplink.NET">
-      <Version>2.6.1451</Version>
+      <Version>2.8.2024</Version>
     </PackageReference>
     <PackageReference Include="uplink.NET.Win">
-      <Version>2.6.1451</Version>
+      <Version>2.8.2024</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

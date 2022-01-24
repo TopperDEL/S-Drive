@@ -302,10 +302,10 @@ namespace DokanNet.Tardigrade
                 .Select(finfo => new FileInformation
                 {
                     Attributes = FileAttributes.Normal,
-                    CreationTime = finfo.SystemMetaData.Created,
-                    LastAccessTime = finfo.SystemMetaData.Created,
-                    LastWriteTime = finfo.SystemMetaData.Created,
-                    Length = finfo.SystemMetaData.ContentLength,
+                    CreationTime = finfo.SystemMetadata.Created,
+                    LastAccessTime = finfo.SystemMetadata.Created,
+                    LastWriteTime = finfo.SystemMetadata.Created,
+                    Length = finfo.SystemMetadata.ContentLength,
                     FileName = finfo.Key
                 }).ToArray();
 
@@ -317,9 +317,9 @@ namespace DokanNet.Tardigrade
                     .Select(finfo => new FileInformation
                     {
                         Attributes = FileAttributes.Directory,
-                        CreationTime = finfo.SystemMetaData.Created,
-                        LastAccessTime = finfo.SystemMetaData.Created,
-                        LastWriteTime = finfo.SystemMetaData.Created,
+                        CreationTime = finfo.SystemMetadata.Created,
+                        LastAccessTime = finfo.SystemMetadata.Created,
+                        LastWriteTime = finfo.SystemMetadata.Created,
                         Length = 0,
                         FileName = finfo.Key
                     }).ToArray();
@@ -336,10 +336,10 @@ namespace DokanNet.Tardigrade
                 .Select(finfo => new FileInformation
                 {
                     Attributes = FileAttributes.Normal,
-                    CreationTime = finfo.SystemMetaData.Created,
-                    LastAccessTime = finfo.SystemMetaData.Created,
-                    LastWriteTime = finfo.SystemMetaData.Created,
-                    Length = finfo.SystemMetaData.ContentLength,
+                    CreationTime = finfo.SystemMetadata.Created,
+                    LastAccessTime = finfo.SystemMetadata.Created,
+                    LastWriteTime = finfo.SystemMetadata.Created,
+                    Length = finfo.SystemMetadata.ContentLength,
                     FileName = finfo.Key.Substring(currentFolder.Length)
                 }).ToArray();
 
@@ -351,9 +351,9 @@ namespace DokanNet.Tardigrade
                     .Select(finfo => new FileInformation
                     {
                         Attributes = FileAttributes.Directory,
-                        CreationTime = finfo.SystemMetaData.Created,
-                        LastAccessTime = finfo.SystemMetaData.Created,
-                        LastWriteTime = finfo.SystemMetaData.Created,
+                        CreationTime = finfo.SystemMetadata.Created,
+                        LastAccessTime = finfo.SystemMetadata.Created,
+                        LastWriteTime = finfo.SystemMetadata.Created,
                         Length = 0,
                         FileName = finfo.Key.Substring(currentFolder.Length)
                     }).ToArray();
@@ -389,7 +389,7 @@ namespace DokanNet.Tardigrade
                 //Download that object using a DownloadStream
                 var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
                 getObjectTask.Wait();
-                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetaData.ContentLength, realFileName);
+                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetadata.ContentLength, realFileName);
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.SlidingExpiration = new TimeSpan(0, 30, 0); //Keep it for 30 Minutes since last access in our cache.
                 _memoryCache.Set(fileName, info.Context, cachePolicy);
@@ -453,7 +453,7 @@ namespace DokanNet.Tardigrade
             listTask.Wait();
 
             totalNumberOfBytes = 1125899906842624; //1PB - why not? Storj is huge. :)
-            totalNumberOfFreeBytes = totalNumberOfBytes - listTask.Result.Sum(f => f.SystemMetaData.ContentLength); ;
+            totalNumberOfFreeBytes = totalNumberOfBytes - listTask.Result.Sum(f => f.SystemMetadata.ContentLength); ;
             freeBytesAvailable = totalNumberOfFreeBytes;
             return Trace(nameof(GetDiskFreeSpace), null, info, DokanResult.Success, "out " + freeBytesAvailable.ToString(),
                 "out " + totalNumberOfBytes.ToString(), "out " + totalNumberOfFreeBytes.ToString());
@@ -911,9 +911,9 @@ namespace DokanNet.Tardigrade
                     {
                         FileName = fileName,
                         Attributes = FileAttributes.Directory,
-                        CreationTime = file.SystemMetaData.Created,
-                        LastAccessTime = file.SystemMetaData.Created, //Todo: use custom meta
-                        LastWriteTime = file.SystemMetaData.Created, //Todo: use custom meta
+                        CreationTime = file.SystemMetadata.Created,
+                        LastAccessTime = file.SystemMetadata.Created, //Todo: use custom meta
+                        LastWriteTime = file.SystemMetadata.Created, //Todo: use custom meta
                         Length = 0,
                     };
                 }
@@ -924,10 +924,10 @@ namespace DokanNet.Tardigrade
                     {
                         FileName = fileName,
                         Attributes = FileAttributes.NotContentIndexed | FileAttributes.Archive,
-                        CreationTime = file.SystemMetaData.Created,
-                        LastAccessTime = file.SystemMetaData.Created, //Todo: use custom meta
-                        LastWriteTime = file.SystemMetaData.Created, //Todo: use custom meta
-                        Length = file.SystemMetaData.ContentLength,
+                        CreationTime = file.SystemMetadata.Created,
+                        LastAccessTime = file.SystemMetadata.Created, //Todo: use custom meta
+                        LastWriteTime = file.SystemMetadata.Created, //Todo: use custom meta
+                        Length = file.SystemMetadata.ContentLength,
                     };
                 }
             }
