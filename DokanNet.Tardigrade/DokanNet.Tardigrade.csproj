@@ -50,8 +50,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DokanNet, Version=1.4.0.0, Culture=neutral, PublicKeyToken=cef3dedf553bda55, processorArchitecture=MSIL">
-      <HintPath>..\packages\DokanNet.1.4.0\lib\net46\DokanNet.dll</HintPath>
+    <Reference Include="DokanNet, Version=2.0.5.1, Culture=neutral, PublicKeyToken=cef3dedf553bda55, processorArchitecture=MSIL">
+      <HintPath>..\packages\DokanNet.2.0.5.1\lib\net462\DokanNet.dll</HintPath>
     </Reference>
     <Reference Include="SQLite-net, Version=1.7.335.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\sqlite-net-pcl.1.7.335\lib\netstandard2.0\SQLite-net.dll</HintPath>

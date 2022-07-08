@@ -95,6 +95,16 @@ namespace DokanNet.Tardigrade
         /// </summary>
         private Dictionary<string, ChunkedUploadOperation> _currentUploads = new Dictionary<string, ChunkedUploadOperation>();
 
+        /// <summary>
+        /// Dokan itself
+        /// </summary>
+        private Dokan _dokan;
+
+        /// <summary>
+        /// A helper to unmount the drive
+        /// </summary>
+        private System.Threading.ManualResetEvent _mre;
+
         #region Implementation of ITardigradeMount
         /// <summary>
         /// Mounts a given bucket with given access privileges. This method will block until the drive gets unmounted again. TODO
@@ -113,7 +123,21 @@ namespace DokanNet.Tardigrade
 
             await InitUplinkAsync(mountParameters.Bucketname).ConfigureAwait(false);
 
-            this.Mount(mountParameters.DriveLetter.ToString() + ":\\", DokanOptions.DebugMode, 1);
+            var nullLogger = new NullLogger();
+            using (_mre = new System.Threading.ManualResetEvent(false))
+            using (_dokan = new Dokan(nullLogger))
+            {
+                var dokanBuilder = new DokanInstanceBuilder(_dokan)
+                       .ConfigureOptions(options =>
+                       {
+                           options.Options = DokanOptions.DebugMode | DokanOptions.StderrOutput;
+                           options.MountPoint = mountParameters.DriveLetter.ToString() + ":\\";
+                       });
+                using (var dokanInstance = dokanBuilder.Build(this))
+                {
+                    _mre.WaitOne();
+                }
+            }
         }
 
         /// <summary>
@@ -121,7 +145,8 @@ namespace DokanNet.Tardigrade
         /// </summary>
         public void Unmount()
         {
-            Dokan.Unmount(_mountParameters.DriveLetter.ToString()[0]);
+            _mre.Set();
+            //Dokan.Unmount(_mountParameters.DriveLetter.ToString()[0]);
         }
         #endregion
 
@@ -167,6 +192,9 @@ namespace DokanNet.Tardigrade
                     }
                     result.Add(obj);
                 }
+
+                //Filter double folder-names
+                result = result.GroupBy(x => x.Key).Select(y => y.First()).ToList();
 
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1);
@@ -284,8 +312,8 @@ namespace DokanNet.Tardigrade
 
             //If we are within a subfolder, we need to add a backslash to the foldername
             var currentFolder = fileName.Substring(1);
-            if (currentFolder != "")
-                currentFolder = currentFolder + "\\";
+            //if (currentFolder != "")
+            //   currentFolder = currentFolder + "\\";
 
             IList<FileInformation> files;
             IList<FileInformation> folders;
@@ -301,13 +329,15 @@ namespace DokanNet.Tardigrade
                                 !finfo.IsPrefix)
                 .Select(finfo => new FileInformation
                 {
-                    Attributes = FileAttributes.Normal,
+                    Attributes = finfo.Key.Contains('/') ? FileAttributes.Directory : FileAttributes.Normal,
                     CreationTime = finfo.SystemMetadata.Created,
                     LastAccessTime = finfo.SystemMetadata.Created,
                     LastWriteTime = finfo.SystemMetadata.Created,
                     Length = finfo.SystemMetadata.ContentLength,
-                    FileName = finfo.Key
+                    FileName = finfo.Key.Split('/')[0]
                 }).ToArray();
+
+                files = files.GroupBy(f => f.FileName).Select(f => f.First()).ToArray();
 
                 //List all folders that belong to the current root.
                 folders = listTask.Result
@@ -321,8 +351,10 @@ namespace DokanNet.Tardigrade
                         LastAccessTime = finfo.SystemMetadata.Created,
                         LastWriteTime = finfo.SystemMetadata.Created,
                         Length = 0,
-                        FileName = finfo.Key
+                        FileName = finfo.Key.Split('/')[0]
                     }).ToArray();
+
+                folders = folders.GroupBy(f => f.FileName).Select(f => f.First()).ToArray();
             }
             else
             {
@@ -340,7 +372,7 @@ namespace DokanNet.Tardigrade
                     LastAccessTime = finfo.SystemMetadata.Created,
                     LastWriteTime = finfo.SystemMetadata.Created,
                     Length = finfo.SystemMetadata.ContentLength,
-                    FileName = finfo.Key.Substring(currentFolder.Length)
+                    FileName = finfo.Key.Substring(currentFolder.Length).Split('/')[0]
                 }).ToArray();
 
                 //List all folders that belong to the current folder.
@@ -519,7 +551,7 @@ namespace DokanNet.Tardigrade
         /// </summary>
         /// <param name="info">The DokanFileInfo</param>
         /// <returns>The result of the operation</returns>
-        public NtStatus Mounted(IDokanFileInfo info)
+        public NtStatus Mounted(string mountPoint, IDokanFileInfo info)
         {
             return Trace(nameof(Mounted), null, info, DokanResult.Success);
         }
