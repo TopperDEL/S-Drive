@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "S-Drive.Windows (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "S-Drive.Windows (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
