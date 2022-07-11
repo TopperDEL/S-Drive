@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DokanNet.Tardigrade.Contracts.Models
+namespace S_Drive.Contracts.Models
 {
     public abstract class Messages
     {

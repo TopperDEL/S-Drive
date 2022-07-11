@@ -2,7 +2,7 @@
 using WixSharp;
 using WixSharp.Bootstrapper;
 
-namespace DokanNet.Tardigrade.WiXBootstrapper
+namespace S_Drive.WiXBootstrapper
 {
     class Program
     {

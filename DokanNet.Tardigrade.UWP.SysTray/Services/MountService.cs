@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DokanNet.Tardigrade.UWP.SysTray.Services
+namespace S_Drive.UWP.SysTray.Services
 {
     class MountService
     {
@@ -22,7 +22,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Services
         {
             foreach (var mountParameter in mountParameters)
             {
-                DokanNet.Tardigrade.TardigradeMount tardigradeMount = new TardigradeMount();
+                S_Drive.TardigradeMount tardigradeMount = new TardigradeMount();
 
                 Task mountTask = Task.Run(() => StartMount(tardigradeMount, mountParameter));
                 _activeMounts.Add(mountParameter, tardigradeMount);

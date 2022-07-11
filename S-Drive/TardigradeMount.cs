@@ -1,10 +1,10 @@
-﻿using DokanNet.Logging;
-using DokanNet.Tardigrade.Contracts.Interfaces;
-using DokanNet.Tardigrade.Contracts.Models;
+﻿using DokanNet;
+using DokanNet.Logging;
+using S_Drive.Contracts.Interfaces;
+using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
@@ -16,7 +16,7 @@ using uplink.NET.Models;
 using uplink.NET.Services;
 using static DokanNet.FormatProviders;
 
-namespace DokanNet.Tardigrade
+namespace S_Drive
 {
     public class TardigradeMount : ITardigradeMount, IDokanOperations
     {
@@ -265,7 +265,7 @@ namespace DokanNet.Tardigrade
         /// <param name="result">The result of the operation</param>
         /// <returns>The result of the operation</returns>
         private NtStatus Trace(string method, string fileName, IDokanFileInfo info,
-            FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes,
+            FileAccess access, System.IO.FileShare share, System.IO.FileMode mode, System.IO.FileOptions options, System.IO.FileAttributes attributes,
             NtStatus result)
         {
 #if TRACE
@@ -329,7 +329,7 @@ namespace DokanNet.Tardigrade
                                 !finfo.IsPrefix)
                 .Select(finfo => new FileInformation
                 {
-                    Attributes = finfo.Key.Contains('/') ? FileAttributes.Directory : FileAttributes.Normal,
+                    Attributes = finfo.Key.Contains('/') ? System.IO.FileAttributes.Directory : System.IO.FileAttributes.Normal,
                     CreationTime = finfo.SystemMetadata.Created,
                     LastAccessTime = finfo.SystemMetadata.Created,
                     LastWriteTime = finfo.SystemMetadata.Created,
@@ -346,7 +346,7 @@ namespace DokanNet.Tardigrade
                                     finfo.IsPrefix)
                     .Select(finfo => new FileInformation
                     {
-                        Attributes = FileAttributes.Directory,
+                        Attributes = System.IO.FileAttributes.Directory,
                         CreationTime = finfo.SystemMetadata.Created,
                         LastAccessTime = finfo.SystemMetadata.Created,
                         LastWriteTime = finfo.SystemMetadata.Created,
@@ -367,7 +367,7 @@ namespace DokanNet.Tardigrade
                                 !finfo.IsPrefix)
                 .Select(finfo => new FileInformation
                 {
-                    Attributes = FileAttributes.Normal,
+                    Attributes = System.IO.FileAttributes.Normal,
                     CreationTime = finfo.SystemMetadata.Created,
                     LastAccessTime = finfo.SystemMetadata.Created,
                     LastWriteTime = finfo.SystemMetadata.Created,
@@ -382,7 +382,7 @@ namespace DokanNet.Tardigrade
                                     finfo.IsPrefix)
                     .Select(finfo => new FileInformation
                     {
-                        Attributes = FileAttributes.Directory,
+                        Attributes = System.IO.FileAttributes.Directory,
                         CreationTime = finfo.SystemMetadata.Created,
                         LastAccessTime = finfo.SystemMetadata.Created,
                         LastWriteTime = finfo.SystemMetadata.Created,
@@ -773,7 +773,7 @@ namespace DokanNet.Tardigrade
         /// <param name="attributes">The FileAttributes</param>
         /// <param name="info">The DokanFileInfo</param>
         /// <returns>The result of the operation</returns>
-        public NtStatus CreateFile(string fileName, FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
+        public NtStatus CreateFile(string fileName, FileAccess access, System.IO.FileShare share, System.IO.FileMode mode, System.IO.FileOptions options, System.IO.FileAttributes attributes, IDokanFileInfo info)
         {
             var result = DokanResult.Success;
             var filePath = GetPath(fileName);
@@ -785,12 +785,12 @@ namespace DokanNet.Tardigrade
                 {
                     switch (mode)
                     {
-                        case FileMode.Open:
+                        case System.IO.FileMode.Open:
                             //Nothing to do here
                             info.Context = new object();
                             break;
 
-                        case FileMode.CreateNew:
+                        case System.IO.FileMode.CreateNew:
                             //Need to think about how to create a folder with a prefix
                             info.Context = new object();
                             CreateFolder(fileName);
@@ -820,7 +820,7 @@ namespace DokanNet.Tardigrade
 
                 switch (mode)
                 {
-                    case FileMode.Open:
+                    case System.IO.FileMode.Open:
 
                         if (pathExists || fileName == ROOT_FOLDER)
                         {
@@ -846,21 +846,21 @@ namespace DokanNet.Tardigrade
                         }
                         break;
 
-                    case FileMode.CreateNew:
+                    case System.IO.FileMode.CreateNew:
                         if (pathExists)
                             return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
                                 DokanResult.FileExists);
                         InitChunkedUpload(fileName, info);
                         break;
 
-                    case FileMode.Truncate:
+                    case System.IO.FileMode.Truncate:
                         if (!pathExists)
                             return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
                                 DokanResult.FileNotFound);
                         break;
                 }
 
-                if (pathExists && (mode == FileMode.OpenOrCreate || mode == FileMode.Create))
+                if (pathExists && (mode == System.IO.FileMode.OpenOrCreate || mode == System.IO.FileMode.Create))
                     result = DokanResult.AlreadyExists;
             }
             return Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes,
@@ -898,7 +898,7 @@ namespace DokanNet.Tardigrade
                 fileInfo = new FileInformation
                 {
                     FileName = fileName,
-                    Attributes = FileAttributes.NotContentIndexed | FileAttributes.Archive,
+                    Attributes = System.IO.FileAttributes.NotContentIndexed | System.IO.FileAttributes.Archive,
                     CreationTime = DateTime.Now,
                     LastAccessTime = DateTime.Now,
                     LastWriteTime = DateTime.Now,
@@ -911,7 +911,7 @@ namespace DokanNet.Tardigrade
                 fileInfo = new FileInformation
                 {
                     FileName = fileName,
-                    Attributes = FileAttributes.Directory,
+                    Attributes = System.IO.FileAttributes.Directory,
                     CreationTime = DateTime.Now,
                     LastAccessTime = DateTime.Now,
                     LastWriteTime = DateTime.Now,
@@ -942,7 +942,7 @@ namespace DokanNet.Tardigrade
                     fileInfo = new FileInformation
                     {
                         FileName = fileName,
-                        Attributes = FileAttributes.Directory,
+                        Attributes = System.IO.FileAttributes.Directory,
                         CreationTime = file.SystemMetadata.Created,
                         LastAccessTime = file.SystemMetadata.Created, //Todo: use custom meta
                         LastWriteTime = file.SystemMetadata.Created, //Todo: use custom meta
@@ -955,7 +955,7 @@ namespace DokanNet.Tardigrade
                     fileInfo = new FileInformation
                     {
                         FileName = fileName,
-                        Attributes = FileAttributes.NotContentIndexed | FileAttributes.Archive,
+                        Attributes = System.IO.FileAttributes.NotContentIndexed | System.IO.FileAttributes.Archive,
                         CreationTime = file.SystemMetadata.Created,
                         LastAccessTime = file.SystemMetadata.Created, //Todo: use custom meta
                         LastWriteTime = file.SystemMetadata.Created, //Todo: use custom meta
@@ -1027,7 +1027,7 @@ namespace DokanNet.Tardigrade
         /// <summary>
         /// Sets file attributes - not supported on storj.
         /// </summary>
-        public NtStatus SetFileAttributes(string fileName, FileAttributes attributes, IDokanFileInfo info)
+        public NtStatus SetFileAttributes(string fileName, System.IO.FileAttributes attributes, IDokanFileInfo info)
         {
             return DokanResult.NotImplemented;
         }

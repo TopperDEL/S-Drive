@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 
-namespace DokanNet.Tardigrade.UWP.Services
+namespace S_Drive.UWP.Services
 {
     class SystrayCommunicator
     {

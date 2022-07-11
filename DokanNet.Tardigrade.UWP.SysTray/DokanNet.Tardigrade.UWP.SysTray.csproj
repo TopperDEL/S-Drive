@@ -31,8 +31,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj" />
-    <ProjectReference Include="..\DokanNet.Tardigrade\DokanNet.Tardigrade.csproj" />
+    <ProjectReference Include="..\S_Drive.Contracts\S_Drive.Contracts.csproj" />
+    <ProjectReference Include="..\DokanNet.Tardigrade\S_Drive.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

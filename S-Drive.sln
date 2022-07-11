@@ -3,27 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.Console", "DokanNet.Tardigrade.Console\DokanNet.Tardigrade.Console.csproj", "{335E1318-7BB2-4B5F-8EF7-3BE52846F8ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Console", "S-Drive.Console\S-Drive.Console.csproj", "{335E1318-7BB2-4B5F-8EF7-3BE52846F8ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade", "DokanNet.Tardigrade\DokanNet.Tardigrade.csproj", "{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive", "S-Drive\S-Drive.csproj", "{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.UWP", "DokanNet.Tardigrade.UWP\DokanNet.Tardigrade.UWP.csproj", "{11E66B33-5D46-40AF-924E-C6FE0A9C300E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.UWP.SysTray", "DokanNet.Tardigrade.UWP.SysTray\DokanNet.Tardigrade.UWP.SysTray.csproj", "{D6AF9590-0963-4E52-B2DD-D46D14774746}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokanNet.Tardigrade.UWP.SysTray", "DokanNet.Tardigrade.UWP.SysTray\DokanNet.Tardigrade.UWP.SysTray.csproj", "{D6AF9590-0963-4E52-B2DD-D46D14774746}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokanNet.Tardigrade.Contracts", "DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Contracts", "S-Drive.Contracts\S-Drive.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "DokanNet.Tardigrade.Package", "DokanNet.Tardigrade.Package\DokanNet.Tardigrade.Package.wapproj", "{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DokanNet.Tardigrade.WiXInstaller", "DokanNet.Tardigrade.WiXInstaller\DokanNet.Tardigrade.WiXInstaller.wixproj", "{F4C13607-D66E-4E5E-A207-E9418B0F82DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanNet.Tardigrade.WiXBootstrapper", "DokanNet.Tardigrade.WiXBootstrapper\DokanNet.Tardigrade.WiXBootstrapper.csproj", "{44555887-C439-470C-944D-8866EC3D7067}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokanNet.Tardigrade.WiXBootstrapper", "DokanNet.Tardigrade.WiXBootstrapper\DokanNet.Tardigrade.WiXBootstrapper.csproj", "{44555887-C439-470C-944D-8866EC3D7067}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer-Build", "Installer-Build", "{46238BF5-1551-4EBB-931A-D9D82163700F}"
 	ProjectSection(SolutionItems) = preProject
 		build-installer.bat = build-installer.bat
 		fart.exe = fart.exe
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +129,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11E66B33-5D46-40AF-924E-C6FE0A9C300E} = {6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}
+		{D6AF9590-0963-4E52-B2DD-D46D14774746} = {6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}
+		{BA19F7C4-9CB7-48A8-8A62-1B2958F20ED1} = {6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}
+		{F4C13607-D66E-4E5E-A207-E9418B0F82DE} = {6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}
+		{44555887-C439-470C-944D-8866EC3D7067} = {6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}
+		{46238BF5-1551-4EBB-931A-D9D82163700F} = {6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9B02C10-0503-4812-A635-69B7E33488A8}

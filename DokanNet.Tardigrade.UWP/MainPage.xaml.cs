@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.UWP.ViewModels;
+﻿using S_Drive.UWP.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Navigation;
 
 // Die Elementvorlage "Leere Seite" wird unter https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x407 dokumentiert.
 
-namespace DokanNet.Tardigrade.UWP
+namespace S_Drive.UWP
 {
     /// <summary>
     /// Eine leere Seite, die eigenständig verwendet oder zu der innerhalb eines Rahmens navigiert werden kann.

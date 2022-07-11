@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DokanNet.Tardigrade.UWP.ViewModels
+namespace S_Drive.UWP.ViewModels
 {
     public class MountParameterViewModel
     {

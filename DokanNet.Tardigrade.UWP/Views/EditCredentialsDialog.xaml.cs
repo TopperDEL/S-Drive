@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.UWP.ViewModels;
+﻿using S_Drive.UWP.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Navigation;
 
 // Die Elementvorlage "Inhaltsdialogfeld" wird unter https://go.microsoft.com/fwlink/?LinkId=234238 dokumentiert.
 
-namespace DokanNet.Tardigrade.UWP.Views
+namespace S_Drive.UWP.Views
 {
    
     public sealed partial class EditCredentialsDialog : ContentDialog

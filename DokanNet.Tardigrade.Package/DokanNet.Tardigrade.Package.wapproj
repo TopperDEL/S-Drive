@@ -31,7 +31,7 @@
     <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
     <DefaultLanguage>de-DE</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <EntryPointProjectUniqueName>..\DokanNet.Tardigrade.UWP\DokanNet.Tardigrade.UWP.csproj</EntryPointProjectUniqueName>
+    <EntryPointProjectUniqueName>..\S_Drive.UWP\S_Drive.UWP.csproj</EntryPointProjectUniqueName>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
@@ -66,7 +66,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DokanNet.Tardigrade.Package_TemporaryKey.pfx" />
+    <None Include="S_Drive.Package_TemporaryKey.pfx" />
     <Content Include="Images\LargeTile.scale-100.png" />
     <Content Include="Images\LargeTile.scale-125.png" />
     <Content Include="Images\LargeTile.scale-150.png" />
@@ -121,8 +121,8 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DokanNet.Tardigrade.UWP.SysTray\DokanNet.Tardigrade.UWP.SysTray.csproj" />
-    <ProjectReference Include="..\DokanNet.Tardigrade.UWP\DokanNet.Tardigrade.UWP.csproj" />
+    <ProjectReference Include="..\S_Drive.UWP.SysTray\S_Drive.UWP.SysTray.csproj" />
+    <ProjectReference Include="..\S_Drive.UWP\S_Drive.UWP.csproj" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>

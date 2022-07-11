@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DokanNet.Tardigrade.UWP.SysTray.Properties
+namespace S_Drive.UWP.SysTray.Properties
 {
 
 

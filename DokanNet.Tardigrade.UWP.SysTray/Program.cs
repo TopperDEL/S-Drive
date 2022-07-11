@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Windows.ApplicationModel.AppService;
 
-namespace DokanNet.Tardigrade.UWP.SysTray
+namespace S_Drive.UWP.SysTray
 {
     static class Program
     {

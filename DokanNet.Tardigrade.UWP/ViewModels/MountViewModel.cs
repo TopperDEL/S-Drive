@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 
-namespace DokanNet.Tardigrade.UWP.ViewModels
+namespace S_Drive.UWP.ViewModels
 {
     public class MountViewModel : INotifyPropertyChanged
     {

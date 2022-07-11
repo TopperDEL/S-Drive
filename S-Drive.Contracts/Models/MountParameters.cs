@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DokanNet.Tardigrade.Contracts.Models
+namespace S_Drive.Contracts.Models
 {
     public class MountParameters
     {   
@@ -18,7 +18,7 @@ namespace DokanNet.Tardigrade.Contracts.Models
         public MountParameters()
         {
             DriveLetter = DriveLetters.s;
-            VolumeLabel = "Tardigrade";
+            VolumeLabel = "S-Drive";
         }
     }
 }

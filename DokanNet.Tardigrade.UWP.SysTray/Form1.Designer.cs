@@ -1,4 +1,4 @@
-﻿namespace DokanNet.Tardigrade.UWP.SysTray
+﻿namespace S_Drive.UWP.SysTray
 {
     partial class Form1
     {

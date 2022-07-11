@@ -1,10 +1,10 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DokanNet.Tardigrade.Contracts.Interfaces
+namespace S_Drive.Contracts.Interfaces
 {
     public interface ITardigradeMount
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DokanNet.Tardigrade.UWP.SysTray.Properties {
+namespace S_Drive.UWP.SysTray.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DokanNet.Tardigrade.UWP.SysTray.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("S_Drive.UWP.SysTray.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

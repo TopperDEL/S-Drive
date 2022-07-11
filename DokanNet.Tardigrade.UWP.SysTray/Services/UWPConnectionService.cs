@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
 
-namespace DokanNet.Tardigrade.UWP.SysTray.Services
+namespace S_Drive.UWP.SysTray.Services
 {
     public delegate void MountAll(List<MountParameters> mountList);
     public delegate void UnmountAll();

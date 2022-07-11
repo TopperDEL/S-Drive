@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Navigation;
 
 // Die Elementvorlage "Inhaltsdialogfeld" wird unter https://go.microsoft.com/fwlink/?LinkId=234238 dokumentiert.
 
-namespace DokanNet.Tardigrade.UWP.Views
+namespace S_Drive.UWP.Views
 {
     public sealed partial class SettingsDialog : ContentDialog
     {

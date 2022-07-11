@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
 
-namespace DokanNet.Tardigrade.UWP.Services
+namespace S_Drive.UWP.Services
 {
     class VaultService
     {

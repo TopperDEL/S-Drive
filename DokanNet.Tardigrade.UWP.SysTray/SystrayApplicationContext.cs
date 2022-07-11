@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 
-namespace DokanNet.Tardigrade.UWP.SysTray
+namespace S_Drive.UWP.SysTray
 {
     class SystrayApplicationContext : ApplicationContext
     {
@@ -27,7 +27,7 @@ namespace DokanNet.Tardigrade.UWP.SysTray
 
             _notifyIcon = new NotifyIcon();
             _notifyIcon.DoubleClick += new EventHandler(OpenApp);
-            _notifyIcon.Icon = DokanNet.Tardigrade.UWP.SysTray.Properties.Resources.Storj_symbol;
+            _notifyIcon.Icon = S_Drive.UWP.SysTray.Properties.Resources.Storj_symbol;
             _notifyIcon.ContextMenu = new ContextMenu(new MenuItem[] { openMenuItem, closeMenuItem });
             _notifyIcon.Visible = true;
 

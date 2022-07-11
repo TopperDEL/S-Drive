@@ -1,4 +1,4 @@
-﻿using DokanNet.Tardigrade.Contracts.Models;
+﻿using S_Drive.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using Windows.Data.Json;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 
-namespace DokanNet.Tardigrade.UWP.Services
+namespace S_Drive.UWP.Services
 {
     class UWPConnectionService
     {

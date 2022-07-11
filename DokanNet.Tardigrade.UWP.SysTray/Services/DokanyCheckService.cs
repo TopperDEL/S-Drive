@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DokanNet.Tardigrade.UWP.SysTray.Services
+namespace S_Drive.UWP.SysTray.Services
 {
     class DokanyCheckService
     {

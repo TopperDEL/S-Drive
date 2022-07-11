@@ -194,9 +194,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj">
+    <ProjectReference Include="..\S-Drive.Contracts\S-Drive.Contracts.csproj">
       <Project>{6af39c55-ef62-4114-b8f5-6c157c4ecbef}</Project>
-      <Name>DokanNet.Tardigrade.Contracts</Name>
+      <Name>S-Drive.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

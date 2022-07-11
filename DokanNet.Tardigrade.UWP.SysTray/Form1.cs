@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DokanNet.Tardigrade.UWP.SysTray
+namespace S_Drive.UWP.SysTray
 {
     public partial class Form1 : Form
     {

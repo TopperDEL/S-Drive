@@ -17,15 +17,15 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DokanNet" Version="2.0.5.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DokanNet.Tardigrade.Contracts\DokanNet.Tardigrade.Contracts.csproj" />
+    <ProjectReference Include="..\S-Drive.Contracts\S-Drive.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DokanNet" Version="2.0.5.1" />
     <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.0.3" />
     <PackageReference Include="SQLitePCLRaw.core" Version="2.0.3" />
