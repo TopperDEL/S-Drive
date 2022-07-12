@@ -61,36 +61,17 @@ namespace S_Drive.WinUI
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
         {
-            //if (!await IsSystrayAvailable())
-            //    return;
-
             _vm.MountsActive = true;
             var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
             _vaultService.SaveMounts(mounts);
 
             _mountService.MountAll(mounts);
-
-            //var messageSent = await _uwpConnectionService.SendMountAllAsync(mounts);
-            //if (!messageSent)
-            //{
-            //    MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("Error_Mount"));
-            //    await dlg.ShowAsync();
-            //}
         }
 
         private async void UnmountAll_Click(object sender, RoutedEventArgs e)
         {
-            //if (!await IsSystrayAvailable())
-            //    return;
-
             _mountService.UnmountAll();
             _vm.MountsActive = false;
-            //var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
-            //if (!messageSent)
-            //{
-            //    MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("Error_Unmount"));
-            //    await dlg.ShowAsync();
-            //}
         }
 
         private void AddMount_Click(object sender, RoutedEventArgs e)
