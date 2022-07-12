@@ -32,8 +32,8 @@
                 <Setter Property="BorderBrush" Value="{StaticResource StorjBlue}"/>
             </Style>
 
-            <XamlUICommand x:Key="ShowHideWindowCommand" Label="Show/Hide Window" Description="Show/Hide Window"/>
-            <XamlUICommand x:Key="ExitApplicationCommand" Label="Exit" Description="Exit"/>
+            <XamlUICommand x:Key="ShowHideWindowCommand" x:Uid="TrayShowHide" Label="Show/Hide Window"/>
+            <XamlUICommand x:Key="ExitApplicationCommand" x:Uid="TrayExit" Label="Exit"/>
             
             <tb:TaskbarIcon x:Name="TrayIcon"
                 ToolTipText="S-Drive"

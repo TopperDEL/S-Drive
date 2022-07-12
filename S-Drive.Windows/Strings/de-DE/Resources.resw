@@ -208,6 +208,12 @@
   <data name="stopDrives.Text" xml:space="preserve">
     <value>Laufwerk(e) beenden</value>
   </data>
+  <data name="TrayExit.Label" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="TrayShowHide.Label" xml:space="preserve">
+    <value>Anzeigen/Verbergen</value>
+  </data>
   <data name="volume.Header" xml:space="preserve">
     <value>Bezeichnung</value>
   </data>
