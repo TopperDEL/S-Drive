@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using H.NotifyIcon;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -26,6 +27,8 @@ namespace S_Drive.Windows
     /// </summary>
     public partial class App : Application
     {
+        public static TaskbarIcon? TrayIcon { get; private set; }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -42,10 +45,40 @@ namespace S_Drive.Windows
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            InitializeTrayIcon();
+
             m_window = new MainWindow();
+            m_window.Closed += (sender, args) => { args.Handled = true; m_window.Hide(); };
             m_window.Activate();
         }
 
         private Window m_window;
+
+        private void InitializeTrayIcon()
+        {
+            TrayIcon = (TaskbarIcon)Resources["TrayIcon"];
+
+            var showHideWindowCommand = (XamlUICommand)Resources["ShowHideWindowCommand"];
+            showHideWindowCommand.ExecuteRequested += (sender, e) =>
+            {
+                if (m_window.Visible)
+                {
+                    m_window.Hide();
+                }
+                else
+                {
+                    m_window.Show();
+                }
+            };
+
+            var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
+            exitApplicationCommand.ExecuteRequested += (sender, e) =>
+            {
+                TrayIcon?.Dispose();
+                m_window?.Close();
+            };
+
+            TrayIcon.ForceCreate();
+        }
     }
 }

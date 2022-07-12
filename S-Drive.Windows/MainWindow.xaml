@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:S_Drive.Windows.ViewModels"
-    xmlns:tb="using:H.NotifyIcon"
     mc:Ignorable="d">
 
     <Grid Padding="20">
@@ -102,20 +101,5 @@
                 <SymbolIcon Symbol="Setting"/>
             </Button>
         </StackPanel>
-
-        <tb:TaskbarIcon
-            ToolTipText="S-Drive"
-            IconSource="/Assets/Storj.ico"
-            MenuActivation="LeftOrRightClick"
-            PopupActivation="DoubleClick"
-            >
-            <tb:TaskbarIcon.ContextFlyout>
-                <MenuFlyout>
-                    <MenuFlyoutItem Text="Open admin" />
-                    <MenuFlyoutSeparator />
-                    <MenuFlyoutItem Text="Close S-Drive"/>
-                </MenuFlyout>
-            </tb:TaskbarIcon.ContextFlyout>
-        </tb:TaskbarIcon>
     </Grid>
 </Window>
