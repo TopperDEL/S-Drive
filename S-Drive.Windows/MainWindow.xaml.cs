@@ -29,6 +29,7 @@ namespace S_Drive.Windows
         public MainWindow()
         {
             this.InitializeComponent();
+            this.Title = "S-Drive";
         }
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
