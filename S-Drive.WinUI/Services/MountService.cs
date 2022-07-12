@@ -21,7 +21,7 @@ namespace S_Drive.WinUI.Services
         {
             foreach (var mountParameter in mountParameters)
             {
-                S_Drive.StorjMount storjMount = new StorjMount();
+                StorjMount storjMount = new StorjMount();
 
                 Task mountTask = Task.Run(() => StartMount(storjMount, mountParameter));
                 _activeMounts.Add(mountParameter, storjMount);
