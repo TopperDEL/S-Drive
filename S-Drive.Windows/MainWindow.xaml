@@ -107,7 +107,15 @@
             ToolTipText="S-Drive"
             IconSource="/Assets/Storj.ico"
             MenuActivation="LeftOrRightClick"
-            PopupActivation="DoubleClick">
+            PopupActivation="DoubleClick"
+            >
+            <tb:TaskbarIcon.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem Text="Open admin" />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem Text="Close S-Drive"/>
+                </MenuFlyout>
+            </tb:TaskbarIcon.ContextFlyout>
         </tb:TaskbarIcon>
     </Grid>
 </Window>
