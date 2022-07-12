@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -27,6 +28,7 @@ namespace S_Drive.Windows
         public ViewModels.MountViewModel _vm;
         private Services.VaultService _vaultService;
         private Services.MountService _mountService;
+        private Services.DokanyCheckService _dokanyCheckService;
 
         public MainWindow()
         {
@@ -42,6 +44,19 @@ namespace S_Drive.Windows
             }
 
             _mountService = new Services.MountService();
+            _dokanyCheckService = new Services.DokanyCheckService();
+
+            GetMountStatus();
+        }
+
+        private void GetMountStatus()
+        {
+            var isDokanyInstalled = _dokanyCheckService.IsDokanyInstalled();
+            if (!isDokanyInstalled)
+            {
+                _vm.ShowDokanyMissingInfo();
+            }
+            _vm.MountsActive = _mountService.GetDrivesMounted();
         }
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
