@@ -10,21 +10,21 @@ namespace S_Drive.WinUI.Services
 {
     class MountService
     {
-        private Dictionary<MountParameters, TardigradeMount> _activeMounts;
+        private Dictionary<MountParameters, StorjMount> _activeMounts;
 
         public MountService()
         {
-            _activeMounts = new Dictionary<MountParameters, TardigradeMount>();
+            _activeMounts = new Dictionary<MountParameters, StorjMount>();
         }
 
         public void MountAll(List<MountParameters> mountParameters)
         {
             foreach (var mountParameter in mountParameters)
             {
-                S_Drive.TardigradeMount tardigradeMount = new TardigradeMount();
+                S_Drive.StorjMount storjMount = new StorjMount();
 
-                Task mountTask = Task.Run(() => StartMount(tardigradeMount, mountParameter));
-                _activeMounts.Add(mountParameter, tardigradeMount);
+                Task mountTask = Task.Run(() => StartMount(storjMount, mountParameter));
+                _activeMounts.Add(mountParameter, storjMount);
             }
         }
 
@@ -42,7 +42,7 @@ namespace S_Drive.WinUI.Services
             return _activeMounts.Count() > 0;
         }
 
-        private void StartMount(TardigradeMount mount, MountParameters mountParameters)
+        private void StartMount(StorjMount mount, MountParameters mountParameters)
         {
             try
             {

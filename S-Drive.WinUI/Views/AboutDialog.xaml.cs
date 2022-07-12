@@ -28,7 +28,7 @@ namespace S_Drive.WinUI.Views
 
         private async void GotoSourceCode(object sender, RoutedEventArgs e)
         {
-            await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/TopperDEL/DokanNet.Tardigrade"));
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/TopperDEL/S-Drive"));
         }
 
         private async void GotoUplinkNET(object sender, RoutedEventArgs e)

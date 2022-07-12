@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace S_Drive.Contracts.Interfaces
 {
-    public interface ITardigradeMount
+    public interface IStorjMount
     {
         Task MountAsync(MountParameters parameters);
 

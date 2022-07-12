@@ -18,7 +18,7 @@ using static DokanNet.FormatProviders;
 
 namespace S_Drive
 {
-    public class TardigradeMount : ITardigradeMount, IDokanOperations
+    public class StorjMount : IStorjMount, IDokanOperations
     {
         /// <summary>
         /// The mount parameters in use.
@@ -80,7 +80,7 @@ namespace S_Drive
         /// <summary>
         /// The logger used in DEBUG-mode
         /// </summary>
-        private ConsoleLogger logger = new ConsoleLogger("[Tardigrade] ");
+        private ConsoleLogger logger = new ConsoleLogger("[Storj] ");
 
         /// <summary>
         /// The MemoryCache holds mainly the result of ListAllAsync plus some accessed files.
@@ -105,7 +105,7 @@ namespace S_Drive
         /// </summary>
         private System.Threading.ManualResetEvent _mre;
 
-        #region Implementation of ITardigradeMount
+        #region Implementation of IStorjMount
         /// <summary>
         /// Mounts a given bucket with given access privileges. This method will block until the drive gets unmounted again. TODO
         /// </summary>
@@ -664,7 +664,7 @@ namespace S_Drive
         /// <summary>
         /// Reads data from a file. Currently the file gets downloaded completely as there is no DownloadRange-Method available (might come in the future).
         /// That means: if some bytes at the end of a file are requested, the system block here until that data got downloaded from uplink. This might
-        /// be the reason for the most problems regarding the TardigradeMount.
+        /// be the reason for the most problems regarding the StorjMount.
         /// </summary>
         /// <param name="fileName">The filename to download</param>
         /// <param name="buffer">The buffer to write into - might have a different size as available</param>

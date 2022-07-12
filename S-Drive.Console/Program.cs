@@ -11,7 +11,7 @@ namespace S_Drive.Console
     {
         static void Main(string[] args)
         {
-            TardigradeMount tardigradeMount = new TardigradeMount();
+            StorjMount storjMount = new StorjMount();
 
             MountParameters mountParameters = new MountParameters();
             mountParameters.DriveLetter = DriveLetters.s;
@@ -24,7 +24,7 @@ namespace S_Drive.Console
             //mountParameters.EncryptionPassphrase = args[2];
             //mountParameters.Bucketname = args[3];
 
-            tardigradeMount.MountAsync(mountParameters).Wait();
+            storjMount.MountAsync(mountParameters).Wait();
         }
     }
 }
