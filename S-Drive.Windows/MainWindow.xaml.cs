@@ -26,6 +26,7 @@ namespace S_Drive.Windows
     {
         public ViewModels.MountViewModel _vm;
         private Services.VaultService _vaultService;
+        private Services.MountService _mountService;
 
         public MainWindow()
         {
@@ -40,7 +41,7 @@ namespace S_Drive.Windows
                 _vm.Mounts.Add(new ViewModels.MountParameterViewModel(mount));
             }
 
-            //_uwpConnectionService = new Services.UWPConnectionService();
+            _mountService = new Services.MountService();
         }
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
@@ -51,6 +52,8 @@ namespace S_Drive.Windows
             _vm.MountsActive = true;
             var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
             _vaultService.SaveMounts(mounts);
+
+            _mountService.MountAll(mounts);
 
             //var messageSent = await _uwpConnectionService.SendMountAllAsync(mounts);
             //if (!messageSent)
@@ -65,6 +68,7 @@ namespace S_Drive.Windows
             //if (!await IsSystrayAvailable())
             //    return;
 
+            _mountService.UnmountAll();
             _vm.MountsActive = false;
             //var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
             //if (!messageSent)
