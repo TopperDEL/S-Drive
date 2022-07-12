@@ -146,7 +146,6 @@ namespace S_Drive
         public void Unmount()
         {
             _mre.Set();
-            //Dokan.Unmount(_mountParameters.DriveLetter.ToString()[0]);
         }
         #endregion
 
