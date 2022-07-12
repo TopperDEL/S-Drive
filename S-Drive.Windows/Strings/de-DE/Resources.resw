@@ -124,7 +124,7 @@
     <value>OK</value>
   </data>
   <data name="aboutDialog.Title" xml:space="preserve">
-    <value>Über Tardigrade-Drive</value>
+    <value>Über S-Drive</value>
   </data>
   <data name="accessGrant.Header" xml:space="preserve">
     <value>Zugriffsrecht</value>
@@ -136,10 +136,10 @@
     <value>API Key</value>
   </data>
   <data name="appVersion.Text" xml:space="preserve">
-    <value>Tardigrade-Drive v</value>
+    <value>S-Drive v</value>
   </data>
   <data name="bucket.Header" xml:space="preserve">
-    <value>Tardigrade-Bucket</value>
+    <value>Storj-Bucket</value>
   </data>
   <data name="deleteMount.Text" xml:space="preserve">
     <value>Löschen</value>
@@ -148,8 +148,8 @@
     <value>Entwickelt von Tim Parth (TopperDEL)</value>
   </data>
   <data name="dokanyIsMissingInfo.Text" xml:space="preserve">
-    <value>Damit diese App funktioniert muss Dokany installiert sein. Dokany fungiert als Systemtreiber und ermöglicht es Tardigrade-Drive ein virtuelles Laufwerk auf Ihrem Computer anzulegen. Bitte installieren Sie Dokany und starten Sie den Computer neu.</value>
-    <comment>For this app to work you need Dokany installed. Dokany acts as a system driver and enables Tardigrade-Drive to mount a virtual hard drive on your computer. Please install Dokany and restart your computer.</comment>
+    <value>Damit diese App funktioniert muss Dokany installiert sein. Dokany fungiert als Systemtreiber und ermöglicht es S-Drive ein virtuelles Laufwerk auf Ihrem Computer anzulegen. Bitte installieren Sie Dokany und starten Sie den Computer neu.</value>
+    <comment>For this app to work you need Dokany installed. Dokany acts as a system driver and enables S-Drive to mount a virtual hard drive on your computer. Please install Dokany and restart your computer.</comment>
   </data>
   <data name="downloadDokany.Content" xml:space="preserve">
     <value>Klicken Sie hier, um Dokany zu installieren</value>
