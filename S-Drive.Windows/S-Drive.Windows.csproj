@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="Assets\StoreLogo.png" />
     <None Remove="Views\AboutDialog.xaml" />
+    <None Remove="Views\EditCredentialsDialog.xaml" />
     <None Remove="Views\SettingsDialog.xaml" />
   </ItemGroup>
 
@@ -47,6 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AboutDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\EditCredentialsDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\SettingsDialog.xaml">

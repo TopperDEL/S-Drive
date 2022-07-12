@@ -48,9 +48,9 @@ namespace S_Drive.Windows
             //if (!await IsSystrayAvailable())
             //    return;
 
-            //_vm.MountsActive = true;
-            //var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
-            //_vaultService.SaveMounts(mounts);
+            _vm.MountsActive = true;
+            var mounts = _vm.Mounts.Select(vm => vm.MountParameters).ToList();
+            _vaultService.SaveMounts(mounts);
 
             //var messageSent = await _uwpConnectionService.SendMountAllAsync(mounts);
             //if (!messageSent)
@@ -65,7 +65,7 @@ namespace S_Drive.Windows
             //if (!await IsSystrayAvailable())
             //    return;
 
-            //_vm.MountsActive = false;
+            _vm.MountsActive = false;
             //var messageSent = await _uwpConnectionService.SendUnmountAllAsync();
             //if (!messageSent)
             //{
@@ -83,8 +83,9 @@ namespace S_Drive.Windows
         {
             var button = sender as Button;
 
-            //Views.EditCredentialsDialog editCredentialsDlg = new Views.EditCredentialsDialog(button.Tag as MountParameterViewModel);
-            //await editCredentialsDlg.ShowAsync();
+            Views.EditCredentialsDialog editCredentialsDlg = new Views.EditCredentialsDialog(button.Tag as MountParameterViewModel);
+            editCredentialsDlg.XamlRoot = this.Content.XamlRoot;
+            await editCredentialsDlg.ShowAsync();
         }
 
         private void DeleteMount_Click(object sender, RoutedEventArgs e)

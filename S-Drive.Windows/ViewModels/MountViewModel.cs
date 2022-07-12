@@ -14,7 +14,7 @@ namespace S_Drive.Windows.ViewModels
     {
         public ObservableCollection<MountParameterViewModel> Mounts { get; set; }
 
-        private bool _mountsActive = true;
+        private bool _mountsActive = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
