@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer-Build", "Installe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{6E04C7E0-21C8-4572-BD58-7E09A1E4B41D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.WinUI", "S-Drive.Windows\S-Drive.WinUI.csproj", "{71FA6502-02F6-4A5D-8C38-64DF456A50F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.WinUI", "S-Drive.WinUI\S-Drive.WinUI.csproj", "{71FA6502-02F6-4A5D-8C38-64DF456A50F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
