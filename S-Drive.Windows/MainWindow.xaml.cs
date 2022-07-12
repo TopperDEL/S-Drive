@@ -110,8 +110,9 @@ namespace S_Drive.Windows
 
         private async void Settings_Click(object sender, RoutedEventArgs e)
         {
-            //Views.SettingsDialog settingsDlg = new Views.SettingsDialog();
-            //await settingsDlg.ShowAsync();
+            Views.SettingsDialog settingsDlg = new Views.SettingsDialog();
+            settingsDlg.XamlRoot = this.Content.XamlRoot;
+            await settingsDlg.ShowAsync();
         }
     }
 }
