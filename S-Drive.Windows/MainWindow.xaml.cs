@@ -25,11 +25,22 @@ namespace S_Drive.Windows
     public sealed partial class MainWindow : Window
     {
         public ViewModels.MountViewModel _vm;
+        private Services.VaultService _vaultService;
 
         public MainWindow()
         {
             this.InitializeComponent();
             this.Title = "S-Drive";
+
+            _vaultService = new Services.VaultService();
+
+            _vm = new ViewModels.MountViewModel();
+            foreach (var mount in _vaultService.LoadMounts())
+            {
+                _vm.Mounts.Add(new ViewModels.MountParameterViewModel(mount));
+            }
+
+            //_uwpConnectionService = new Services.UWPConnectionService();
         }
 
         private async void MountAll_Click(object sender, RoutedEventArgs e)
@@ -92,8 +103,9 @@ namespace S_Drive.Windows
 
         private async void About_Click(object sender, RoutedEventArgs e)
         {
-            //Views.AboutDialog aboutDlg = new Views.AboutDialog();
-            //await aboutDlg.ShowAsync();
+            Views.AboutDialog aboutDlg = new Views.AboutDialog();
+            aboutDlg.XamlRoot = this.Content.XamlRoot;
+            await aboutDlg.ShowAsync();
         }
 
         private async void Settings_Click(object sender, RoutedEventArgs e)
