@@ -14,6 +14,22 @@
 
             <helper:EnumBooleanConverter x:Key="enumBooleanConverter"/>
             <SolidColorBrush x:Key="StorjBlue" Color="#2683FF"/>
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource StorjBlue}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="CornerRadius" Value="2"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="MinWidth" Value="130"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="BorderBrush" Value="{StaticResource StorjBlue}"/>
+            </Style>
+            <Style TargetType="ComboBox">
+                <Setter Property="BorderBrush" Value="{StaticResource StorjBlue}"/>
+            </Style>
+            <Style TargetType="PasswordBox">
+                <Setter Property="BorderBrush" Value="{StaticResource StorjBlue}"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

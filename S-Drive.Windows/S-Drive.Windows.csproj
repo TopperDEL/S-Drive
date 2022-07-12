@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\StoreLogo.png" />
+    <None Remove="Assets\StoreLogo.scale-400.png" />
     <None Remove="Views\AboutDialog.xaml" />
     <None Remove="Views\EditCredentialsDialog.xaml" />
     <None Remove="Views\SettingsDialog.xaml" />
