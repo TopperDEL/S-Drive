@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
 
-namespace S_Drive.Windows.Services
+namespace S_Drive.WinUI.Services
 {
     class VaultService
     {

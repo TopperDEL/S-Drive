@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 
-namespace S_Drive.Windows.ViewModels
+namespace S_Drive.WinUI.ViewModels
 {
     public class MountViewModel : INotifyPropertyChanged
     {

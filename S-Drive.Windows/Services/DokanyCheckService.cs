@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S_Drive.Windows.Services
+namespace S_Drive.WinUI.Services
 {
     class DokanyCheckService
     {

@@ -1,10 +1,10 @@
 ﻿<Application
-    x:Class="S_Drive.Windows.App"
+    x:Class="S_Drive.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:helper="using:S_Drive.Windows.Helper"
+    xmlns:helper="using:S_Drive.WinUI.Helper"
     xmlns:tb="using:H.NotifyIcon"
-    xmlns:local="using:S_Drive.Windows">
+    xmlns:local="using:S_Drive.WinUI">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

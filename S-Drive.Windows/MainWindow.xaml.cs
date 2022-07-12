@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using S_Drive.Windows.ViewModels;
+using S_Drive.WinUI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +18,7 @@ using Windows.Foundation.Collections;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace S_Drive.Windows
+namespace S_Drive.WinUI
 {
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
@@ -115,10 +115,10 @@ namespace S_Drive.Windows
 
         private async void InstallDokany_Click(object sender, RoutedEventArgs e)
         {
-            //if (Environment.Is64BitProcess)
-            //    await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v1.4.0.1000/Dokan_x64.msi"));
-            //else
-            //    await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v1.4.0.1000/Dokan_x86.msi"));
+            if (Environment.Is64BitProcess)
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v2.0.5.1000/Dokan_x64.msi"));
+            else
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dokan-dev/dokany/releases/download/v2.0.5.1000/Dokan_x86.msi"));
         }
 
         private async void About_Click(object sender, RoutedEventArgs e)

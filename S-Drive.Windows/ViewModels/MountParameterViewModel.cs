@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S_Drive.Windows.ViewModels
+namespace S_Drive.WinUI.ViewModels
 {
     public class MountParameterViewModel
     {

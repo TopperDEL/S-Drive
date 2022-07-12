@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 
 // Die Elementvorlage "Inhaltsdialogfeld" wird unter https://go.microsoft.com/fwlink/?LinkId=234238 dokumentiert.
 
-namespace S_Drive.Windows.Views
+namespace S_Drive.WinUI.Views
 {
     public sealed partial class AboutDialog : ContentDialog
     {
@@ -28,14 +28,12 @@ namespace S_Drive.Windows.Views
 
         private async void GotoSourceCode(object sender, RoutedEventArgs e)
         {
-            
-            //await Windows.System.Launcher.LaunchUriAsync("");
-            //await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/TopperDEL/DokanNet.Tardigrade"));
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/TopperDEL/DokanNet.Tardigrade"));
         }
 
         private async void GotoUplinkNET(object sender, RoutedEventArgs e)
         {
-            //await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/TopperDEL/uplink.net"));
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/TopperDEL/uplink.net"));
         }
 
         public static string GetAppVersion()
