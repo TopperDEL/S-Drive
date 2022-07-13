@@ -20,6 +20,7 @@ namespace S_Drive
 {
     public class StorjMount : IStorjMount, IDokanOperations
     {
+        private Helpers.SingleThreadUplinkRunner _stuRunner;
         /// <summary>
         /// The mount parameters in use.
         /// </summary>
@@ -120,6 +121,8 @@ namespace S_Drive
                 _access = new Access(mountParameters.SatelliteAddress, mountParameters.ApiKey, mountParameters.EncryptionPassphrase);
             else
                 _access = new Access(mountParameters.AccessGrant);
+
+            _stuRunner = Helpers.SingleThreadUplinkRunner.Instance;
 
             await InitUplinkAsync(mountParameters.Bucketname).ConfigureAwait(false);
 
@@ -673,14 +676,28 @@ namespace S_Drive
         /// <returns>The result of the operation</returns>
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
         {
-            InitDownload(fileName, info);
+            var thread = _stuRunner.Run(() =>
+            {
+                InitDownload(fileName, info);
+                
+                var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                int bytesReadByThread;
+                var download = info.Context as DownloadStream;
+                download.Position = offset;
+                if (download.Length > 0 && download.Length < offset + buffer.Length)
+                    bytesReadByThread = download.Read(buffer, 0, (int)(download.Length - offset));
+                else
+                    bytesReadByThread = download.Read(buffer, 0, buffer.Length);
+                return bytesReadByThread;
+            });
+            bytesRead = thread.Result;
 
-            var download = info.Context as DownloadStream;
-            download.Position = offset;
-            if (download.Length > 0 && download.Length < offset + buffer.Length)
-                bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
-            else
-                bytesRead = download.Read(buffer, 0, buffer.Length);
+            //var download = info.Context as DownloadStream;
+            //download.Position = offset;
+            //if (download.Length > 0 && download.Length < offset + buffer.Length)
+            //    bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
+            //else
+            //    bytesRead = download.Read(buffer, 0, buffer.Length);
             return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
         }
 
