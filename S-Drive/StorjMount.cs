@@ -35,7 +35,7 @@ namespace S_Drive
         /// prefixes out of nowhere, we use this file to fake a folder on the network.
         /// It gets transferred into a Prefix in ListAllAsync().
         /// </summary>
-        const string DOKAN_FOLDER = "/folder.dokan";
+        public const string DOKAN_FOLDER = "/folder.dokan";
 
         /// <summary>
         /// The MemoryCache-Entry-Name for the result of ListAllAsync().
