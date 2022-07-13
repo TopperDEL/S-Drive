@@ -70,5 +70,21 @@ namespace S_Drive.Test.Helpers
             Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
             Assert.AreEqual("/Subfolder2/Subfolder2B", content[1]);
         }
+
+        [TestMethod]
+        public void GetContentForSubfolderComplex()
+        {
+            _keys.Add("/rootfile.txt");
+            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
+            _keys.Add("/Subfolder2/subfile.txt");
+            _keys.Add("/Subfolder2/Subfolder2B/subfile.txt");
+            _keys.Add("/Subfolder3/Special folder.withwäird stuff/subfile.txt");
+            _keys.Add("/Subfolder3/Special folder.withwäird stuff/VeryDeep/SubFolders/subfile.txt");
+            _helper.UpdateFolderTree(_keys);
+
+            var content = _helper.GetContentFor("/Subfolder3");
+
+            Assert.AreEqual("/Subfolder3/Special folder.withwäird stuff", content[0]);
+        }
     }
 }
