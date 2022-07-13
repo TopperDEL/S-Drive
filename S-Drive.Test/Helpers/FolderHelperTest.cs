@@ -25,7 +25,7 @@ namespace S_Drive.Test.Helpers
             var content = _helper.GetContentFor("/");
 
             Assert.AreEqual("/rootfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder1", content[1]);
+            Assert.AreEqual("/Subfolder1/", content[1]);
         }
 
         [TestMethod]
@@ -39,8 +39,8 @@ namespace S_Drive.Test.Helpers
             var content = _helper.GetContentFor("/");
 
             Assert.AreEqual("/rootfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder1", content[1]);
-            Assert.AreEqual("/Subfolder2", content[2]);
+            Assert.AreEqual("/Subfolder1/", content[1]);
+            Assert.AreEqual("/Subfolder2/", content[2]);
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace S_Drive.Test.Helpers
             var content = _helper.GetContentFor("/Subfolder2");
 
             Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder2/Subfolder2B", content[1]);
+            Assert.AreEqual("/Subfolder2/Subfolder2B/", content[1]);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace S_Drive.Test.Helpers
             var content = _helper.GetContentFor("/Subfolder2");
 
             Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder2/Subfolder2B", content[1]);
+            Assert.AreEqual("/Subfolder2/Subfolder2B/", content[1]);
         }
 
         [TestMethod]
@@ -99,7 +99,7 @@ namespace S_Drive.Test.Helpers
 
             var content = _helper.GetContentFor("/Subfolder3");
 
-            Assert.AreEqual("/Subfolder3/Special folder.withwäird stuff", content[0]);
+            Assert.AreEqual("/Subfolder3/Special folder.withwäird stuff/", content[0]);
         }
     }
 }

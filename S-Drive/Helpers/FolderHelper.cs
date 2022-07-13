@@ -29,6 +29,7 @@ namespace S_Drive.Helpers
                     var deeperPart = keyToUse.Substring(currentDirectory.Length);
                     if (deeperPart.StartsWith("/"))
                         deeperPart = deeperPart.Substring(1);
+                    bool hasSubFolders = deeperPart.Where(c => c == '/').Count() >= 1;
                     deeperPart = deeperPart.Split('/')[0];
                     if (currentDirectory.EndsWith("/"))
                     {
@@ -37,6 +38,10 @@ namespace S_Drive.Helpers
                     else
                     {
                         keyToUse = currentDirectory + "/" + deeperPart;
+                    }
+                    if(hasSubFolders)
+                    {
+                        keyToUse = keyToUse + "/";
                     }
 
                     if (!ret.Contains(keyToUse))
