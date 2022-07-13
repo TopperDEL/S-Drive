@@ -72,6 +72,21 @@ namespace S_Drive.Test.Helpers
         }
 
         [TestMethod]
+        public void GetContentForSubfolderDeepVariant2()
+        {
+            _keys.Add("/rootfile.txt");
+            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
+            _keys.Add("/Subfolder2/subfile.txt");
+            _keys.Add("/Subfolder2/Subfolder2B/Subfolder2C/subfile.txt");
+            _helper.UpdateFolderTree(_keys);
+
+            var content = _helper.GetContentFor("/Subfolder2");
+
+            Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
+            Assert.AreEqual("/Subfolder2/Subfolder2B", content[1]);
+        }
+
+        [TestMethod]
         public void GetContentForSubfolderComplex()
         {
             _keys.Add("/rootfile.txt");
