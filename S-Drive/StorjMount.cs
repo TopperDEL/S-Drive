@@ -1,5 +1,6 @@
 ﻿using DokanNet;
 using DokanNet.Logging;
+using MonkeyCache.FileStore;
 using S_Drive.Contracts.Interfaces;
 using S_Drive.Contracts.Models;
 using S_Drive.Models;
@@ -21,6 +22,11 @@ namespace S_Drive
 {
     public class StorjMount : IStorjMount, IDokanOperations
     {
+        static StorjMount()
+        {
+            Barrel.ApplicationId = "S_Drive";
+        }
+
         private Helpers.SingleThreadUplinkRunner _stuRunner;
         /// <summary>
         /// The mount parameters in use.
@@ -376,7 +382,12 @@ namespace S_Drive
                 var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
                 getObjectTask.Wait();
 
-                if (getObjectTask.Result.SystemMetadata.ContentLength < 10000000)
+                if (Barrel.Current.Exists(_bucket.Name + "_" + realFileName))
+                {
+                    info.Context = Barrel.Current.Get<byte[]>(_bucket.Name + "_" + realFileName);
+                    Debug.WriteLine("Found buffered file " + realFileName);
+                }
+                else if (getObjectTask.Result.SystemMetadata.ContentLength < 10000000)
                 {
                     //Download that object using a DownloadOperation
                     DownloadOperation downloadOperation;
@@ -398,8 +409,11 @@ namespace S_Drive
 
         private void DownloadOperation_DownloadOperationEnded(DownloadOperation downloadOperation)
         {
-            if(downloadOperation.Completed)
-                Debug.WriteLine("Downloaded file " + downloadOperation.ObjectName);
+            if (downloadOperation.Completed)
+            {
+                Barrel.Current.Add(_bucket.Name + "_" + downloadOperation.ObjectName, downloadOperation.DownloadedBytes, TimeSpan.FromDays(1));
+                Debug.WriteLine("Buffered file " + downloadOperation.ObjectName);
+            }
             else
                 Debug.WriteLine("Failed downloading file " + downloadOperation.ObjectName + " - " + downloadOperation.ErrorMessage);
         }
@@ -672,7 +686,7 @@ namespace S_Drive
                 else if (info.Context is DownloadOperation)
                 {
                     var downloadOperation = info.Context as DownloadOperation;
-                    if(downloadOperation.BytesReceived > offset + buffer.Length)
+                    if (downloadOperation.BytesReceived > offset + buffer.Length)
                     {
                         Array.Copy(downloadOperation.DownloadedBytes, offset, buffer, 0, buffer.Length);
                         bytesRead = buffer.Length;
@@ -680,7 +694,7 @@ namespace S_Drive
                     else if (downloadOperation.BytesReceived > offset)
                     {
                         bytesRead = (int)(downloadOperation.BytesReceived - offset);
-                        Array.Copy(downloadOperation.DownloadedBytes,offset, buffer, 0, bytesRead);
+                        Array.Copy(downloadOperation.DownloadedBytes, offset, buffer, 0, bytesRead);
                     }
                     else
                     {
@@ -688,12 +702,27 @@ namespace S_Drive
                         bytesRead = 0;
                     }
                 }
+                else if (info.Context is byte[])
+                {
+                    var source = info.Context as byte[];
+                    
+                    if (source.Length - offset > buffer.Length)
+                    {
+                        Array.Copy(source, offset, buffer, 0, buffer.Length);
+                        bytesRead = buffer.Length;
+                    }
+                    else
+                    {
+                        Array.Copy(source, offset, buffer, 0, source.Length - offset);
+                        bytesRead = (int)(source.Length - offset);
+                    }
+                }
                 else
                 {
                     bytesRead = 0;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 bytesRead = 0;
             }
