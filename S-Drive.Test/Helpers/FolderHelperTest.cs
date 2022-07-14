@@ -1,4 +1,5 @@
 using S_Drive.Helpers;
+using S_Drive.Models;
 
 namespace S_Drive.Test.Helpers
 {
@@ -6,100 +7,100 @@ namespace S_Drive.Test.Helpers
     public class FolderHelperTest
     {
         FolderHelper _helper;
-        List<string> _keys;
+        List<FolderContent> _folderContent;
 
         [TestInitialize]
         public void Init()
         {
             _helper = new FolderHelper();
-            _keys = new List<string>();
+            _folderContent = new List<FolderContent>();
         }
 
         [TestMethod]
         public void GetContentForRoot()
         {
-            _keys.Add("/rootfile.txt");
-            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
-            _helper.UpdateFolderTree(_keys);
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/");
 
-            Assert.AreEqual("/rootfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder1/", content[1]);
+            Assert.AreEqual("/rootfile.txt", content[0].Key);
+            Assert.AreEqual("/Subfolder1/", content[1].Key);
         }
 
         [TestMethod]
         public void GetContentForRootWithFileInSubfolder()
         {
-            _keys.Add("/rootfile.txt");
-            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
-            _keys.Add("/Subfolder2/subfile.txt");
-            _helper.UpdateFolderTree(_keys);
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/");
 
-            Assert.AreEqual("/rootfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder1/", content[1]);
-            Assert.AreEqual("/Subfolder2/", content[2]);
+            Assert.AreEqual("/rootfile.txt", content[0].Key);
+            Assert.AreEqual("/Subfolder1/", content[1].Key);
+            Assert.AreEqual("/Subfolder2/", content[2].Key);
         }
 
         [TestMethod]
         public void GetContentForSubfolder()
         {
-            _keys.Add("/rootfile.txt");
-            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
-            _keys.Add("/Subfolder2/subfile.txt");
-            _helper.UpdateFolderTree(_keys);
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/Subfolder2");
 
-            Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
+            Assert.AreEqual("/Subfolder2/subfile.txt", content[0].Key);
         }
 
         [TestMethod]
         public void GetContentForSubfolderDeep()
         {
-            _keys.Add("/rootfile.txt");
-            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
-            _keys.Add("/Subfolder2/subfile.txt");
-            _keys.Add("/Subfolder2/Subfolder2B/subfile.txt");
-            _helper.UpdateFolderTree(_keys);
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/Subfolder2B/subfile.txt", DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/Subfolder2");
 
-            Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder2/Subfolder2B/", content[1]);
+            Assert.AreEqual("/Subfolder2/subfile.txt", content[0].Key);
+            Assert.AreEqual("/Subfolder2/Subfolder2B/", content[1].Key);
         }
 
         [TestMethod]
         public void GetContentForSubfolderDeepVariant2()
         {
-            _keys.Add("/rootfile.txt");
-            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
-            _keys.Add("/Subfolder2/subfile.txt");
-            _keys.Add("/Subfolder2/Subfolder2B/Subfolder2C/subfile.txt");
-            _helper.UpdateFolderTree(_keys);
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/Subfolder2B/Subfolder2C/subfile.txt", DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/Subfolder2");
 
-            Assert.AreEqual("/Subfolder2/subfile.txt", content[0]);
-            Assert.AreEqual("/Subfolder2/Subfolder2B/", content[1]);
+            Assert.AreEqual("/Subfolder2/subfile.txt", content[0].Key);
+            Assert.AreEqual("/Subfolder2/Subfolder2B/", content[1].Key);
         }
 
         [TestMethod]
         public void GetContentForSubfolderComplex()
         {
-            _keys.Add("/rootfile.txt");
-            _keys.Add("/Subfolder1" + StorjMount.DOKAN_FOLDER);
-            _keys.Add("/Subfolder2/subfile.txt");
-            _keys.Add("/Subfolder2/Subfolder2B/subfile.txt");
-            _keys.Add("/Subfolder3/Special folder.withwäird stuff/subfile.txt");
-            _keys.Add("/Subfolder3/Special folder.withwäird stuff/VeryDeep/SubFolders/subfile.txt");
-            _helper.UpdateFolderTree(_keys);
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/Subfolder2B/subfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder3/Special folder.withwäird stuff/subfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder3/Special folder.withwäird stuff/VeryDeep/SubFolders/subfile.txt", DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/Subfolder3");
 
-            Assert.AreEqual("/Subfolder3/Special folder.withwäird stuff/", content[0]);
+            Assert.AreEqual("/Subfolder3/Special folder.withwäird stuff/", content[0].Key);
         }
     }
 }

@@ -2,6 +2,7 @@
 using DokanNet.Logging;
 using S_Drive.Contracts.Interfaces;
 using S_Drive.Contracts.Models;
+using S_Drive.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -159,7 +160,7 @@ namespace S_Drive
         /// <param name="bucketName">The bucket to connect to</param>
         private void InitUplink(string bucketName)
         {
-            _= _stuRunner.Run(async () =>
+            _ = _stuRunner.Run(async () =>
             {
                 _bucketService = new BucketService(_access);
                 _objectService = new ObjectService(_access);
@@ -293,7 +294,7 @@ namespace S_Drive
         protected string GetPath(string fileName)
         {
             if (fileName == ROOT_FOLDER)
-                return fileName.Replace("\\","/");
+                return fileName.Replace("\\", "/");
             else
             {
                 if (fileName.StartsWith(ROOT_FOLDER))
@@ -322,20 +323,20 @@ namespace S_Drive
             IList<FileInformation> folders = new List<FileInformation>();
 
             var folderHelper = new Helpers.FolderHelper();
-            folderHelper.UpdateFolderTree(listTask.Result.Select(o => "/" + o.Key).ToList());
+            folderHelper.UpdateFolderTree(listTask.Result.Select(o => new FolderContent("/" + o.Key, o.SystemMetadata.Created, o.SystemMetadata.ContentLength)).ToList());
             var subContent = folderHelper.GetContentFor("/" + currentFolder);
             foreach (var sub in subContent)
             {
-                if (sub.EndsWith("/"))
+                if (sub.Key.EndsWith("/"))
                 {
                     result.Add(new FileInformation
                     {
                         Attributes = System.IO.FileAttributes.Directory,
-                        CreationTime = DateTime.Now,//finfo.SystemMetadata.Created,
-                        LastAccessTime = DateTime.Now,//finfo.SystemMetadata.Created,
-                        LastWriteTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        CreationTime = sub.CreationTime,
+                        LastAccessTime = sub.CreationTime,
+                        LastWriteTime = sub.CreationTime,
                         Length = 0,
-                        FileName = sub.Substring(currentFolder.Length + 1).TrimStart('/').TrimEnd('/')//finfo.Key.Split('/')[0]
+                        FileName = sub.Key.Substring(currentFolder.Length + 1).TrimStart('/').TrimEnd('/')
                     });
                 }
                 else
@@ -343,11 +344,11 @@ namespace S_Drive
                     result.Add(new FileInformation
                     {
                         Attributes = System.IO.FileAttributes.Normal,
-                        CreationTime = DateTime.Now,//finfo.SystemMetadata.Created,
-                        LastAccessTime = DateTime.Now,//finfo.SystemMetadata.Created,
-                        LastWriteTime = DateTime.Now,//finfo.SystemMetadata.Created,
-                        Length = 0,//finfo.SystemMetadata.ContentLength,
-                        FileName = sub.Substring(currentFolder.Length + 1).TrimStart('/')//finfo.Key.Split('/')[0]
+                        CreationTime = sub.CreationTime,
+                        LastAccessTime = sub.CreationTime,
+                        LastWriteTime = sub.CreationTime,
+                        Length = sub.ContentLength,
+                        FileName = sub.Key.Substring(currentFolder.Length + 1).TrimStart('/')
                     });
                 }
             }
@@ -372,14 +373,35 @@ namespace S_Drive
                 //Get the internal name of that file
                 var realFileName = GetPath(fileName);
 
-                //Download that object using a DownloadStream
                 var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
                 getObjectTask.Wait();
-                info.Context = new System.IO.BufferedStream(new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetadata.ContentLength, realFileName));
+
+                if (getObjectTask.Result.SystemMetadata.ContentLength < 10000000)
+                {
+                    //Download that object using a DownloadOperation
+                    DownloadOperation downloadOperation;
+                    info.Context = downloadOperation = (_objectService.DownloadObjectAsync(_bucket, realFileName, new DownloadOptions(), false)).Result;
+                    downloadOperation.DownloadOperationEnded += DownloadOperation_DownloadOperationEnded;
+                    _ = downloadOperation.StartDownloadAsync();
+                }
+                else
+                {
+                    //Download that object using a DownloadStream
+                    info.Context = new System.IO.BufferedStream(new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetadata.ContentLength, realFileName));
+                }
+
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.SlidingExpiration = new TimeSpan(0, 30, 0); //Keep it for 30 Minutes since last access in our cache.
                 _memoryCache.Set(fileName, info.Context, cachePolicy);
             }
+        }
+
+        private void DownloadOperation_DownloadOperationEnded(DownloadOperation downloadOperation)
+        {
+            if(downloadOperation.Completed)
+                Debug.WriteLine("Downloaded file " + downloadOperation.ObjectName);
+            else
+                Debug.WriteLine("Failed downloading file " + downloadOperation.ObjectName + " - " + downloadOperation.ErrorMessage);
         }
 
         /// <summary>
@@ -628,21 +650,53 @@ namespace S_Drive
         /// <returns>The result of the operation</returns>
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
         {
-            var thread = _stuRunner.Run(() =>
+
+            //var thread = _stuRunner.Run(() =>
+            //{
+            try
             {
                 InitDownload(fileName, info);
-                
+
                 var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                 int bytesReadByThread;
-                var download = info.Context as System.IO.BufferedStream;
-                download.Position = offset;
-                if (download.Length > 0 && download.Length < offset + buffer.Length)
-                    bytesReadByThread = download.Read(buffer, 0, (int)(download.Length - offset));
+                if (info.Context is System.IO.BufferedStream)
+                {
+                    var download = info.Context as System.IO.BufferedStream;
+                    download.Position = offset;
+                    if (download.Length > 0 && download.Length < offset + buffer.Length)
+                        bytesReadByThread = download.Read(buffer, 0, (int)(download.Length - offset));
+                    else
+                        bytesReadByThread = download.Read(buffer, 0, buffer.Length);
+                    bytesRead = bytesReadByThread;
+                }
+                else if (info.Context is DownloadOperation)
+                {
+                    var downloadOperation = info.Context as DownloadOperation;
+                    if(downloadOperation.BytesReceived > offset + buffer.Length)
+                    {
+                        Array.Copy(downloadOperation.DownloadedBytes, offset, buffer, 0, buffer.Length);
+                        bytesRead = buffer.Length;
+                    }
+                    else if (downloadOperation.BytesReceived > offset)
+                    {
+                        bytesRead = (int)(downloadOperation.BytesReceived - offset);
+                        Array.Copy(downloadOperation.DownloadedBytes,offset, buffer, 0, bytesRead);
+                    }
+                    else
+                    {
+                        //No data yet - come back later :)
+                        bytesRead = 0;
+                    }
+                }
                 else
-                    bytesReadByThread = download.Read(buffer, 0, buffer.Length);
-                return bytesReadByThread;
-            });
-            bytesRead = thread.Result;
+                {
+                    bytesRead = 0;
+                }
+            }
+            catch
+            {
+                bytesRead = 0;
+            }
 
             return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
         }

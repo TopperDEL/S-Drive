@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using S_Drive.Models;
 
 namespace S_Drive.Helpers
 {
     public class FolderHelper
     {
-        private List<string> _keys;
-        public void UpdateFolderTree(List<string> keys)
+        private List<FolderContent> _folderContents;
+        public void UpdateFolderTree(List<FolderContent> folderContent)
         {
-            _keys = keys;
+            _folderContents = folderContent;
         }
 
-        public List<string> GetContentFor(string currentDirectory)
+        public List<FolderContent> GetContentFor(string currentDirectory)
         {
-            if (_keys == null)
-                return new List<string>();
+            if (_folderContents == null)
+                return new List<FolderContent>();
 
-            var ret = new List<string>();
+            var ret = new List<FolderContent>();
 
-            foreach (var key in _keys)
+            foreach (var folderContent in _folderContents)
             {
-                if (key.StartsWith(currentDirectory))
+                if (folderContent.Key.StartsWith(currentDirectory))
                 {
                     string keyToUse;
-                    keyToUse = key;
+                    keyToUse = folderContent.Key;
                     var deeperPart = keyToUse.Substring(currentDirectory.Length);
                     if (deeperPart.StartsWith("/"))
                         deeperPart = deeperPart.Substring(1);
@@ -39,13 +40,13 @@ namespace S_Drive.Helpers
                     {
                         keyToUse = currentDirectory + "/" + deeperPart;
                     }
-                    if(hasSubFolders)
+                    if (hasSubFolders)
                     {
                         keyToUse = keyToUse + "/";
                     }
 
-                    if (!ret.Contains(keyToUse))
-                        ret.Add(keyToUse);
+                    if (ret.Where(c => c.Key == keyToUse).Count() == 0)
+                        ret.Add(new FolderContent(keyToUse, folderContent.CreationTime, folderContent.ContentLength));
                 }
             }
 
