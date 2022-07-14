@@ -42,11 +42,11 @@ namespace S_Drive.WinUI.Services
             return _activeMounts.Count() > 0;
         }
 
-        private void StartMount(StorjMount mount, MountParameters mountParameters)
+        private async Task StartMount(StorjMount mount, MountParameters mountParameters)
         {
             try
             {
-                mount.Mount(mountParameters);
+                await mount.MountAsync(mountParameters);
             }
             catch (Exception ex)
             {

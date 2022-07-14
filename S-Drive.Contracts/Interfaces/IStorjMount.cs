@@ -8,7 +8,7 @@ namespace S_Drive.Contracts.Interfaces
 {
     public interface IStorjMount
     {
-        void Mount(MountParameters parameters);
+        Task MountAsync(MountParameters parameters);
 
         void Unmount();
     }

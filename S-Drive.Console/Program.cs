@@ -24,7 +24,7 @@ namespace S_Drive.Console
             //mountParameters.EncryptionPassphrase = args[2];
             //mountParameters.Bucketname = args[3];
 
-            storjMount.Mount(mountParameters);
+            storjMount.MountAsync(mountParameters).Wait();
         }
     }
 }

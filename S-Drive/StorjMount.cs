@@ -27,7 +27,6 @@ namespace S_Drive
             Barrel.ApplicationId = "S_Drive";
         }
 
-        private Helpers.SingleThreadUplinkRunner _stuRunner;
         /// <summary>
         /// The mount parameters in use.
         /// </summary>
@@ -119,7 +118,7 @@ namespace S_Drive
         /// </summary>
         /// <param name="mountParameters">The parameters to use for a  mount</param>
         /// <returns>A task doing the initialization</returns>
-        public void Mount(MountParameters mountParameters)
+        public async Task MountAsync(MountParameters mountParameters)
         {
             _mountParameters = mountParameters;
             Access.SetTempDirectory(System.IO.Path.GetTempPath());
@@ -129,9 +128,7 @@ namespace S_Drive
             else
                 _access = new Access(mountParameters.AccessGrant);
 
-            _stuRunner = Helpers.SingleThreadUplinkRunner.Instance;
-
-            InitUplink(mountParameters.Bucketname);
+            await InitUplinkAsync(mountParameters.Bucketname);
 
             var nullLogger = new NullLogger();
             using (_mre = new System.Threading.ManualResetEvent(false))
@@ -164,21 +161,18 @@ namespace S_Drive
         /// Init the services and ensure the bucket to use exists.
         /// </summary>
         /// <param name="bucketName">The bucket to connect to</param>
-        private void InitUplink(string bucketName)
+        private async Task InitUplinkAsync(string bucketName)
         {
-            _ = _stuRunner.Run(async () =>
+            _bucketService = new BucketService(_access);
+            _objectService = new ObjectService(_access);
+            try
             {
-                _bucketService = new BucketService(_access);
-                _objectService = new ObjectService(_access);
-                try
-                {
-                    _bucket = await _bucketService.GetBucketAsync(bucketName).ConfigureAwait(false);
-                }
-                catch
-                {
-                    _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
-                }
-            });
+                _bucket = await _bucketService.GetBucketAsync(bucketName).ConfigureAwait(false);
+            }
+            catch
+            {
+                _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
+            }
         }
         #endregion
 
@@ -237,6 +231,8 @@ namespace S_Drive
 
             if (fileName != null)
                 _memoryCache.Remove(fileName);
+
+            Barrel.Current.Empty(_bucket.Name + "_" + fileName);
         }
 
         /// <summary>
@@ -664,9 +660,6 @@ namespace S_Drive
         /// <returns>The result of the operation</returns>
         public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
         {
-
-            //var thread = _stuRunner.Run(() =>
-            //{
             try
             {
                 InitDownload(fileName, info);
@@ -705,7 +698,7 @@ namespace S_Drive
                 else if (info.Context is byte[])
                 {
                     var source = info.Context as byte[];
-                    
+
                     if (source.Length - offset > buffer.Length)
                     {
                         Array.Copy(source, offset, buffer, 0, buffer.Length);
