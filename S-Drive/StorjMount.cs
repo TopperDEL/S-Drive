@@ -159,17 +159,19 @@ namespace S_Drive
         /// <param name="bucketName">The bucket to connect to</param>
         private async Task InitUplinkAsync(string bucketName)
         {
-            _bucketService = new BucketService(_access);
-            _objectService = new ObjectService(_access);
-            try
+            _stuRunner.Run(async () =>
             {
-                _bucket = await _bucketService.GetBucketAsync(bucketName).ConfigureAwait(false);
-            }
-            catch
-            {
-                _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
-            }
-
+                _bucketService = new BucketService(_access);
+                _objectService = new ObjectService(_access);
+                try
+                {
+                    _bucket = await _bucketService.GetBucketAsync(bucketName).ConfigureAwait(false);
+                }
+                catch
+                {
+                    _bucket = await _bucketService.EnsureBucketAsync(bucketName).ConfigureAwait(false);
+                }
+            });
         }
         #endregion
 
@@ -291,13 +293,13 @@ namespace S_Drive
         protected string GetPath(string fileName)
         {
             if (fileName == ROOT_FOLDER)
-                return fileName;
+                return fileName.Replace("\\","/");
             else
             {
                 if (fileName.StartsWith(ROOT_FOLDER))
-                    return fileName.Substring(1);
+                    return fileName.Substring(1).Replace("\\", "/");
                 else
-                    return fileName;
+                    return fileName.Replace("\\", "/");
             }
         }
 
@@ -312,93 +314,43 @@ namespace S_Drive
             var listTask = ListAllAsync();
             listTask.Wait();
 
-            //If we are within a subfolder, we need to add a backslash to the foldername
             var currentFolder = fileName.Substring(1);
-            //if (currentFolder != "")
-            //   currentFolder = currentFolder + "\\";
+            currentFolder = currentFolder.Replace("\\", "/");
 
-            IList<FileInformation> files;
-            IList<FileInformation> folders;
-
-            if (currentFolder == "")
-            {
-                //We are in the root-folder
-
-                //List all files that belong to the current root but are not (fake-)folders.
-                files = listTask.Result
-                .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
-                                DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                !finfo.IsPrefix)
-                .Select(finfo => new FileInformation
-                {
-                    Attributes = finfo.Key.Contains('/') ? System.IO.FileAttributes.Directory : System.IO.FileAttributes.Normal,
-                    CreationTime = finfo.SystemMetadata.Created,
-                    LastAccessTime = finfo.SystemMetadata.Created,
-                    LastWriteTime = finfo.SystemMetadata.Created,
-                    Length = finfo.SystemMetadata.ContentLength,
-                    FileName = finfo.Key.Split('/')[0]
-                }).ToArray();
-
-                files = files.GroupBy(f => f.FileName).Select(f => f.First()).ToArray();
-
-                //List all folders that belong to the current root.
-                folders = listTask.Result
-                    .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Contains("\\") &&
-                                    DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                    finfo.IsPrefix)
-                    .Select(finfo => new FileInformation
-                    {
-                        Attributes = System.IO.FileAttributes.Directory,
-                        CreationTime = finfo.SystemMetadata.Created,
-                        LastAccessTime = finfo.SystemMetadata.Created,
-                        LastWriteTime = finfo.SystemMetadata.Created,
-                        Length = 0,
-                        FileName = finfo.Key.Split('/')[0]
-                    }).ToArray();
-
-                folders = folders.GroupBy(f => f.FileName).Select(f => f.First()).ToArray();
-            }
-            else
-            {
-                //We are in a subfolder
-
-                //List all files that belong to the current folder but are not (fake-)folders.
-                files = listTask.Result
-                .Where(finfo => finfo.Key.StartsWith(currentFolder) && !finfo.Key.Substring(currentFolder.Length).Contains("\\") &&
-                                DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                !finfo.IsPrefix)
-                .Select(finfo => new FileInformation
-                {
-                    Attributes = System.IO.FileAttributes.Normal,
-                    CreationTime = finfo.SystemMetadata.Created,
-                    LastAccessTime = finfo.SystemMetadata.Created,
-                    LastWriteTime = finfo.SystemMetadata.Created,
-                    Length = finfo.SystemMetadata.ContentLength,
-                    FileName = finfo.Key.Substring(currentFolder.Length).Split('/')[0]
-                }).ToArray();
-
-                //List all folders that belong to the current folder.
-                folders = listTask.Result
-                    .Where(finfo => finfo.Key.StartsWith(currentFolder) &&
-                                    DokanHelper.DokanIsNameInExpression(searchPattern, finfo.Key, true) &&
-                                    finfo.IsPrefix)
-                    .Select(finfo => new FileInformation
-                    {
-                        Attributes = System.IO.FileAttributes.Directory,
-                        CreationTime = finfo.SystemMetadata.Created,
-                        LastAccessTime = finfo.SystemMetadata.Created,
-                        LastWriteTime = finfo.SystemMetadata.Created,
-                        Length = 0,
-                        FileName = finfo.Key.Substring(currentFolder.Length)
-                    }).ToArray();
-            }
-
-            //Merge files and folders.
             List<FileInformation> result = new List<FileInformation>();
-            foreach (var folder in folders)
-                result.Add(folder);
-            foreach (var file in files)
-                result.Add(file);
+            IList<FileInformation> files = new List<FileInformation>();
+            IList<FileInformation> folders = new List<FileInformation>();
+
+            var folderHelper = new Helpers.FolderHelper();
+            folderHelper.UpdateFolderTree(listTask.Result.Select(o => "/" + o.Key).ToList());
+            var subContent = folderHelper.GetContentFor("/" + currentFolder);
+            foreach (var sub in subContent)
+            {
+                if (sub.EndsWith("/"))
+                {
+                    result.Add(new FileInformation
+                    {
+                        Attributes = System.IO.FileAttributes.Directory,
+                        CreationTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        LastAccessTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        LastWriteTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        Length = 0,
+                        FileName = sub.Substring(currentFolder.Length + 1).TrimStart('/').TrimEnd('/')//finfo.Key.Split('/')[0]
+                    });
+                }
+                else
+                {
+                    result.Add(new FileInformation
+                    {
+                        Attributes = System.IO.FileAttributes.Normal,
+                        CreationTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        LastAccessTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        LastWriteTime = DateTime.Now,//finfo.SystemMetadata.Created,
+                        Length = 0,//finfo.SystemMetadata.ContentLength,
+                        FileName = sub.Substring(currentFolder.Length + 1).TrimStart('/')//finfo.Key.Split('/')[0]
+                    });
+                }
+            }
 
             return result;
         }
@@ -423,7 +375,7 @@ namespace S_Drive
                 //Download that object using a DownloadStream
                 var getObjectTask = _objectService.GetObjectAsync(_bucket, realFileName);
                 getObjectTask.Wait();
-                info.Context = new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetadata.ContentLength, realFileName);
+                info.Context = new System.IO.BufferedStream(new DownloadStream(_bucket, (int)getObjectTask.Result.SystemMetadata.ContentLength, realFileName));
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.SlidingExpiration = new TimeSpan(0, 30, 0); //Keep it for 30 Minutes since last access in our cache.
                 _memoryCache.Set(fileName, info.Context, cachePolicy);
@@ -682,7 +634,7 @@ namespace S_Drive
                 
                 var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                 int bytesReadByThread;
-                var download = info.Context as DownloadStream;
+                var download = info.Context as System.IO.BufferedStream;
                 download.Position = offset;
                 if (download.Length > 0 && download.Length < offset + buffer.Length)
                     bytesReadByThread = download.Read(buffer, 0, (int)(download.Length - offset));
