@@ -112,7 +112,7 @@ namespace S_Drive
         /// </summary>
         /// <param name="mountParameters">The parameters to use for a  mount</param>
         /// <returns>A task doing the initialization</returns>
-        public async Task MountAsync(MountParameters mountParameters)
+        public void Mount(MountParameters mountParameters)
         {
             _mountParameters = mountParameters;
             Access.SetTempDirectory(System.IO.Path.GetTempPath());
@@ -124,7 +124,7 @@ namespace S_Drive
 
             _stuRunner = Helpers.SingleThreadUplinkRunner.Instance;
 
-            await InitUplinkAsync(mountParameters.Bucketname).ConfigureAwait(false);
+            InitUplink(mountParameters.Bucketname);
 
             var nullLogger = new NullLogger();
             using (_mre = new System.Threading.ManualResetEvent(false))
@@ -157,9 +157,9 @@ namespace S_Drive
         /// Init the services and ensure the bucket to use exists.
         /// </summary>
         /// <param name="bucketName">The bucket to connect to</param>
-        private async Task InitUplinkAsync(string bucketName)
+        private void InitUplink(string bucketName)
         {
-            _stuRunner.Run(async () =>
+            _= _stuRunner.Run(async () =>
             {
                 _bucketService = new BucketService(_access);
                 _objectService = new ObjectService(_access);
@@ -644,12 +644,6 @@ namespace S_Drive
             });
             bytesRead = thread.Result;
 
-            //var download = info.Context as DownloadStream;
-            //download.Position = offset;
-            //if (download.Length > 0 && download.Length < offset + buffer.Length)
-            //    bytesRead = download.Read(buffer, 0, (int)(download.Length - offset));
-            //else
-            //    bytesRead = download.Read(buffer, 0, buffer.Length);
             return Trace(nameof(ReadFile), fileName, info, DokanResult.Success);
         }
 

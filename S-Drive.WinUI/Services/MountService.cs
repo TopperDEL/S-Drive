@@ -46,7 +46,7 @@ namespace S_Drive.WinUI.Services
         {
             try
             {
-                mount.MountAsync(mountParameters).Wait();
+                mount.Mount(mountParameters);
             }
             catch (Exception ex)
             {
