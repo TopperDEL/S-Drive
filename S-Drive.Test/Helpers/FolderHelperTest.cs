@@ -58,6 +58,19 @@ namespace S_Drive.Test.Helpers
         }
 
         [TestMethod]
+        public void GetContentForSubfolderWithoutHiddenFile()
+        {
+            _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
+            _helper.UpdateFolderTree(_folderContent);
+
+            var content = _helper.GetContentFor("/Subfolder1");
+
+            Assert.AreEqual(0, content.Count);
+        }
+
+        [TestMethod]
         public void GetContentForSubfolderDeep()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
