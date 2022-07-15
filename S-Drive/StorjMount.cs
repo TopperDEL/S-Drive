@@ -190,11 +190,6 @@ namespace S_Drive
                 result = new List<uplink.NET.Models.Object>();
                 foreach (var obj in objects.Items)
                 {
-                    if (obj.Key.Contains(DOKAN_FOLDER))
-                    {
-                        obj.IsPrefix = true;
-                        obj.Key = obj.Key.Replace(DOKAN_FOLDER, "");
-                    }
                     result.Add(obj);
                 }
 
@@ -218,7 +213,7 @@ namespace S_Drive
         /// <returns>The internal "fake-folder-object"-name</returns>
         private string ToInternalFolder(string fileName)
         {
-            return fileName + "/" + DOKAN_FOLDER;
+            return fileName + DOKAN_FOLDER;
         }
 
         /// <summary>
@@ -679,6 +674,12 @@ namespace S_Drive
                 else if (info.Context is DownloadOperation)
                 {
                     var downloadOperation = info.Context as DownloadOperation;
+                    //We cannot always return 0 as this might break the file.
+                    //But until the download did not fail and has not bytes received => wait for some.
+                    while (!downloadOperation.Failed && downloadOperation.BytesReceived == 0)
+                    {
+                        Task.Delay(10);
+                    }
                     if (downloadOperation.BytesReceived > offset + buffer.Length)
                     {
                         Array.Copy(downloadOperation.DownloadedBytes, offset, buffer, 0, buffer.Length);
@@ -691,7 +692,7 @@ namespace S_Drive
                     }
                     else
                     {
-                        //No data yet - come back later :)
+                        //Still no data yet - come back later :)
                         bytesRead = 0;
                     }
                 }
@@ -715,7 +716,7 @@ namespace S_Drive
                     bytesRead = 0;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 bytesRead = 0;
             }
@@ -914,7 +915,7 @@ namespace S_Drive
         {
             var file = GetPath(folderName);
             file = ToInternalFolder(file);
-            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), new byte[] { }, false);
+            var uploadTask = _objectService.UploadObjectAsync(_bucket, file, new UploadOptions(), Encoding.UTF8.GetBytes(folderName), false);
             uploadTask.Wait();
             var result = uploadTask.Result;
             result.StartUploadAsync().Wait();
@@ -1121,7 +1122,14 @@ namespace S_Drive
 
             realFileName = ToInternalFolder(realFileName);
 
-            await _objectService.DeleteObjectAsync(_bucket, realFileName).ConfigureAwait(false);
+            try
+            {
+                await _objectService.DeleteObjectAsync(_bucket, realFileName).ConfigureAwait(false);
+            }
+            catch
+            {
+
+            }
 
             ClearMemoryCache();
 
