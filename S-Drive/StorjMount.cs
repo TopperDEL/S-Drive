@@ -499,7 +499,7 @@ namespace S_Drive
         /// <returns>The result of the operation</returns>
         public NtStatus FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, IDokanFileInfo info)
         {
-            files = FindFilesHelper(fileName, searchPattern);
+            files = FindFilesHelper(fileName, searchPattern).Where(f => DokanHelper.DokanIsNameInExpression(searchPattern, f.FileName, true)).ToList();
 
             return Trace(nameof(FindFilesWithPattern), fileName, info, DokanResult.Success);
         }
@@ -1117,7 +1117,11 @@ namespace S_Drive
             var files = await ListAllAsync().ConfigureAwait(false);
             foreach (var toDelete in files.Where(f => !f.IsPrefix && f.Key.StartsWith(realFileName)))
             {
-                await _objectService.DeleteObjectAsync(_bucket, toDelete.Key).ConfigureAwait(false);
+                try
+                {
+                    await _objectService.DeleteObjectAsync(_bucket, toDelete.Key).ConfigureAwait(false);
+                }
+                catch { }
             }
 
             realFileName = ToInternalFolder(realFileName);
