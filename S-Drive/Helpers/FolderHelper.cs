@@ -45,7 +45,7 @@ namespace S_Drive.Helpers
                         keyToUse = keyToUse + "/";
                     }
 
-                    if (ret.Where(c => c.Key == keyToUse).Count() == 0 && !keyToUse.Contains(StorjMount.DOKAN_FOLDER))
+                    if (ret.Where(c => c.Key == keyToUse).Count() == 0 && !keyToUse.Contains(StorjDisk.DOKAN_FOLDER))
                         ret.Add(new FolderContent(keyToUse, folderContent.CreationTime, folderContent.ContentLength));
                 }
             }
