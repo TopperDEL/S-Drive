@@ -1019,9 +1019,9 @@ namespace S_Drive
             if (info.DeleteOnClose &&
                 !info.IsDirectory) //Directories are deleted with DeleteDirectory
             {
-                var realFileName = GetPath(fileName);
-                var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
-                deleteTask.Wait();
+                //var realFileName = GetPath(fileName);
+                //var deleteTask = _objectService.DeleteObjectAsync(_bucket, realFileName);
+                //deleteTask.Wait();
 
                 ClearMemoryCache(fileName);
             }
