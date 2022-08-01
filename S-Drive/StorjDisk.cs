@@ -139,34 +139,16 @@ namespace S_Drive
 
         public IDokanFileContext CreateFileContext(string path, FileMode mode, System.IO.FileAccess access, FileShare share = FileShare.None, FileOptions options = FileOptions.None)
         {
-            //var cachedConted = _memoryCache.Get(path);
-            //if (cachedConted != null)
-            //{
-            //    Debug.WriteLine("found Cached Context for " + path + " - Mode: " + mode.ToString());
-            //    return cachedConted as IDokanFileContext;
-            //}
-
             var fileExist = FileExists(path);
 
             var context = StorjDriveContext.GetOrCreateContext(this, path, _objectService, _bucket, fileExist);
             context.FileChanged += (sender, args) =>
             {
                 ClearMemoryCache();
-                Debug.WriteLine("Updating file " + path + " - " + GetPathInverse(path));
                 Dokan.Notify.Update(_dokanInstance, GetPathInverse(path));
                 Dokan.Notify.XAttrUpdate(_dokanInstance, GetPathInverse(path));
             };
 
-            //var cachePolicy = new CacheItemPolicy();
-            //cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1);
-            //_memoryCache.Set(path, context, cachePolicy);
-
-            //if (mode == FileMode.Create || mode == FileMode.OpenOrCreate || mode == FileMode.CreateNew)
-            //{
-            //    Debug.WriteLine("Creating new empty file " + path);
-            //    _objectService.UploadObjectAsync(_bucket, path, new UploadOptions(), new byte[0], true).Wait();
-            //    Dokan.Notify.Create(_dokanInstance, GetPathInverse(path), false);
-            //}
             return context;
         }
 
@@ -183,7 +165,6 @@ namespace S_Drive
 
         public void DeleteFile(string path)
         {
-            Debug.WriteLine("DeleteFile " + path);
             try
             {
                 if (_objectService.GetObjectAsync(_bucket, path).Result != null)
@@ -194,11 +175,6 @@ namespace S_Drive
             catch { }
             ClearMemoryCache(path);
             Dokan.Notify.Delete(_dokanInstance, GetPathInverse(path), false);
-            //if (StorjDriveContext._currentUploads.ContainsKey(path))
-            //{
-            //    StorjDriveContext._currentUploads[path].ChunkedUpload.Dispose();
-            //    StorjDriveContext._currentUploads.Remove(path);
-            //}
         }
 
         public bool DirectoryCanBeDeleted(string path)
@@ -210,9 +186,8 @@ namespace S_Drive
         {
             if (path == "/" || path.Length == 0)
                 return true;
-            //Debug.WriteLine("DirectoryExists? " + path + DOKAN_FOLDER);
+
             var exists = ListAllAsync().Result.Where(o => o.Key == path + DOKAN_FOLDER).Count() >= 1;
-            //Debug.WriteLine("DirectoryExists => " + exists);
             return exists;
         }
 
@@ -238,12 +213,6 @@ namespace S_Drive
                 var cachePolicy = new CacheItemPolicy();
                 cachePolicy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1);
                 _memoryCache.Set(LIST_CACHE, result, cachePolicy);
-
-                Debug.WriteLine("Listing all new");
-            }
-            else
-            {
-                //Debug.WriteLine("Listing from cache");
             }
 
             return result;
@@ -263,10 +232,9 @@ namespace S_Drive
 
         public bool FileExists(string path)
         {
-            Debug.WriteLine("FileExists? " + path);
             var exists = ListAllAsync().Result.Where(o => o.Key == path).Count() >= 1;
             var isOpen = StorjDriveContext.GetFilesWithContext().Where(o=>o.Key == path).Any();
-            Debug.WriteLine("FileExists => " + (exists || isOpen));
+
             return (exists || isOpen);
         }
 
@@ -341,12 +309,6 @@ namespace S_Drive
 
         public bool GetFileInfo(string path, out FileInformation fi)
         {
-            Debug.WriteLine("GetFileInfo: " + path + ".");
-            //if (StorjDriveContext._currentUploads.ContainsKey(path))
-            //{
-            //    fi = StorjDriveContext._currentUploads[path].FileInformation;
-            //    return true;
-            //}
             var listTask = ListAllAsync();
             listTask.Wait();
             var currentFile = listTask.Result.Where(s => s.Key == path).FirstOrDefault();
@@ -419,11 +381,13 @@ namespace S_Drive
 
         public void SetFileAttribute(string path, FileAttributes attr)
         {
+            //ToDo
             Debug.WriteLine("NOT IMPLEMENTED - SetFileAttribute");
         }
 
         public void SetFileTime(string path, DateTime? creationTime, DateTime? lastAccessTime, DateTime? lastWriteTime)
         {
+            //ToDo
             Debug.WriteLine("NOT IMPLEMENTED - SetFiletime");
         }
 
