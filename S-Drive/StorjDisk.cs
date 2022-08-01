@@ -94,7 +94,7 @@ namespace S_Drive
         public string FileSystemName => "NTFS";
 
         public FileSystemFeatures FileSystemFeatures => FileSystemFeatures.CasePreservedNames | FileSystemFeatures.CaseSensitiveSearch |
-                                                        //FileSystemFeatures.PersistentAcls | FileSystemFeatures.SupportsRemoteStorage |
+                                                        FileSystemFeatures.PersistentAcls | FileSystemFeatures.SupportsRemoteStorage |
                                                         FileSystemFeatures.UnicodeOnDisk;
 
         public uint MaximumComponentLength => 256;
