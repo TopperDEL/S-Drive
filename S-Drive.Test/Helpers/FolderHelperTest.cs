@@ -20,7 +20,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForRoot()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _helper.UpdateFolderTree(_folderContent);
 
             var content = _helper.GetContentFor("/");
@@ -33,7 +33,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForRootWithFileInSubfolder()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
             _helper.UpdateFolderTree(_folderContent);
 
@@ -48,7 +48,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForSubfolder()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
             _helper.UpdateFolderTree(_folderContent);
 
@@ -61,7 +61,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForSubfolderWithoutHiddenFile()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
             _helper.UpdateFolderTree(_folderContent);
 
@@ -74,7 +74,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForSubfolderDeep()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/Subfolder2B/subfile.txt", DateTime.Now, 0));
             _helper.UpdateFolderTree(_folderContent);
@@ -89,7 +89,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForSubfolderDeepVariant2()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/Subfolder2B/Subfolder2C/subfile.txt", DateTime.Now, 0));
             _helper.UpdateFolderTree(_folderContent);
@@ -104,7 +104,7 @@ namespace S_Drive.Test.Helpers
         public void GetContentForSubfolderComplex()
         {
             _folderContent.Add(new FolderContent("/rootfile.txt", DateTime.Now, 0));
-            _folderContent.Add(new FolderContent("/Subfolder1" + StorjMount.DOKAN_FOLDER, DateTime.Now, 0));
+            _folderContent.Add(new FolderContent("/Subfolder1" + StorjDisk.DOKAN_FOLDER, DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/subfile.txt", DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder2/Subfolder2B/subfile.txt", DateTime.Now, 0));
             _folderContent.Add(new FolderContent("/Subfolder3/Special folder.withwäird stuff/subfile.txt", DateTime.Now, 0));

@@ -10,18 +10,18 @@ namespace S_Drive.WinUI.Services
 {
     class MountService
     {
-        private Dictionary<MountParameters, StorjMount> _activeMounts;
+        private Dictionary<MountParameters, StorjDisk> _activeMounts;
 
         public MountService()
         {
-            _activeMounts = new Dictionary<MountParameters, StorjMount>();
+            _activeMounts = new Dictionary<MountParameters, StorjDisk>();
         }
 
         public void MountAll(List<MountParameters> mountParameters)
         {
             foreach (var mountParameter in mountParameters)
             {
-                StorjMount storjMount = new StorjMount();
+                StorjDisk storjMount = new StorjDisk(new uplink.NET.Models.Access(mountParameter.AccessGrant), mountParameter.Bucketname);
 
                 Task mountTask = Task.Run(() => StartMount(storjMount, mountParameter));
                 _activeMounts.Add(mountParameter, storjMount);
@@ -42,11 +42,13 @@ namespace S_Drive.WinUI.Services
             return _activeMounts.Count() > 0;
         }
 
-        private async Task StartMount(StorjMount mount, MountParameters mountParameters)
+        private async Task StartMount(StorjDisk mount, MountParameters mountParameters)
         {
             try
             {
-                await mount.MountAsync(mountParameters);
+                var dokan = new NC.DokanFS.DokanFrontend(mount, "Storj");
+                var driveLetter = (NC.DokanFS.DriveLetters)Enum.Parse(typeof(NC.DokanFS.DriveLetters), mountParameters.DriveLetter.ToString());
+                await mount.MountAsync(new NC.DokanFS.MountParameters { DriveLetter = driveLetter, VolumeLabel = mountParameters.VolumeLabel }, dokan);
             }
             catch (Exception ex)
             {
