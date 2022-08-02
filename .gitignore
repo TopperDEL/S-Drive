@@ -354,3 +354,6 @@ MigrationBackup/
 DokanNet.Tardigrade.WiXBootstrapper/Tardigrade-Drive.msi
 DokanNet.Tardigrade.WiXBootstrapper/Tardigrade-Drive-Bootstrapper.wixpdb
 DokanNet.Tardigrade.WiXBootstrapper/Tardigrade-Drive-Bootstrapper.exe
+
+#App-Packages
+App-Packages/
