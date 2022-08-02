@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 using NC.DokanFS;
-using S_Drive;
+using S_Drive.Core;
 using S_Drive.Tool;
 using System.Reflection;
 

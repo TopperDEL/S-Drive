@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using S_Drive.Models;
+using S_Drive.Core.Models;
+using S_Drive.Core;
 
-namespace S_Drive.Helpers
+namespace S_Drive.Core.Helpers
 {
     public class FolderHelper
     {

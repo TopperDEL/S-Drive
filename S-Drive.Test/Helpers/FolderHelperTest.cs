@@ -1,5 +1,6 @@
-using S_Drive.Helpers;
-using S_Drive.Models;
+using S_Drive.Core;
+using S_Drive.Core.Helpers;
+using S_Drive.Core.Models;
 
 namespace S_Drive.Test.Helpers
 {

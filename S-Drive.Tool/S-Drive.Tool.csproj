@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\S-Drive.Contracts\S-Drive.Contracts.csproj" />
+    <ProjectReference Include="..\S-Drive.Core\S-Drive.Core.csproj" />
     <ProjectReference Include="..\S-Drive\S-Drive.Core.csproj" />
   </ItemGroup>
 

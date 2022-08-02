@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace S_Drive
+namespace S_Drive.Core
 {
     //Based on: https://github.com/mlhpdx/seekable-s3-stream
     public class SeekableBufferedStream : Stream

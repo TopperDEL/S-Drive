@@ -1,4 +1,5 @@
 ﻿using NC.DokanFS;
+using S_Drive.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

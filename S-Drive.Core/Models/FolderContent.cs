@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace S_Drive.Models
+namespace S_Drive.Core.Models
 {
     public class FolderContent
     {

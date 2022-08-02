@@ -2,7 +2,7 @@
 using DokanNet.Logging;
 using NC.DokanFS;
 using S_Drive.Contracts.Models;
-using S_Drive.Models;
+using S_Drive.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ using uplink.NET.Interfaces;
 using uplink.NET.Models;
 using uplink.NET.Services;
 
-namespace S_Drive
+namespace S_Drive.Core
 {
     public class StorjDisk : MountableBase, IDokanDisk
     {

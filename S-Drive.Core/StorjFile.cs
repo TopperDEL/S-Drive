@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using uplink.NET.Models;
 
-namespace S_Drive
+namespace S_Drive.Core
 {
     public class StorjFile : IDokanFile
     {

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Console", "S-Drive.Console\S-Drive.Console.csproj", "{335E1318-7BB2-4B5F-8EF7-3BE52846F8ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Core", "S-Drive\S-Drive.Core.csproj", "{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Core", "S-Drive.Core\S-Drive.Core.csproj", "{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Contracts", "S-Drive.Contracts\S-Drive.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
 EndProject

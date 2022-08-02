@@ -1,5 +1,5 @@
 ﻿using NC.DokanFS;
-using S_Drive.Models;
+using S_Drive.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using uplink.NET.Interfaces;
 using uplink.NET.Models;
 
-namespace S_Drive
+namespace S_Drive.Core
 {
     internal class StorjDriveContext : IDokanFileContext
     {
