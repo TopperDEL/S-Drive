@@ -18,7 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\S-Drive.Contracts\S-Drive.Contracts.csproj" />
-    <ProjectReference Include="..\S-Drive\S-Drive.csproj" />
+    <ProjectReference Include="..\S-Drive\S-Drive.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Console", "S-Drive.Console\S-Drive.Console.csproj", "{335E1318-7BB2-4B5F-8EF7-3BE52846F8ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive", "S-Drive\S-Drive.csproj", "{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Core", "S-Drive\S-Drive.Core.csproj", "{C82236D5-4973-44F1-963E-8BF2F2DFAB3F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Contracts", "S-Drive.Contracts\S-Drive.Contracts.csproj", "{6AF39C55-EF62-4114-B8F5-6C157C4ECBEF}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildInfo", "BuildInfo", "{
 	ProjectSection(SolutionItems) = preProject
 		Bundling.txt = Bundling.txt
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S-Drive.Tool", "S-Drive.Tool\S-Drive.Tool.csproj", "{E70C560E-0588-4A37-9FD8-A56094C181B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +118,22 @@ Global
 		{131EBFCE-06FF-43AE-AEDC-D8E9DC1E805A}.Release|x64.Build.0 = Release|Any CPU
 		{131EBFCE-06FF-43AE-AEDC-D8E9DC1E805A}.Release|x86.ActiveCfg = Release|Any CPU
 		{131EBFCE-06FF-43AE-AEDC-D8E9DC1E805A}.Release|x86.Build.0 = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|arm64.Build.0 = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|x64.Build.0 = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Debug|x86.Build.0 = Debug|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|arm64.ActiveCfg = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|arm64.Build.0 = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|x64.ActiveCfg = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|x64.Build.0 = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|x86.ActiveCfg = Release|Any CPU
+		{E70C560E-0588-4A37-9FD8-A56094C181B1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

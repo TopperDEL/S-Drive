@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\S-Drive.Contracts\S-Drive.Contracts.csproj" />
-    <ProjectReference Include="..\S-Drive\S-Drive.csproj" />
+    <ProjectReference Include="..\S-Drive\S-Drive.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AboutDialog.xaml">

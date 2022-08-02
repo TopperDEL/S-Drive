@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>S_Drive.Tool</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<PackAsTool>true</PackAsTool>
+    <ToolCommandName>s-drive</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <PackageId>S-Drive</PackageId>
+    <Title>S-Drive</Title>
+    <Authors>Tim Parth</Authors>
+    <Company>Storj Labs</Company>
+    
+    <Description>With the S-Drive you can mount a virtual hard disk in Windows Explorer that is connected to a bucket on Storj DCS (Decentralised Cloud Storage).</Description>
+    <Copyright>2022 Tim Parth, Storj Labs</Copyright>
+    <PackageProjectUrl>https://github.com/TopperDEL/S-Drive</PackageProjectUrl>
+    <PackageIcon>StoreLogo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/TopperDEL/S-Drive</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>storj dokan vfs virtual drive</PackageTags>
+	<Version>0.2.0</Version>
+    <PackageReleaseNotes>Alpha version - use with caution. Now includes an arguments parser and help-screen.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\S-Drive.WinUI\Assets\StoreLogo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="uplink.NET.Win" Version="2.9.2774" />	
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\S-Drive.Contracts\S-Drive.Contracts.csproj" />
+    <ProjectReference Include="..\S-Drive\S-Drive.Core.csproj" />
+  </ItemGroup>
+
+</Project>
