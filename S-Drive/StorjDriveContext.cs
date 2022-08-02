@@ -62,11 +62,9 @@ namespace S_Drive
 
         public string FileName { get; private set; }
 
-        private ChunkedUploadOperation _uploadOperation;
         private readonly IObjectService _objectService;
         private readonly Bucket _bucket;
         private Stream _stream;
-        private bool _needsFlushing;
 
         public event EventHandler FileChanged;
 
@@ -89,7 +87,6 @@ namespace S_Drive
         public void Append(byte[] buffer)
         {
             _stream.Write(buffer, (int)_stream.Position, buffer.Length);
-            _needsFlushing = true;
         }
 
         public void Dispose()
@@ -114,7 +111,6 @@ namespace S_Drive
                 var uploadOperation = _objectService.UploadObjectAsync(_bucket, FileName, new UploadOptions(), ((MemoryStream)_stream).ToArray(),false).Result;
                 uploadOperation.StartUploadAsync().Wait();
 
-                _needsFlushing = false;
                 FileChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -167,7 +163,6 @@ namespace S_Drive
         {
             _stream.Position = offset;
             _stream.Write(buffer, 0, buffer.Length);
-            _needsFlushing = true;
             
             FileChanged?.Invoke(this, EventArgs.Empty);
         }
